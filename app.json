@@ -26,7 +26,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.cs52.boost",
       "publishBundlePath": "ios/boost/Supporting/shell-app.bundle",
-      "publishManifestPath": "ios/boost/Supporting/shell-app-manifest.json"
+      "publishManifestPath": "ios/boost/Supporting/shell-app-manifest.json",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.911387247122-1joui15ksueilqqsse016o2f94585tmt"
+        }
+      }
     },
     "isDetached": true,
     "detach": {

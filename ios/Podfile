@@ -109,6 +109,8 @@ target 'boost' do
   pod 'Folly',
     :podspec => "../node_modules/react-native/third-party-podspecs/Folly.podspec",
     :inhibit_warnings => true
+  pod 'EXGoogleSignIn', path: '../node_modules/expo-google-sign-in/ios'
+  pod 'Firebase/Core'
   pod 'glog',
     :podspec => "../node_modules/react-native/third-party-podspecs/glog.podspec",
     :inhibit_warnings => true

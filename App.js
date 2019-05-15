@@ -1,18 +1,48 @@
 import React from 'react';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { AppLoading, Asset, Font, Icon } from 'expo';
+import { Provider } from 'react-redux';
+
+import * as firebase from 'firebase';
 import {
-  Platform, StatusBar, StyleSheet, View,
-} from 'react-native';
-import {
-  AppLoading, Asset, Font, Icon,
-} from 'expo';
+  firebase_apiKey,
+  firebase_authDomain,
+  firebase_databaseURL,
+  firebase_projectId,
+  firebase_storageBucket,
+  firebase_messagingSenderId,
+} from 'react-native-dotenv';
 import AppNavigator from './navigation/AppNavigator';
+import store from './state/create_store';
+
+const FireBaseConfig = {
+  apiKey: firebase_apiKey.slice(0, -2),
+  authDomain: firebase_authDomain.slice(0, -2),
+  databaseURL: firebase_databaseURL.slice(0, -2),
+  projectId: firebase_projectId.slice(0, -2),
+  storageBucket: firebase_storageBucket.slice(0, -2),
+  messagingSenderId: firebase_messagingSenderId.slice(0, -2),
+};
 
 export default class App extends React.Component {
-  state = {
-    isLoadingComplete: false,
-  };
+  constructor(props) {
+    super(props);
 
-  _handleLoadingError = (error) => {
+    this.state = {
+      isLoadingComplete: false,
+      isAuthenticationReady: false,
+      isAuthenticated: false,
+    };
+
+    // initialize firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FireBaseConfig);
+    }
+
+    firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
+  }
+
+  _handleLoadingError = error => {
     // In this case, you might want to report the error to your error
     // reporting service, for example Sentry
     console.warn(error);
@@ -39,7 +69,10 @@ export default class App extends React.Component {
   };
 
   render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+    if (
+      (!this.state.isLoadingComplete || !this.state.isAuthenticationReady) &&
+      !this.props.skipLoadingScreen
+    ) {
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -49,13 +82,43 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
+        <Provider store={store}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <AppNavigator />
+          </View>
+        </Provider>
       );
     }
   }
+
+  onAuthStateChanged = user => {
+    if (user) {
+      this.setState({
+        isAuthenticationReady: true,
+        isAuthenticated: true,
+      });
+    } else {
+      if (this.state.isAuthenticationReady) {
+        this.setState(
+          {
+            isAuthenticationReady: false,
+            isAuthenticated: false,
+          },
+          () => {
+            this.setState({
+              isAuthenticationReady: true,
+            });
+          }
+        );
+      } else {
+        this.setState({
+          isAuthenticationReady: true,
+          isAuthenticated: false,
+        });
+      }
+    }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -155,6 +155,27 @@ PODS:
     - FBSDKCoreKit
   - FBSDKShareKit (4.39.1):
     - FBSDKCoreKit
+  - Firebase/Core (6.0.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 6.0.0)
+  - Firebase/CoreOnly (6.0.0):
+    - FirebaseCore (= 6.0.0)
+  - FirebaseAnalytics (6.0.0):
+    - FirebaseCore (~> 6.0)
+    - FirebaseInstanceID (~> 4.0)
+    - GoogleAppMeasurement (= 6.0.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
+    - nanopb (~> 0.3)
+  - FirebaseCore (6.0.0):
+    - GoogleUtilities/Environment (~> 6.0)
+    - GoogleUtilities/Logger (~> 6.0)
+  - FirebaseInstanceID (4.0.0):
+    - FirebaseCore (~> 6.0)
+    - GoogleUtilities/Environment (~> 6.0)
+    - GoogleUtilities/UserDefaults (~> 6.0)
   - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
@@ -177,6 +198,12 @@ PODS:
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
   - Google-Mobile-Ads-SDK (7.22.0)
+  - GoogleAppMeasurement (6.0.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
+    - nanopb (~> 0.3)
   - GoogleMaps (2.5.0):
     - GoogleMaps/Maps (= 2.5.0)
   - GoogleMaps/Base (2.5.0)
@@ -194,9 +221,32 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.0)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
+  - GoogleUtilities/AppDelegateSwizzler (6.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (6.1.0)
+  - GoogleUtilities/Logger (6.1.0):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (6.1.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (6.1.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (6.1.0)"
+  - GoogleUtilities/Reachability (6.1.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (6.1.0):
+    - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
   - React (0.57.1):
     - React/Core (= 0.57.1)
   - React/ART (0.57.1):
@@ -286,6 +336,7 @@ DEPENDENCIES:
   - EXSMS (from `../node_modules/expo-sms/ios`)
   - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
   - EXTaskManagerInterface (from `../node_modules/expo-task-manager-interface/ios`)
+  - Firebase/Core
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - React/ART (from `../node_modules/react-native`)
@@ -318,14 +369,21 @@ SPEC REPOS:
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
+    - GoogleAppMeasurement
     - GoogleMaps
     - GoogleSignIn
     - GoogleToolboxForMac
+    - GoogleUtilities
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
+    - nanopb
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -471,19 +529,26 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: f442aa96179cc9b382bb4abeb7e340a47cca8f91
   FBSDKLoginKit: c3079d9a4db27c492287b1eed7a4272b28cf8a59
   FBSDKShareKit: 27d7b982e7b1f4638da2f2b1ab6eba5afc6b5888
+  Firebase: fa80b9d987ca014a1ba9357496ef2a0178b28b12
+  FirebaseAnalytics: 1743c5f4de3687d0745709dfdc4b1dea1484f44c
+  FirebaseCore: e38f025287b413255a53acc1945d048a112047f7
+  FirebaseInstanceID: 0e0348a3c00a734fa376a070f5ad4533ad975cb5
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
+  GoogleAppMeasurement: 7f028ea162b72c8f326daec74afc95d94f7a47d6
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  GoogleUtilities: 84df567c76ca84f67b7bb40e769fdd4acc746a10
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 7facfcc0e38a3459cb43260d0988588ba8a0cc1b
+PODFILE CHECKSUM: 6a4447f8de7abb0d2c5accf937d506c3bf6bd526
 
 COCOAPODS: 1.5.3
