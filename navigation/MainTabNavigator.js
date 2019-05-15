@@ -13,12 +13,7 @@ const HomeStack = createStackNavigator({
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Survey',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name="edit-location"
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="edit-location" />,
 };
 
 const LinksStack = createStackNavigator({
@@ -27,12 +22,7 @@ const LinksStack = createStackNavigator({
 
 LinksStack.navigationOptions = {
   tabBarLabel: 'Data',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name="insert-chart"
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="insert-chart" />,
 };
 
 const SettingsStack = createStackNavigator({
@@ -41,12 +31,7 @@ const SettingsStack = createStackNavigator({
 
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name="settings"
-    />
-  ),
+  tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="settings" />,
 };
 
 export default createBottomTabNavigator({

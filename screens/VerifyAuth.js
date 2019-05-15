@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import * as firebase from 'firebase';
+import * as api from '../datastore/api_requests';
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -8,12 +9,18 @@ export default class LoginScreen extends React.Component {
   };
 
   componentDidMount() {
-    console.log('!!!!!');
-    console.log('grab data about user from mongo');
-    console.log(
-      "if the data from mongo says we don't have their initial setup info, route them to ProvideInitialInfo"
-    );
-    console.log('else, route them to App');
+    api
+      .getUserInfo(firebase.auth().currentUser.uid)
+      .then(response => {
+        if (!Object.keys(response).includes('homeLocation')) {
+          this.props.navigation.navigate('ProvideInitialInfo');
+        } else {
+          this.props.navigation.navigate('App');
+        }
+      })
+      .catch(err => {
+        Alert.alert(err.message);
+      });
   }
 
   render() {
@@ -22,31 +29,11 @@ export default class LoginScreen extends React.Component {
         <View style={styles.contentContainer}>
           <Text>Loading...</Text>
 
-          <Text
-            style={{ marginTop: 50, textAlign: 'center', marginHorizontal: 25, marginBottom: 50 }}>
-            the following buttons are temporary until we have the server routes created for users
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              this.props.navigation.navigate('ProvideInitialInfo');
-            }}>
-            <Text style={{ textAlign: 'center', margin: 15 }}>
-              if the data from mongo says we don't have their initial setup info, auto-navigate to
-              ProvideInitialInfo
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.props.navigation.navigate('App');
-            }}>
-            <Text>else route them straight to App</Text>
-          </TouchableOpacity>
-          <Text style={{ marginTop: 50 }}>Proof of concept:</Text>
           <TouchableOpacity
             onPress={() => {
               firebase.auth().signOut();
             }}>
-            <Text>sign out</Text>
+            <Text style={{ marginTop: 50 }}>sign out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

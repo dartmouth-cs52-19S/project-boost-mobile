@@ -11,8 +11,11 @@ const AuthStack = createStackNavigator({
   Login: LoginScreen,
 });
 
-const GetInfoStack = createStackNavigator({
+const VerifyAuthStack = createStackNavigator({
   VerifyAuth: VerifyAuthScreen,
+});
+
+const GetInfoStack = createStackNavigator({
   ProvideInitialInfo: ProvideInitialInfoScreen,
 });
 
@@ -21,6 +24,7 @@ export default createAppContainer(
     {
       Auth: AuthStack,
       GetInfo: GetInfoStack,
+      VerifyAuth: VerifyAuthStack,
       App: MainTabNavigator,
     },
     {
