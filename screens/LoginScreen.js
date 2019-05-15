@@ -1,9 +1,21 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, Alert } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  ImageBackground,
+  Alert,
+  Dimensions,
+} from 'react-native';
 import { connect } from 'react-redux';
 import { Google, Constants } from 'expo';
 import * as firebase from 'firebase';
 import { setUserID } from '../state/actions';
+
+const { height, width } = Dimensions.get('window');
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -19,13 +31,28 @@ class LoginScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.contentContainer}>
-          <TouchableOpacity onPress={this.signInGoogleAsync}>
-            <Image source={require('../assets/images/google-signin.png')} style={styles.image} />
-          </TouchableOpacity>
+          <Text style={styles.boostText}>BOOST</Text>
+          <View style={styles.womanArea}>
+            <Image source={require('../assets/images/shopping-woman.png')} style={styles.woman} />
+          </View>
         </View>
-      </ScrollView>
+        <View style={styles.bottom}>
+          <ImageBackground
+            source={require('../assets/background-images/home-bottom.png')}
+            style={styles.bottomImage}>
+            <View style={styles.googleButtonArea}>
+              <TouchableOpacity onPress={this.signInGoogleAsync}>
+                <Image
+                  source={require('../assets/images/google-signin.png')}
+                  style={styles.image}
+                />
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+        </View>
+      </View>
     );
   }
 
@@ -66,15 +93,43 @@ class LoginScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 100,
-    backgroundColor: '#fff',
+    paddingTop: 75,
+    backgroundColor: '#388CAB',
   },
   contentContainer: {
+    flex: 1,
+    overflow: 'visible',
+  },
+  boostText: {
+    fontSize: 30,
+    color: 'white',
+    marginLeft: 30,
+    fontFamily: 'Raleway-Light',
+  },
+  womanArea: {
     alignItems: 'center',
+    overflow: 'visible',
+  },
+  woman: {
+    marginTop: 20,
+    width: 330,
+    height: 600,
   },
   image: {
-    width: 200,
-    height: 50,
+    width: 250,
+    height: 55,
+  },
+  googleButtonArea: {
+    marginTop: 'auto',
+    marginBottom: 75,
+    alignItems: 'center',
+  },
+  bottom: {
+    zIndex: -1000,
+  },
+  bottomImage: {
+    height: 456,
+    width,
   },
 });
 

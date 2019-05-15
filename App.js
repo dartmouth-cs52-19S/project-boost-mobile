@@ -61,9 +61,24 @@ export default class App extends React.Component {
       Font.loadAsync({
         // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
-        // We include SpaceMono because we use it in HomeScreen.js. Feel free
-        // to remove this if you are not using it in your app
-        'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+        'Raleway-Black': require('./assets/fonts/raleway/Raleway-Black.ttf'),
+        'Raleway-BlackItalic': require('./assets/fonts/raleway/Raleway-BlackItalic.ttf'),
+        'Raleway-Bold': require('./assets/fonts/raleway/Raleway-Bold.ttf'),
+        'Raleway-BoldItalic': require('./assets/fonts/raleway/Raleway-BoldItalic.ttf'),
+        'Raleway-ExtraBold': require('./assets/fonts/raleway/Raleway-ExtraBold.ttf'),
+        'Raleway-ExtraBoldItalic': require('./assets/fonts/raleway/Raleway-ExtraBoldItalic.ttf'),
+        'Raleway-ExtraLight': require('./assets/fonts/raleway/Raleway-ExtraLight.ttf'),
+        'Raleway-ExtraLightItalic': require('./assets/fonts/raleway/Raleway-ExtraLightItalic.ttf'),
+        'Raleway-Italic': require('./assets/fonts/raleway/Raleway-Italic.ttf'),
+        'Raleway-Light': require('./assets/fonts/raleway/Raleway-Light.ttf'),
+        'Raleway-LightItalic': require('./assets/fonts/raleway/Raleway-LightItalic.ttf'),
+        'Raleway-Medium': require('./assets/fonts/raleway/Raleway-Medium.ttf'),
+        'Raleway-MediumItalic': require('./assets/fonts/raleway/Raleway-MediumItalic.ttf'),
+        'Raleway-Regular': require('./assets/fonts/raleway/Raleway-Regular.ttf'),
+        'Raleway-SemiBold': require('./assets/fonts/raleway/Raleway-SemiBold.ttf'),
+        'Raleway-SemiBoldItalic': require('./assets/fonts/raleway/Raleway-SemiBoldItalic.ttf'),
+        'Raleway-Thin': require('./assets/fonts/raleway/Raleway-Thin.ttf'),
+        'Raleway-ThinItalic': require('./assets/fonts/raleway/Raleway-ThinItalic.ttf'),
       }),
     ]);
   };
