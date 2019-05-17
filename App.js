@@ -61,6 +61,7 @@ export default class App extends React.Component {
       Font.loadAsync({
         // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
+        'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         'Raleway-Black': require('./assets/fonts/raleway/Raleway-Black.ttf'),
         'Raleway-BlackItalic': require('./assets/fonts/raleway/Raleway-BlackItalic.ttf'),
         'Raleway-Bold': require('./assets/fonts/raleway/Raleway-Bold.ttf'),
