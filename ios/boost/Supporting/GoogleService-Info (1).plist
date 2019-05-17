@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>911387247122-1joui15ksueilqqsse016o2f94585tmt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.911387247122-1joui15ksueilqqsse016o2f94585tmt</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBon-2W4hn9zL0fUlZaY7uop-oNgyU5JU0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>911387247122</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.cs52.boost</string>
+	<key>PROJECT_ID</key>
+	<string>boost-240320</string>
+	<key>STORAGE_BUCKET</key>
+	<string>boost-240320.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:911387247122:ios:4feae4ac98f67321</string>
+	<key>DATABASE_URL</key>
+	<string>https://boost-240320.firebaseio.com</string>
+</dict>
+</plist>

@@ -1,0 +1,147 @@
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  ImageBackground,
+  Alert,
+  Dimensions,
+} from 'react-native';
+import { connect } from 'react-redux';
+import { Google, Constants } from 'expo';
+import * as firebase from 'firebase';
+import { setUserID } from '../state/actions';
+
+const { height, width } = Dimensions.get('window');
+
+class LoginScreen extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
+
+  componentWillMount() {
+    if (firebase.auth().currentUser) {
+      this.props.setUserID(firebase.auth().currentUser.uid);
+      this.props.navigation.navigate('VerifyAuth');
+    }
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.boostText}>BOOST</Text>
+          <View style={styles.womanArea}>
+            <Image source={require('../assets/images/shopping-woman.png')} style={styles.woman} />
+          </View>
+        </View>
+        <View style={styles.bottom}>
+          <ImageBackground
+            source={require('../assets/background-images/home-bottom.png')}
+            style={styles.bottomImage}>
+            <View style={styles.googleButtonArea}>
+              <TouchableOpacity onPress={this.signInGoogleAsync}>
+                <Image
+                  source={require('../assets/images/google-signin.png')}
+                  style={styles.image}
+                />
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+        </View>
+      </View>
+    );
+  }
+
+  // if the user tries to sign in with google, open pop up
+  signInGoogleAsync = async () => {
+    try {
+      const result = await Google.logInAsync({
+        // androidClientId: "Your Client ID",
+        iosClientId: Constants.isDevice
+          ? `911387247122-1g9m6a6tqhnq0i6vso3galottgdjh4pf.apps.googleusercontent.com`
+          : '911387247122-1joui15ksueilqqsse016o2f94585tmt.apps.googleusercontent.com',
+        scopes: ['profile', 'email'],
+      });
+
+      // if successfully sign in via google, grab auth tokens and sign in with firebase
+      if (result.type === 'success') {
+        const credential = firebase.auth.GoogleAuthProvider.credential(
+          result.idToken,
+          result.accessToken
+        );
+
+        firebase
+          .auth()
+          .signInAndRetrieveDataWithCredential(credential)
+          .then(() => {
+            this.props.setUserID(firebase.auth().currentUser.uid);
+            this.props.navigation.navigate('VerifyAuth');
+          });
+      } else {
+        console.log('User cancelled google sign in');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 75,
+    backgroundColor: '#388CAB',
+  },
+  contentContainer: {
+    flex: 1,
+    overflow: 'visible',
+  },
+  boostText: {
+    fontSize: 30,
+    color: 'white',
+    marginLeft: 30,
+    fontFamily: 'Raleway-Light',
+  },
+  womanArea: {
+    alignItems: 'center',
+    overflow: 'visible',
+  },
+  woman: {
+    marginTop: 20,
+    width: 330,
+    height: 600,
+  },
+  image: {
+    width: 250,
+    height: 55,
+  },
+  googleButtonArea: {
+    marginTop: 'auto',
+    marginBottom: 75,
+    alignItems: 'center',
+  },
+  bottom: {
+    zIndex: -1000,
+  },
+  bottomImage: {
+    height: 456,
+    width,
+  },
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setUserID: object => {
+      dispatch(setUserID(object));
+    },
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(LoginScreen);
