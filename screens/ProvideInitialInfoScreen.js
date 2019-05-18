@@ -3,6 +3,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Button,
   View,
   FormInput,
   FormLabel,
@@ -26,6 +27,13 @@ export default class LoginScreen extends React.Component {
           <FormInput />
           <FormValidationMessage>Error message</FormValidationMessage> <Text>Test 3</Text>
         </View>
+        <Text style={styles.text}>Click the button below to go straight into the app for now</Text>
+        <Button
+          onPress={() => {
+            this.props.navigation.navigate('App');
+          }}
+          title="navigate to app"
+        />
       </ScrollView>
     );
   }
@@ -51,5 +59,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     fontFamily: 'Railway',
+  },
+  text: {
+    margin: 20,
   },
 });

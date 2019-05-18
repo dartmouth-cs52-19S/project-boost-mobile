@@ -5,4 +5,11 @@ const setUserID = uid => {
   };
 };
 
-export { setUserID };
+const setUserData = userData => {
+  return {
+    type: 'setUserData',
+    value: userData,
+  };
+};
+
+export { setUserID, setUserData };
