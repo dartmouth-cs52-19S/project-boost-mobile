@@ -1,14 +1,54 @@
 import React from 'react';
-import { ExpoConfigView } from '@expo/samples';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
+import { connect } from 'react-redux';
 
-export default class SettingsScreen extends React.Component {
+import NavBar from '../components/NavBar';
+
+class SettingsScreen extends React.Component {
   static navigationOptions = {
-    title: 'app.json',
+    header: null,
   };
 
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
-    return <ExpoConfigView />;
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <NavBar backgroundColor="#293C44" />
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.getStartedContainer}>
+              <Text style={{ paddingTop: 30, paddingBottom: 10, color: 'white' }}>
+                settings screen
+              </Text>
+            </View>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
   }
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#293C44',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#293C44',
+  },
+  contentContainer: {
+    backgroundColor: '#293C44',
+  },
+});
+
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(SettingsScreen);

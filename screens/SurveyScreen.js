@@ -1,7 +1,9 @@
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, Button, View } from 'react-native';
-import * as firebase from 'firebase';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
+
+import NavBar from '../components/NavBar';
 
 class SurveyScreen extends React.Component {
   static navigationOptions = {
@@ -10,29 +12,29 @@ class SurveyScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.getStartedContainer}>
-            <Text style={{ paddingTop: 30, paddingBottom: 10 }}>data from api:</Text>
-            <Text>{JSON.stringify(this.props.userData)}</Text>
-
-            <Button
-              onPress={() => {
-                firebase.auth().signOut();
-              }}
-              title="Sign Out"
-            />
-          </View>
-        </ScrollView>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <NavBar backgroundColor="#388CAB" />
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.getStartedContainer}>
+              <Text style={{ paddingTop: 30, paddingBottom: 10 }}>data from api:</Text>
+              <Text>{JSON.stringify(this.props.userData)}</Text>
+            </View>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#388CAB',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#388CAB',
   },
   developmentModeText: {
     marginBottom: 20,
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 30,
+    backgroundColor: '#388CAB',
   },
   welcomeContainer: {
     alignItems: 'center',
