@@ -12,4 +12,11 @@ const setUserData = userData => {
   };
 };
 
-export { setUserID, setUserData };
+const setProvidedBackgroundLocation = bool => {
+  return {
+    type: 'setProvidedBackgroundLocation',
+    value: bool,
+  };
+};
+
+export { setUserID, setUserData, setProvidedBackgroundLocation };

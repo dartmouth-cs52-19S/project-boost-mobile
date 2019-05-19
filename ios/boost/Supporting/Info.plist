@@ -65,11 +65,11 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Boost to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Boost to use your location</string>
+	<string>Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Boost to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Boost to access your device's accelerometer</string>
+	<string>Allow Boost to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Boost permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -91,6 +91,12 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

@@ -1,11 +1,31 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, Button } from 'react-native';
+import { connect } from 'react-redux';
 
-export default class LoginScreen extends React.Component {
+import { TaskManager, Constants, Permissions, Location } from 'expo';
+import { setProvidedBackgroundLocation } from '../state/actions';
+
+// define background location data task for device
+TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, error }) => {
+  if (error) {
+    console.log(error.message);
+  } else {
+    // TODO: send data to server
+    console.log(locations);
+  }
+});
+
+class ProvideInitialInfoScreen extends React.Component {
   static navigationOptions = {
     // header: null,
     title: 'VerifyAuth',
   };
+
+  constructor(props) {
+    super(props);
+
+    this.getUserLocation();
+  }
 
   render() {
     return (
@@ -30,6 +50,21 @@ export default class LoginScreen extends React.Component {
       </ScrollView>
     );
   }
+
+  // start stream to get user background location data
+  getUserLocation = async () => {
+    if (Constants.isDevice) {
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+      if (status === 'granted') {
+        this.props.setProvidedBackgroundLocation(true);
+      }
+
+      Location.startLocationUpdatesAsync('GET_BACKGROUND_LOCATION_DATA', {
+        distanceInterval: 80, // ensure new location changed by 80 meters (about 0.05 miles)
+      });
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -42,3 +77,16 @@ const styles = StyleSheet.create({
     margin: 20,
   },
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setProvidedBackgroundLocation: bool => {
+      dispatch(setProvidedBackgroundLocation(bool));
+    },
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ProvideInitialInfoScreen);

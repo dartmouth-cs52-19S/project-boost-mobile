@@ -31,6 +31,11 @@
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.911387247122-1joui15ksueilqqsse016o2f94585tmt"
         }
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided.",
+        "NSLocationAlwaysUsageDescription": "Allow Boost to use your location. We will use it to gather further insights on your productivity usage on top of the data already provided."
       }
     },
     "isDetached": true,
@@ -43,6 +48,7 @@
       "package": "com.cs52_boost",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
       "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
-    }
+    },
+    "description": ""
   }
 }
