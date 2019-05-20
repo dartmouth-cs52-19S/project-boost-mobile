@@ -20,6 +20,7 @@ class SettingsScreen extends React.Component {
               <Text style={{ paddingTop: 30, paddingBottom: 10, color: 'white' }}>
                 settings screen
               </Text>
+              <Text style={{ color: 'white' }}>{JSON.stringify(this.props.userData)}</Text>
             </View>
           </ScrollView>
         </View>

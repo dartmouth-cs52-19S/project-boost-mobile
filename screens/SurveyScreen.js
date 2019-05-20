@@ -16,9 +16,8 @@ class SurveyScreen extends React.Component {
         <View style={styles.container}>
           <NavBar backgroundColor="#388CAB" />
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <View style={styles.getStartedContainer}>
-              <Text style={{ paddingTop: 30, paddingBottom: 10 }}>data from api:</Text>
-              <Text>{JSON.stringify(this.props.userData)}</Text>
+            <View style={styles.topQuestionArea}>
+              <Text style={styles.topQuestionAreaText}>How Productive Were You At...</Text>
             </View>
           </ScrollView>
         </View>
@@ -36,48 +35,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#388CAB',
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
   contentContainer: {
     backgroundColor: '#388CAB',
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
   },
   tabBarInfoContainer: {
     position: 'absolute',
@@ -104,19 +63,15 @@ const styles = StyleSheet.create({
     color: 'rgba(96,100,109, 1)',
     textAlign: 'center',
   },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
+  topQuestionArea: {
+    marginTop: 30,
     alignItems: 'center',
   },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  topQuestionAreaText: {
+    fontSize: 35,
+    color: 'white',
+    fontFamily: 'Raleway-Bold',
+    textAlign: 'center',
   },
 });
 

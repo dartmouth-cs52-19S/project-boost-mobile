@@ -18,6 +18,7 @@ class DataScreen extends React.Component {
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.getStartedContainer}>
               <Text style={{ paddingTop: 30, paddingBottom: 10, color: 'white' }}>data screen</Text>
+              <Text style={{ color: 'white' }}>{JSON.stringify(this.props.userData)}</Text>
             </View>
           </ScrollView>
         </View>
