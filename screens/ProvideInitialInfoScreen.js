@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, SafeAreaView, View, Switch, Alert } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Button } from 'react-native-elements';
+import axios from 'axios';
 
 const fakeData = {
   locationAlgorithmOutput: {
@@ -52,15 +53,53 @@ export default class ProvideInitialInfo extends React.Component {
         if (a.times.length < b.times.length) return 1;
       });
     }
-    return locations.map(value => {
-      return [
-        <View style={styles.column}>
-          <Text style={styles.columnText}>{value.coords}</Text>
-        </View>,
-        <View style={styles.column}>
-          <Switch />
-        </View>,
-      ];
+    let promises = [];
+    locations.map(value => {
+      promises.push(
+        new Promise((resolve, reject) => {
+          this.getAddress(value.coords)
+            .then(address => {
+              resolve(address);
+            })
+            .catch(error => reject(error));
+        })
+      );
+    });
+    Promise.all(promises)
+      .then(elements => {
+        return elements.map(address => {
+          Alert.alert(address);
+          return [
+            <View style={styles.column}>
+              <Text style={styles.columnText}>{address}</Text>
+            </View>,
+            <View style={styles.column}>
+              <View style={styles.switchContainer}>
+                <Text style={styles.switchText}>YES</Text>
+                <Switch style={styles.switch} onValueChange={value => {}} />
+                <Text style={styles.switchText}>NO</Text>
+              </View>
+            </View>,
+          ];
+        });
+      })
+      .catch(error => Alert.alert(error));
+  };
+
+  getAddress = coords => {
+    const coordList = coords.split(' , ');
+    return new Promise((resolve, reject) => {
+      axios
+        .get(
+          // eslint-disable-next-line prettier/prettier
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordList[0]},${coordList[1]}&key=AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk`
+        )
+        .then(result => {
+          resolve(result.data.results[0].formatted_address);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   };
 
@@ -233,5 +272,19 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: '#293C44',
     margin: 40,
+  },
+  switch: {
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  switchText: {
+    color: '#FEFEFE',
+    fontSize: 18,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
