@@ -2,14 +2,31 @@ import React from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
+import { TaskManager, Constants, Permissions, Location } from 'expo';
 import * as api from '../datastore/api_requests';
 
-import { setUserData } from '../state/actions';
+import { setUserData, setProvidedBackgroundLocation } from '../state/actions';
+
+// define background location data task for device
+TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, error }) => {
+  if (error) {
+    console.log(error.message);
+  } else {
+    // TODO: send data to server
+    console.log(locations);
+  }
+});
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
     header: null,
   };
+
+  constructor(props) {
+    super(props);
+
+    this.getUserLocation();
+  }
 
   componentDidMount() {
     api
@@ -43,6 +60,21 @@ class VerifyAuth extends React.Component {
       </ScrollView>
     );
   }
+
+  // start stream to get user background location data
+  getUserLocation = async () => {
+    if (Constants.isDevice) {
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+      if (status === 'granted') {
+        this.props.setProvidedBackgroundLocation(true);
+      }
+
+      Location.startLocationUpdatesAsync('GET_BACKGROUND_LOCATION_DATA', {
+        distanceInterval: 160, // ensure new location changed by 160 meters (about 0.1 miles)
+      });
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -60,6 +92,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setUserData: object => {
       dispatch(setUserData(object));
+    },
+    setProvidedBackgroundLocation: bool => {
+      dispatch(setProvidedBackgroundLocation(bool));
     },
   };
 };
