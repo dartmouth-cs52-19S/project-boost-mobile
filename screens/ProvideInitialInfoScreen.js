@@ -75,38 +75,20 @@ export default class ProvideInitialInfo extends React.Component {
     });
     Promise.all(promises)
       .then(elements => {
-        let output = [];
-        elements.map((address, i) => {
+        elements.forEach((element, i) => {
           const key = `switch${i}`;
-          this.setState({ [key]: true }, () => {
-            output.push([
-              <View style={styles.column}>
-                <Text style={styles.columnText}>{address}</Text>
-              </View>,
-              <View style={styles.column}>
-                <View style={styles.switchContainer}>
-                  <Text style={styles.switchText}>YES</Text>
-                  <Switch
-                    style={styles.switch}
-                    value={this.state.switch0}
-                    onValueChange={this.toggleSwitch}
-                  />
-                  <Text style={styles.switchText}>NO</Text>
-                </View>
-              </View>,
-            ]);
-          });
+          this.setState({ [key]: true });
         });
         this.setState({
-          locationHistory: output,
+          locationHistory: elements,
           locationLoaded: true,
         });
       })
       .catch(error => Alert.alert(error));
   };
 
-  toggleSwitch = value => {
-    this.setState({ switch0: value });
+  toggleSwitch = (key, value) => {
+    this.setState({ [key]: value });
   };
 
   getAddress = coords => {
@@ -210,7 +192,27 @@ export default class ProvideInitialInfo extends React.Component {
             <View style={styles.column}>
               <Text style={styles.columnHeader}>I am Productive:</Text>
             </View>
-            {this.state.locationLoaded ? this.state.locationHistory : null}
+            {this.state.locationLoaded
+              ? this.state.locationHistory.map((address, i) => {
+                  const key = `switch${i}`;
+                  return [
+                    <View style={styles.column}>
+                      <Text style={styles.columnText}>{address}</Text>
+                    </View>,
+                    <View style={styles.column}>
+                      <View style={styles.switchContainer}>
+                        <Text style={styles.switchText}>YES</Text>
+                        <Switch
+                          style={styles.switch}
+                          value={this.state[key]}
+                          onValueChange={value => this.toggleSwitch(key, value)}
+                        />
+                        <Text style={styles.switchText}>NO</Text>
+                      </View>
+                    </View>,
+                  ];
+                })
+              : null}
           </View>
           <Button
             buttonStyle={styles.submitButton}
