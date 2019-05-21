@@ -32,15 +32,23 @@ export default class ProvideInitialInfo extends React.Component {
     this.state = {
       homeLocation: null,
       homeLocationLatLong: [],
+      locationLoaded: false,
+      locationHistory: null,
+      switch0: true,
+      switch1: false,
     };
   }
+
+  componentDidMount = () => {
+    this.getLocationHistory();
+  };
 
   static navigationOptions = {
     header: null,
     title: 'ProvideInitialInfo',
   };
 
-  renderLocationHistory = () => {
+  getLocationHistory = () => {
     const locations = [];
     Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
       locations.push({ coords: key, times: fakeData.locationAlgorithmOutput[key] });
@@ -67,23 +75,38 @@ export default class ProvideInitialInfo extends React.Component {
     });
     Promise.all(promises)
       .then(elements => {
-        return elements.map(address => {
-          Alert.alert(address);
-          return [
-            <View style={styles.column}>
-              <Text style={styles.columnText}>{address}</Text>
-            </View>,
-            <View style={styles.column}>
-              <View style={styles.switchContainer}>
-                <Text style={styles.switchText}>YES</Text>
-                <Switch style={styles.switch} onValueChange={value => {}} />
-                <Text style={styles.switchText}>NO</Text>
-              </View>
-            </View>,
-          ];
+        let output = [];
+        elements.map((address, i) => {
+          const key = `switch${i}`;
+          this.setState({ [key]: true }, () => {
+            output.push([
+              <View style={styles.column}>
+                <Text style={styles.columnText}>{address}</Text>
+              </View>,
+              <View style={styles.column}>
+                <View style={styles.switchContainer}>
+                  <Text style={styles.switchText}>YES</Text>
+                  <Switch
+                    style={styles.switch}
+                    value={this.state.switch0}
+                    onValueChange={this.toggleSwitch}
+                  />
+                  <Text style={styles.switchText}>NO</Text>
+                </View>
+              </View>,
+            ]);
+          });
+        });
+        this.setState({
+          locationHistory: output,
+          locationLoaded: true,
         });
       })
       .catch(error => Alert.alert(error));
+  };
+
+  toggleSwitch = value => {
+    this.setState({ switch0: value });
   };
 
   getAddress = coords => {
@@ -163,7 +186,7 @@ export default class ProvideInitialInfo extends React.Component {
                 color: '#FEFEFE',
               },
             }}
-            currentLocation // Will add a 'Current location' button at the top of the predefined places list
+            // currentLocation // Will add a 'Current location' button at the top of the predefined places list
             currentLocationLabel="Current location"
             nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
             GooglePlacesDetailsQuery={{
@@ -174,7 +197,7 @@ export default class ProvideInitialInfo extends React.Component {
               // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
               rankby: 'prominence',
             }}
-            debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+            debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
           />
           <Text style={styles.formLabel}>
             We've Guessed Where You're Productive and Unproductive:
@@ -187,7 +210,7 @@ export default class ProvideInitialInfo extends React.Component {
             <View style={styles.column}>
               <Text style={styles.columnHeader}>I am Productive:</Text>
             </View>
-            {this.renderLocationHistory()}
+            {this.state.locationLoaded ? this.state.locationHistory : null}
           </View>
           <Button
             buttonStyle={styles.submitButton}
