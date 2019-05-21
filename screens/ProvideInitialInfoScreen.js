@@ -4,6 +4,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { Button } from 'react-native-elements';
 import axios from 'axios';
 
+// fake data that should look very similar to server data
 const fakeData = {
   locationAlgorithmOutput: {
     '44.308140 , -71.800171': [
@@ -30,12 +31,11 @@ export default class ProvideInitialInfo extends React.Component {
     super(props);
 
     this.state = {
+      // home location info
       homeLocation: null,
       homeLocationLatLong: [],
-      locationLoaded: false,
-      locationHistory: null,
-      switch0: true,
-      switch1: false,
+      locationLoaded: false, // is backend location history fully processed (including Google reverse Geocoding)
+      locationHistory: null, // Object with updated location info (address, productivity score, etc.)
     };
   }
 
@@ -45,11 +45,11 @@ export default class ProvideInitialInfo extends React.Component {
 
   static navigationOptions = {
     header: null,
-    // title: 'ProvideInitialInfo',
   };
 
   getLocationHistory = () => {
     const locations = [];
+    // For now parsing fake data defined above and adding productivity score, which by default is 0
     Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
       locations.push({
         coords: key,
@@ -57,7 +57,7 @@ export default class ProvideInitialInfo extends React.Component {
         productivity: 0,
       });
     });
-    // Sort by most frequently visited locations
+    // Sort fake data by most frequently visited locations
     if (locations.length > 1) {
       locations.sort(function(a, b) {
         if (a.times.length === b.times.length) return 0;
@@ -65,10 +65,12 @@ export default class ProvideInitialInfo extends React.Component {
         if (a.times.length < b.times.length) return 1;
       });
     }
+    // create list of promises, which if successful should just be a list of addresses
     let promises = [];
     locations.map(value => {
       promises.push(
         new Promise((resolve, reject) => {
+          // getAddress does the google maps reverse geocoding api call to get address
           this.getAddress(value.coords)
             .then(address => {
               resolve(address);
@@ -77,17 +79,18 @@ export default class ProvideInitialInfo extends React.Component {
         })
       );
     });
+    // promises.all waits checks to make sure all google maps async calls complete successfully
     Promise.all(promises)
       .then(elements => {
         elements.forEach((element, i) => {
-          const key = `switch${i}`;
-          locations[i]['address'] = element;
-          this.setState({ [key]: false });
+          const key = `switch${i}`; // each location needs a unique switch state specifiec (ex: switch0, switch1, etc.)
+          locations[i]['address'] = element; // add address attribute to location object
+          this.setState({ [key]: false }); // by default, set switch to false (unproductive)
         });
         this.setState({
-          locationHistory: locations,
-          locationLoaded: true,
-          addresses: elements,
+          locationHistory: locations, // store updated location info
+          locationLoaded: true, // tell app location data parsing is complete
+          addresses: elements, // for rendering switches in render function (see map function call in line 223)
         });
       })
       .catch(error => Alert.alert(error));
@@ -96,10 +99,12 @@ export default class ProvideInitialInfo extends React.Component {
   toggleSwitch = (index, value) => {
     const key = `switch${index}`;
     this.setState(prevState => {
+      // update location object with new productivity score
       const locations = prevState.locationHistory.map((location, j) => {
         if (index === j) location.productivity = value ? 5 : 0;
         return location;
       });
+      // update specified switch state
       return {
         [key]: value,
         locationHistory: locations,
@@ -107,6 +112,7 @@ export default class ProvideInitialInfo extends React.Component {
     });
   };
 
+  // makes google maps reverse geocoding api call with lat long input, returns an address if promise is resolved
   getAddress = coords => {
     const coordList = coords.split(' , ');
     return new Promise((resolve, reject) => {
@@ -122,6 +128,15 @@ export default class ProvideInitialInfo extends React.Component {
           reject(error);
         });
     });
+  };
+
+  // checks if home location is provided
+  formValidation = () => {
+    if (this.state.homeLocation === null) {
+      Alert.alert("You're almost there!", 'Please specify a home location');
+    } else {
+      this.props.navigation.navigate('App');
+    }
   };
 
   render() {
@@ -236,8 +251,7 @@ export default class ProvideInitialInfo extends React.Component {
             buttonStyle={styles.submitButton}
             color="#FEFEFE"
             onPress={() => {
-              // TODO: form validation function
-              this.props.navigation.navigate('App');
+              this.formValidation();
             }}
             title="Submit"
           />
