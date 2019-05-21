@@ -45,13 +45,17 @@ export default class ProvideInitialInfo extends React.Component {
 
   static navigationOptions = {
     header: null,
-    title: 'ProvideInitialInfo',
+    // title: 'ProvideInitialInfo',
   };
 
   getLocationHistory = () => {
     const locations = [];
     Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
-      locations.push({ coords: key, times: fakeData.locationAlgorithmOutput[key] });
+      locations.push({
+        coords: key,
+        times: fakeData.locationAlgorithmOutput[key],
+        productivity: 0,
+      });
     });
     // Sort by most frequently visited locations
     if (locations.length > 1) {
@@ -77,18 +81,30 @@ export default class ProvideInitialInfo extends React.Component {
       .then(elements => {
         elements.forEach((element, i) => {
           const key = `switch${i}`;
-          this.setState({ [key]: true });
+          locations[i]['address'] = element;
+          this.setState({ [key]: false });
         });
         this.setState({
-          locationHistory: elements,
+          locationHistory: locations,
           locationLoaded: true,
+          addresses: elements,
         });
       })
       .catch(error => Alert.alert(error));
   };
 
-  toggleSwitch = (key, value) => {
-    this.setState({ [key]: value });
+  toggleSwitch = (index, value) => {
+    const key = `switch${index}`;
+    this.setState(prevState => {
+      const locations = prevState.locationHistory.map((location, j) => {
+        if (index === j) location.productivity = value ? 5 : 0;
+        return location;
+      });
+      return {
+        [key]: value,
+        locationHistory: locations,
+      };
+    });
   };
 
   getAddress = coords => {
@@ -193,7 +209,7 @@ export default class ProvideInitialInfo extends React.Component {
               <Text style={styles.columnHeader}>I am Productive:</Text>
             </View>
             {this.state.locationLoaded
-              ? this.state.locationHistory.map((address, i) => {
+              ? this.state.addresses.map((address, i) => {
                   const key = `switch${i}`;
                   return [
                     <View style={styles.column}>
@@ -201,13 +217,15 @@ export default class ProvideInitialInfo extends React.Component {
                     </View>,
                     <View style={styles.column}>
                       <View style={styles.switchContainer}>
-                        <Text style={styles.switchText}>YES</Text>
+                        <Text style={styles.switchText}>NO</Text>
                         <Switch
                           style={styles.switch}
                           value={this.state[key]}
-                          onValueChange={value => this.toggleSwitch(key, value)}
+                          onValueChange={value => this.toggleSwitch(i, value)}
+                          trackColor={{ true: '#293C44' }}
+                          ios_backgroundColor="#388CAB"
                         />
-                        <Text style={styles.switchText}>NO</Text>
+                        <Text style={styles.switchText}>YES</Text>
                       </View>
                     </View>,
                   ];
