@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import StarRating from 'react-native-star-rating';
 import NavBar from '../components/NavBar';
 
 const fakeData = [
@@ -44,16 +44,52 @@ class SurveyScreen extends React.Component {
 
     this.state = {
       locations: null,
+      currLocationIndex: 0,
+      newData: true,
+      loaded: false,
+      starCount: 3,
     };
   }
 
   componentDidMount = () => {
     this.getNewLocationData();
+    this.setState({ loaded: true });
   };
 
   getNewLocationData = () => {
     // TODO: once backend is set, get actual data from user in database
-    this.ListeningStateChangedEvent({ locations: fakeData });
+    if (fakeData.length === 0) this.setState({ newData: false });
+    this.setState({ locations: fakeData });
+  };
+
+  renderCurrentLocation = () => {
+    const i = this.state.currLocationIndex;
+    const address = this.state.locations[i].location.address;
+    return <Text style={styles.address}>{address}</Text>;
+  };
+
+  onStarRatingPress = rating => {
+    this.setState({ starCount: rating });
+  };
+
+  loadLocationPrompts = () => {
+    return this.state.newData ? (
+      <View>
+        {this.renderCurrentLocation()}
+        <StarRating
+          disabled={false}
+          emptyStar={'ios-star-outline'}
+          fullStar={'ios-star'}
+          iconSet={'Ionicons'}
+          maxStars={5}
+          rating={this.state.starCount}
+          selectedStar={rating => this.onStarRatingPress(rating)}
+          fullStarColor={'#293C44'}
+        />
+      </View>
+    ) : (
+      <Text>No new locations to review, you're all set!</Text>
+    );
   };
 
   render() {
@@ -64,6 +100,7 @@ class SurveyScreen extends React.Component {
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.topQuestionArea}>
               <Text style={styles.topQuestionAreaText}>How Productive Were You At...</Text>
+              {this.state.loaded ? this.loadLocationPrompts() : <Text>Loading...</Text>}
             </View>
           </ScrollView>
         </View>
@@ -118,6 +155,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Raleway-Bold',
     textAlign: 'center',
+  },
+  address: {
+    fontFamily: 'Raleway-Bold',
+    color: '#293C44',
+    fontSize: 30,
+    marginTop: 30,
+    marginBottom: 30,
   },
 });
 

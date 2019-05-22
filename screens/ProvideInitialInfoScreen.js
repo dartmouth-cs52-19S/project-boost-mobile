@@ -159,7 +159,8 @@ export default class ProvideInitialInfo extends React.Component {
             renderDescription={row => row.description} // custom description render
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              const latLong = [details.geometry.location.lat, details.geometry.location.long];
+              console.log(details);
+              const latLong = [details.geometry.location.lat, details.geometry.location.lng];
               this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
             }}
             getDefaultValue={() => ''}

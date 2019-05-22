@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Ionicons.ttf</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -69,7 +73,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Boost to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Boost to access your device's accelerometer</string>
+	<string>Allow Boost to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Boost permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
