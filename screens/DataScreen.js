@@ -23,14 +23,29 @@ class DataScreen extends React.Component {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <NavBar backgroundColor="#293C44" />
+          <View style={styles.getStartedContainer} contentContainerStyle={styles.contentContainer}>
+            <Text style={styles.selectorText}>ALL</Text>
+            <Text style={styles.selectorText}>DAYS</Text>
+            <Text style={styles.selectorText}>WEEKS</Text>
+          </View>
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <View style={styles.getStartedContainer}>
-              <Text style={styles.selector_text}>ALL</Text>
-              <Text style={styles.selector_text}>DAYS</Text>
-              <Text style={styles.selector_text}>WEEKS</Text>
-            </View>
-            <View>
-              <Text style={{ color: 'white', fontSize: 21 }}>Key Insights</Text>
+            <Text style={{ color: 'white', fontSize: 21, paddingLeft: 20 }}>Key Insights</Text>
+            <View style={styles.insideScroll}>
+              <View style={styles.card}>
+                <Text>Card</Text>
+              </View>
+              <View style={styles.card}>
+                <Text>Card</Text>
+              </View>
+              <View style={styles.card}>
+                <Text>Card</Text>
+              </View>
+              <View style={styles.card}>
+                <Text>Card</Text>
+              </View>
+              <View style={styles.card}>
+                <Text>Card</Text>
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -50,25 +65,37 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     padding: 20,
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    marginLeft: 30,
-    marginRight: 30,
+    marginLeft: 18,
+    marginRight: 18,
   },
   contentContainer: {
     backgroundColor: '#293C44',
   },
-  selector_text: {
+  selectorText: {
+    fontFamily: 'Raleway-Light',
     fontSize: 21,
     paddingTop: 18,
     paddingBottom: 18,
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingLeft: 28,
+    paddingRight: 28,
     justifyContent: 'center',
     color: 'white',
     borderWidth: 1,
     borderColor: 'lightgrey',
+  },
+  insideScroll: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: 'rgba(254, 254, 254, 0.2)',
+    margin: 20,
+    width: 350,
+    height: 300,
   },
 });
 
