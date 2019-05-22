@@ -1,0 +1,8 @@
+ language: node_js
+ node_js:
+   - "11"
+ sudo: true
+ before_install:
+   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+ cache:
+   yarn: true
