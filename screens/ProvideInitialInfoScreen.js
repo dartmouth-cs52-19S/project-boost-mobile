@@ -79,6 +79,7 @@ export default class ProvideInitialInfo extends React.Component {
         })
       );
     });
+
     // promises.all waits checks to make sure all google maps async calls complete successfully
     Promise.all(promises)
       .then(elements => {
@@ -104,6 +105,7 @@ export default class ProvideInitialInfo extends React.Component {
         if (index === j) location.productivity = value ? 5 : 0;
         return location;
       });
+      // console.log(locations); // 2D
       // update specified switch state
       return {
         [key]: value,
@@ -137,6 +139,8 @@ export default class ProvideInitialInfo extends React.Component {
       Alert.alert("You're almost there!", 'Please specify a home location');
     } else {
       this.props.navigation.navigate('App');
+      // console.log(this.state.homeLocation); // 2d
+      // console.log(this.state.homeLocationLatLong); // 2d
     }
   };
 
@@ -158,7 +162,7 @@ export default class ProvideInitialInfo extends React.Component {
             renderDescription={row => row.description} // custom description render
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              const latLong = [details.geometry.location.lat, details.geometry.location.long];
+              const latLong = [details.geometry.location.lat, details.geometry.location.lng];
               this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
             }}
             getDefaultValue={() => ''}
