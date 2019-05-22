@@ -227,10 +227,10 @@ export default class ProvideInitialInfo extends React.Component {
               ? this.state.addresses.map((address, i) => {
                   const key = `switch${i}`;
                   return [
-                    <View style={styles.column}>
+                    <View key={i} style={styles.column}>
                       <Text style={styles.columnText}>{address}</Text>
                     </View>,
-                    <View style={styles.column}>
+                    <View key={i + 0.5} style={styles.column}>
                       <View style={styles.switchContainer}>
                         <Text style={styles.switchText}>NO</Text>
                         <Switch
