@@ -34,8 +34,30 @@ SettingsStack.navigationOptions = {
   tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="settings" />,
 };
 
-export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-});
+const BottomTabNavigatorConfig = {
+  tabBarOptions: {
+    activeTintColor: 'white',
+    activeBackgroundColor: '#1A262B',
+    labelStyle: {
+      fontFamily: 'Raleway-Light',
+      fontSize: 16,
+      paddingBottom: 25,
+    },
+    tabStyle: {
+      height: 85,
+      paddingTop: 5,
+    },
+    style: {
+      backgroundColor: '#293C44',
+    },
+  },
+};
+
+export default createBottomTabNavigator(
+  {
+    HomeStack,
+    LinksStack,
+    SettingsStack,
+  },
+  BottomTabNavigatorConfig
+);
