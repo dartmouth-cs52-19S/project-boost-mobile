@@ -5,9 +5,55 @@ import { connect } from 'react-redux';
 
 import NavBar from '../components/NavBar';
 
+const fakeData = [
+  {
+    _id: '123456',
+    location: {
+      // object from google places id
+      id: '98765',
+      address: '123 Something Road, Hanover, NH 05733, US',
+      type: 'residence',
+    },
+    latLongLocation: '22234234, 234234234',
+    startTime: 23423424,
+    endTime: 2342342342,
+    // productivity: 3, // won't exist as a field if user hasn't put it in
+  },
+  {
+    _id: '234567',
+    location: {
+      // object from google places id
+      id: '87654',
+      address: '321 Another One, Hanover, NH 05733, US',
+      type: 'airport',
+    },
+    latLongLocation: '4321431, 1234123',
+    startTime: 23423424,
+    endTime: 2342342342,
+    // productivity: 3, // won't exist as a field if user hasn't put it in
+  },
+];
+
 class SurveyScreen extends React.Component {
   static navigationOptions = {
     header: null,
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      locations: null,
+    };
+  }
+
+  componentDidMount = () => {
+    this.getNewLocationData();
+  };
+
+  getNewLocationData = () => {
+    // TODO: once backend is set, get actual data from user in database
+    this.ListeningStateChangedEvent({ locations: fakeData });
   };
 
   render() {

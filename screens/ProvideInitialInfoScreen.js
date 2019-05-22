@@ -134,7 +134,8 @@ export default class ProvideInitialInfo extends React.Component {
   // checks if home location is provided
   formValidation = () => {
     if (this.state.homeLocation === null) {
-      Alert.alert("You're almost there!", 'Please specify a home location');
+      this.props.navigation.navigate('App');
+      // Alert.alert("You're almost there!", 'Please specify a home location');
     } else {
       this.props.navigation.navigate('App');
     }
