@@ -121,6 +121,7 @@ export default class ProvideInitialInfo extends React.Component {
           // eslint-disable-next-line prettier/prettier
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordList[0]},${coordList[1]}&key=AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk`
         )
+        // FOR THOMAS – placeid = result.data.results[0].place_id
         .then(result => {
           resolve(result.data.results[0].formatted_address);
         })
@@ -183,13 +184,12 @@ export default class ProvideInitialInfo extends React.Component {
                 marginRight: 0,
                 height: 38,
                 color: '#FEFEFE',
-                fontFamily: 'Railway',
+                fontFamily: 'Raleway-Light',
                 backgroundColor: '#388CAB',
                 borderBottomColor: '#FEFEFE',
                 borderBottomWidth: 0.25,
                 fontSize: 20,
                 paddingBottom: 5,
-                fontWeight: '300',
                 paddingLeft: 5,
               },
               poweredContainer: {
@@ -274,14 +274,12 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 35,
     color: 'white',
-    fontWeight: 'bold',
-    fontFamily: 'Railway',
+    fontFamily: 'Raleway-Bold',
   },
   formLabel: {
     color: '#293C44',
     fontSize: 30,
-    fontWeight: 'bold',
-    fontFamily: 'Railway',
+    fontFamily: 'Raleway-Bold',
     marginBottom: 20,
     marginTop: 50,
   },
@@ -294,13 +292,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingBottom: 5,
     color: '#FEFEFE',
-    fontFamily: 'Railway',
+    fontFamily: 'Raleway-Light',
     fontWeight: '300',
   },
   formSubheading: {
     color: '#FEFEFE',
-    fontFamily: 'Raleway',
-    fontWeight: 'bold',
+    fontFamily: 'Raleway-Bold',
     fontSize: 20,
     marginBottom: 25,
   },
@@ -315,16 +312,14 @@ const styles = StyleSheet.create({
   },
   columnHeader: {
     color: '#293C44',
-    fontFamily: 'Raleway',
-    fontWeight: 'bold',
+    fontFamily: 'Raleway-Bold',
     fontSize: 20,
     marginBottom: 20,
   },
   columnText: {
     color: '#FEFEFE',
     fontSize: 20,
-    fontFamily: 'Raleway',
-    fontWeight: '300',
+    fontFamily: 'Raleway-Light',
   },
   submitButton: {
     backgroundColor: '#293C44',
