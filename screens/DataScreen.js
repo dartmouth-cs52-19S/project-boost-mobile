@@ -10,6 +10,14 @@ class DataScreen extends React.Component {
     header: null,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selected_timeframe: '',
+    };
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -17,8 +25,12 @@ class DataScreen extends React.Component {
           <NavBar backgroundColor="#293C44" />
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.getStartedContainer}>
-              <Text style={{ paddingTop: 30, paddingBottom: 10, color: 'white' }}>data screen</Text>
-              <Text style={{ color: 'white' }}>{JSON.stringify(this.props.userData)}</Text>
+              <Text style={styles.selector_text}>ALL</Text>
+              <Text style={styles.selector_text}>DAYS</Text>
+              <Text style={styles.selector_text}>WEEKS</Text>
+            </View>
+            <View>
+              <Text style={{ color: 'white', fontSize: 21 }}>Key Insights</Text>
             </View>
           </ScrollView>
         </View>
@@ -36,8 +48,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#293C44',
   },
+  getStartedContainer: {
+    padding: 20,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginLeft: 30,
+    marginRight: 30,
+  },
   contentContainer: {
     backgroundColor: '#293C44',
+  },
+  selector_text: {
+    fontSize: 21,
+    paddingTop: 18,
+    paddingBottom: 18,
+    paddingLeft: 25,
+    paddingRight: 25,
+    justifyContent: 'center',
+    color: 'white',
+    borderWidth: 1,
+    borderColor: 'lightgrey',
   },
 });
 
