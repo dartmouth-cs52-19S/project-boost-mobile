@@ -15,4 +15,27 @@ const getUserInfo = id => {
   });
 };
 
-export { getUserInfo };
+const updateUserSettings = (
+  userID,
+  homeLocation,
+  homeLocationLatLong,
+  presetProductiveLocations
+) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(`${API_URL}/updateUserSettings`, {
+        userID,
+        homeLocation,
+        homeLocationLatLong,
+        presetProductiveLocations,
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+export { getUserInfo, updateUserSettings };
