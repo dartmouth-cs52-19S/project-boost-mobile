@@ -71,7 +71,7 @@ class VerifyAuth extends React.Component {
       }
 
       Location.startLocationUpdatesAsync('GET_BACKGROUND_LOCATION_DATA', {
-        // distanceInterval: 160, // ensure new location changed by 160 meters (about 0.1 miles)
+        distanceInterval: 160, // ensure new location changed by 160 meters (about 0.1 miles)
       });
     }
   };
