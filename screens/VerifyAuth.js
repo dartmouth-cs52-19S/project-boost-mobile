@@ -12,8 +12,8 @@ TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, e
   if (error) {
     console.log(error.message);
   } else {
-    // TODO: send data to server
     console.log(locations);
+    api.uploadBackgroundLocationData(firebase.auth().currentUser.uid, locations);
   }
 });
 

@@ -15,4 +15,20 @@ const getUserInfo = id => {
   });
 };
 
-export { getUserInfo };
+const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(`${API_URL}/storeBackgroundData`, {
+        uid,
+        dataToBeProcessed,
+      })
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  });
+};
+
+export { getUserInfo, uploadBackgroundLocationData };
