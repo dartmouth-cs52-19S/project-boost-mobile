@@ -162,6 +162,7 @@ class SurveyScreen extends React.Component {
   submit = () => {
     // TODO: Backend integration
     console.log('submit button clicked');
+    this.props.navigation.navigate('LinksStack');
   };
 
   render() {
