@@ -12,7 +12,7 @@ import {
 import { connect } from 'react-redux';
 import { Google, Constants } from 'expo';
 import * as firebase from 'firebase';
-import { setUserID } from '../state/actions';
+import { setUserId } from '../state/actions/index';
 
 const { height, width } = Dimensions.get('window');
 
@@ -23,7 +23,7 @@ class LoginScreen extends React.Component {
 
   componentWillMount() {
     if (firebase.auth().currentUser) {
-      this.props.setUserID(firebase.auth().currentUser.uid);
+      this.props.setUserId(firebase.auth().currentUser.uid);
       this.props.navigation.navigate('VerifyAuth');
     }
   }
@@ -130,15 +130,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setUserID: object => {
-      dispatch(setUserID(object));
-    },
-  };
-};
-
 export default connect(
   null,
-  mapDispatchToProps
+  { setUserId }
 )(LoginScreen);

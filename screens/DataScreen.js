@@ -1,8 +1,7 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableHighlight, Alert } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
-
 import { set } from 'immutable';
 import NavBar from '../components/NavBar';
 
@@ -164,7 +163,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    userData: state.user.userData,
+    productivePrecent: state.user.productivityPrecent,
+    uid: state.user.uid,
   };
 };
 

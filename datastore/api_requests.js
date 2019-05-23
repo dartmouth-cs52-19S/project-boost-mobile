@@ -3,6 +3,7 @@ import axios from 'axios';
 const API_URL = 'https://project-boost.herokuapp.com/api';
 
 const getUserInfo = id => {
+  console.log(id);
   return new Promise((resolve, reject) => {
     axios
       .post(`${API_URL}/getAuth`, { userID: id })
@@ -15,4 +16,30 @@ const getUserInfo = id => {
   });
 };
 
-export { getUserInfo };
+const getTopFive = id => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`${API_URL}/${id}&numberOfItems=5`)
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+const getAverageProductivity = id => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`${API_URL}/productivityScoresLastThirtyDays?uid=${id}`)
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+export { getUserInfo, getTopFive, getAverageProductivity };
