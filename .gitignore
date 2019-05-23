@@ -92,4 +92,5 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/*
+!ios/Pods/Pods.xcodeproj/project.pbxproj
 ios/Podfile.lock
