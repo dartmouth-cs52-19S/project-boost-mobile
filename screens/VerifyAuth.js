@@ -15,7 +15,7 @@ class VerifyAuth extends React.Component {
     api
       .getUserInfo(firebase.auth().currentUser.uid)
       .then(response => {
-        if (!Object.keys(response).includes('homeLocation')) {
+        if (response.homeLocation.length === 0) {
           this.props.setUserData(response);
           this.props.navigation.navigate('ProvideInitialInfo');
         } else {

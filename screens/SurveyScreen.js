@@ -195,8 +195,12 @@ class SurveyScreen extends React.Component {
               <View style={styles.ratingsLabelContainer}>
                 {!this.state.submit
                   ? [
-                      <Text style={styles.ratingsLabel}>Not Productive</Text>,
-                      <Text style={styles.ratingsLabel}>Very Productive</Text>,
+                      <Text style={styles.ratingsLabel} key={0}>
+                        Not Productive
+                      </Text>,
+                      <Text style={styles.ratingsLabel} key={1}>
+                        Very Productive
+                      </Text>,
                     ]
                   : null}
               </View>
@@ -214,16 +218,19 @@ class SurveyScreen extends React.Component {
             </TouchableOpacity>
           ) : (
             [
-              <Text style={styles.progressText}>
+              <Text style={styles.progressText} key={0}>
                 {this.state.currLocationIndex + 1}
                 {this.state.loaded ? ` / ${this.state.locations.length}` : null}
               </Text>,
               <TouchableOpacity
                 style={styles.nextButtonContainer}
+                key={1}
                 onPress={() => {
                   this.nextAddress();
                 }}>
-                <Text style={styles.navButton}>NEXT ></Text>
+                <Text style={styles.navButton} key={2}>
+                  NEXT >
+                </Text>
               </TouchableOpacity>,
             ]
           )}
