@@ -197,15 +197,21 @@ class SurveyScreen extends React.Component {
               title="SUBMIT"
             />
           ) : (
-            <Button
-              buttonStyle={styles.nextButton}
-              color="#293C44"
-              onPress={() => {
-                // console.log('next button clicked');
-                this.nextAddress();
-              }}
-              title="NEXT >"
-            />
+            [
+              <Text style={styles.progressText}>
+                {this.state.currLocationIndex + 1}
+                {this.state.loaded ? ` / ${this.state.locations.length}` : null}
+              </Text>,
+              <Button
+                buttonStyle={styles.nextButton}
+                color="#293C44"
+                onPress={() => {
+                  // console.log('next button clicked');
+                  this.nextAddress();
+                }}
+                title="NEXT >"
+              />,
+            ]
           )}
           {!this.state.atZero ? (
             <Button
@@ -314,6 +320,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontFamily: 'Raleway-SemiBold',
     fontSize: 28,
+  },
+  progressText: {
+    position: 'absolute',
+    bottom: 40,
+    textAlign: 'center',
+    fontFamily: 'Raleway-Light',
+    color: '#FEFEFE',
+    fontSize: 28,
+    alignContent: 'center',
+    left: 0,
+    right: 0,
   },
   buttonContainer: {
     zIndex: 999,
