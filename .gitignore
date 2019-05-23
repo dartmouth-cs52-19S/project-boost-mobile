@@ -7,9 +7,9 @@ npm-debug.*
 *.mobileprovision
 node_modules
 .env
-# macOS
 .DS_Store
 # Xcode
+
 *.pbxuser
 !default.pbxuser
 *.xccheckout
@@ -37,11 +37,9 @@ ios/6amhealth.xcworkspace/xcuserdata
 /ios/Exponent/Supporting/EXBuildConstants.plist
 
 # OSX
-#
 .DS_Store
 
 # Xcode
-#
 build/
 *.pbxuser
 !default.pbxuser
@@ -80,7 +78,6 @@ buck-out/
 *.keystore
 
 # fastlane
-#
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
 # screenshots whenever they are needed.
 # For more information about the recommended setup visit:
@@ -94,4 +91,7 @@ buck-out/
 *.jsbundle
 
 # CocoaPods
-/ios/Pods/
+/ios/Pods/*
+ios/Podfile.lock
+
+ios/boost/Supporting/*
