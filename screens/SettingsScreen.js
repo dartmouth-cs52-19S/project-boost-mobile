@@ -21,14 +21,12 @@ class SettingsScreen extends React.Component {
         ? this.props.userData.homeLocation
         : 'Enter Your Home Addresss',
       presetProductiveLocations: this.props.userData.presetProductiveLocations,
-      homeLocationLatLong: [],
+      homeLocationLatLong: this.props.userData.latlongHomeLocation,
       locationNameToAdd: '',
       locationProductivityToAdd: 0,
       homeLocationDropdown: 'auto',
       addLocationDropdown: 'auto',
     };
-
-    console.log(this.props.userData);
   }
 
   static navigationOptions = {
@@ -77,7 +75,7 @@ class SettingsScreen extends React.Component {
             this.state.homeLocationLatLong,
             this.state.presetProductiveLocations
           )
-          .then(() => {
+          .then(result => {
             api
               .getUserInfo(firebase.auth().currentUser.uid)
               .then(response => {
@@ -86,6 +84,9 @@ class SettingsScreen extends React.Component {
               .catch(err => {
                 Alert.alert(err.message);
               });
+          })
+          .catch(error => {
+            Alert.alert(error.message);
           });
       }
     );
@@ -108,7 +109,7 @@ class SettingsScreen extends React.Component {
           const latLong = [details.geometry.location.lat, details.geometry.location.lng];
           this.setState({
             homeLocation: data.description,
-            homeLocationLatLong: latLong,
+            homeLocationLatLong: `${latLong[0]} , ${latLong[1]}`,
             homeLocationDropdown: 'false',
           });
         }}
