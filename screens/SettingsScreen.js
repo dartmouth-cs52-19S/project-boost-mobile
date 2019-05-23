@@ -4,6 +4,8 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { Button } from 'react-native-elements';
 import axios from 'axios';
 
+import NavBar from '../components/NavBar';
+
 // fake data that should look very similar to server data
 const fakeData = {
   locationAlgorithmOutput: {
@@ -142,132 +144,142 @@ export default class ProvideInitialInfo extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.safeAreaContainer}>
-        <ScrollView style={styles.container}>
-          <Text style={styles.heading}>Settings</Text>
-          <Text style={styles.formLabel}>Your Home Location:</Text>
-          <GooglePlacesAutocomplete
-            placeholder={this.state.homeLocation}
-            placeholderTextColor="#BCC4C7"
-            minLength={2} // minimum length of text to search
-            autoFocus={false}
-            returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-            keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-            listViewDisplayed="auto" // true/false/undefined
-            fetchDetails
-            renderDescription={row => row.description} // custom description render
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              const latLong = [details.geometry.location.lat, details.geometry.location.long];
-              this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
-            }}
-            getDefaultValue={() => ''}
-            query={{
-              // available options: https://developers.google.com/places/web-service/autocomplete
-              key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-              language: 'en', // language of the results
-              types: 'address', // default: 'geocode'
-            }}
-            styles={{
-              description: {
-                fontWeight: 'bold',
-                color: '#388CAB',
-              },
-              textInputContainer: {
-                width: '100%',
-                backgroundColor: 'rgba(0,0,0,0)',
-                borderTopWidth: 0,
-                borderBottomWidth: 0,
-                outline: 'none',
-              },
-              textInput: {
-                marginLeft: 0,
-                marginRight: 0,
-                height: 38,
-                color: '#FEFEFE',
-                fontFamily: 'Raleway-Light',
-                backgroundColor: '#293C44',
-                borderBottomColor: '#FEFEFE',
-                borderBottomWidth: 0.25,
-                fontSize: 20,
-                paddingBottom: 5,
-                paddingLeft: 5,
-              },
-              poweredContainer: {
-                display: 'none',
-              },
-              row: {
-                color: '#FEFEFE',
-              },
-            }}
-            // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-            currentLocationLabel="Current location"
-            nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-            GooglePlacesDetailsQuery={{
-              // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-              fields: 'formatted_address',
-            }}
-            GooglePlacesSearchQuery={{
-              // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-              rankby: 'prominence',
-            }}
-            debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-          />
-          <Text style={styles.formLabel}>Where You're Productive and Unproductive:</Text>
-          <View style={styles.columnContainer}>
-            <View style={styles.column}>
-              <Text style={styles.columnHeader}>Location:</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <NavBar backgroundColor="#293C44" />
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.settingsContainer}>
+              <Text style={styles.formLabel}>Your Home Location:</Text>
+              <GooglePlacesAutocomplete
+                placeholder={this.state.homeLocation}
+                placeholderTextColor="#BCC4C7"
+                minLength={2} // minimum length of text to search
+                autoFocus={false}
+                returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+                listViewDisplayed="auto" // true/false/undefined
+                fetchDetails
+                renderDescription={row => row.description} // custom description render
+                onPress={(data, details = null) => {
+                  // 'details' is provided when fetchDetails = true
+                  const latLong = [details.geometry.location.lat, details.geometry.location.long];
+                  this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
+                }}
+                getDefaultValue={() => ''}
+                query={{
+                  // available options: https://developers.google.com/places/web-service/autocomplete
+                  key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
+                  language: 'en', // language of the results
+                  types: 'address', // default: 'geocode'
+                }}
+                styles={{
+                  description: {
+                    fontWeight: 'bold',
+                    color: '#388CAB',
+                  },
+                  textInputContainer: {
+                    width: '100%',
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderTopWidth: 0,
+                    borderBottomWidth: 0,
+                    outline: 'none',
+                  },
+                  textInput: {
+                    marginLeft: 0,
+                    marginRight: 0,
+                    height: 38,
+                    color: '#FEFEFE',
+                    fontFamily: 'Raleway-Light',
+                    backgroundColor: '#293C44',
+                    borderBottomColor: '#FEFEFE',
+                    borderBottomWidth: 0.25,
+                    fontSize: 20,
+                    paddingBottom: 5,
+                    paddingLeft: 5,
+                  },
+                  poweredContainer: {
+                    display: 'none',
+                  },
+                  row: {
+                    color: '#FEFEFE',
+                  },
+                }}
+                // currentLocation // Will add a 'Current location' button at the top of the predefined places list
+                currentLocationLabel="Current location"
+                nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+                GooglePlacesDetailsQuery={{
+                  // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
+                  fields: 'formatted_address',
+                }}
+                GooglePlacesSearchQuery={{
+                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                  rankby: 'prominence',
+                }}
+                debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+              />
+              <Text style={styles.formLabel}>Where You're Productive and Unproductive:</Text>
+              <View style={styles.columnContainer}>
+                <View style={styles.column}>
+                  <Text style={styles.columnHeader}>Location:</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.columnHeader}>I am Productive:</Text>
+                </View>
+                {this.state.locationLoaded
+                  ? this.state.addresses.map((address, i) => {
+                      const key = `switch${i}`;
+                      return [
+                        <View key={i} style={styles.column}>
+                          <Text style={styles.columnText}>{address}</Text>
+                        </View>,
+                        <View key={i + 0.5} style={styles.column}>
+                          <View style={styles.switchContainer}>
+                            <Text style={styles.switchText}>NO</Text>
+                            <Switch
+                              style={styles.switch}
+                              value={this.state[key]}
+                              onValueChange={value => this.toggleSwitch(i, value)}
+                              trackColor={{ true: '#293C44' }}
+                              ios_backgroundColor="#293C44"
+                            />
+                            <Text style={styles.switchText}>YES</Text>
+                          </View>
+                        </View>,
+                      ];
+                    })
+                  : null}
+              </View>
+              <Button
+                buttonStyle={styles.saveButton}
+                color="#FEFEFE"
+                onPress={() => {
+                  this.formValidation();
+                }}
+                title="Save"
+              />
             </View>
-            <View style={styles.column}>
-              <Text style={styles.columnHeader}>I am Productive:</Text>
-            </View>
-            {this.state.locationLoaded
-              ? this.state.addresses.map((address, i) => {
-                  const key = `switch${i}`;
-                  return [
-                    <View key={i} style={styles.column}>
-                      <Text style={styles.columnText}>{address}</Text>
-                    </View>,
-                    <View key={i + 0.5} style={styles.column}>
-                      <View style={styles.switchContainer}>
-                        <Text style={styles.switchText}>NO</Text>
-                        <Switch
-                          style={styles.switch}
-                          value={this.state[key]}
-                          onValueChange={value => this.toggleSwitch(i, value)}
-                          trackColor={{ true: '#293C44' }}
-                          ios_backgroundColor="#293C44"
-                        />
-                        <Text style={styles.switchText}>YES</Text>
-                      </View>
-                    </View>,
-                  ];
-                })
-              : null}
-          </View>
-          <Button
-            buttonStyle={styles.saveButton}
-            color="#FEFEFE"
-            onPress={() => {
-              this.formValidation();
-            }}
-            title="Save"
-          />
-        </ScrollView>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  safeAreaContainer: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#293C44',
   },
   container: {
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingRight: 20,
+    flex: 1,
+    backgroundColor: '#293C44',
+  },
+  contentContainer: {
+    backgroundColor: '#293C44',
+  },
+  settingsContainer: {
+    marginLeft: 18,
+    marginRight: 18,
   },
   heading: {
     fontSize: 35,
