@@ -3,6 +3,7 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import StarRating from 'react-native-star-rating';
+import { Button } from 'react-native-elements';
 import NavBar from '../components/NavBar';
 
 const fakeData = [
@@ -74,7 +75,7 @@ class SurveyScreen extends React.Component {
 
   loadLocationPrompts = () => {
     return this.state.newData ? (
-      <View>
+      <View style={styles.reviewContainer}>
         {this.renderCurrentLocation()}
         <StarRating
           disabled={false}
@@ -92,6 +93,19 @@ class SurveyScreen extends React.Component {
     );
   };
 
+  nextAddress = () => {
+    if (true) {
+      this.setState(prevState => {
+        console.log(prevState.currLocationIndex + 1);
+        return { currLocationIndex: prevState.currLocationIndex + 1 };
+      });
+    }
+  };
+
+  prevAddress = () => {
+    console.log('prevAddress function called');
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -101,8 +115,32 @@ class SurveyScreen extends React.Component {
             <View style={styles.topQuestionArea}>
               <Text style={styles.topQuestionAreaText}>How Productive Were You At...</Text>
               {this.state.loaded ? this.loadLocationPrompts() : <Text>Loading...</Text>}
+              <View style={styles.ratingsLabelContainer}>
+                <Text style={styles.ratingsLabel}>Not Productive</Text>
+                <Text style={styles.ratingsLabel}>Very Productive</Text>
+              </View>
             </View>
           </ScrollView>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            buttonStyle={styles.nextButton}
+            color="#293C44"
+            onPress={() => {
+              console.log('next button clicked');
+              this.nextAddress();
+            }}
+            title="NEXT >"
+          />
+          <Button
+            buttonStyle={styles.prevButton}
+            color="#293C44"
+            onPress={() => {
+              console.log('previous button clicked');
+              this.prevAddress();
+            }}
+            title="< BACK"
+          />
         </View>
       </SafeAreaView>
     );
@@ -117,6 +155,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#388CAB',
+    zIndex: 1,
   },
   contentContainer: {
     backgroundColor: '#388CAB',
@@ -162,6 +201,45 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 30,
     marginBottom: 30,
+  },
+  ratingsLabelContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  ratingsLabel: {
+    textAlign: 'center',
+    fontFamily: 'Raleway-Light',
+    color: '#FEFEFE',
+    fontSize: 18,
+    marginTop: 15,
+    width: 120,
+  },
+  reviewContainer: {
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 35,
+    right: 30,
+    //   backgroundColor: 'transparent',
+    //   fontFamily: 'Raleway-SemiBold',
+    //   fontSize: 20,
+    // zIndex: 9999,
+    fontColor: 'red',
+  },
+  prevButton: {
+    position: 'absolute',
+    bottom: 35,
+    left: 30,
+    //   backgroundColor: 'transparent',
+    //   fontFamily: 'Raleway-SemiBold',
+    //   fontSize: 20,
+  },
+  buttonContainer: {
+    zIndex: 999,
   },
 });
 
