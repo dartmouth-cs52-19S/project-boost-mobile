@@ -1,9 +1,9 @@
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import StarRating from 'react-native-star-rating';
-import { Button } from 'react-native-elements';
+import moment from 'moment';
 import NavBar from '../components/NavBar';
 
 const fakeData = [
@@ -16,8 +16,8 @@ const fakeData = [
       type: 'residence',
     },
     latLongLocation: '22234234, 234234234',
-    startTime: 23423424,
-    endTime: 2342342342,
+    startTime: 1558642194,
+    endTime: 1558649376,
     // productivity: 3, // won't exist as a field if user hasn't put it in
   },
   {
@@ -29,8 +29,8 @@ const fakeData = [
       type: 'airport',
     },
     latLongLocation: '4321431, 1234123',
-    startTime: 23423424,
-    endTime: 2342342342,
+    startTime: 1558642194,
+    endTime: 1558667989,
     // productivity: 3, // won't exist as a field if user hasn't put it in
   },
 ];
@@ -84,6 +84,7 @@ class SurveyScreen extends React.Component {
     return this.state.newData ? (
       <View style={styles.reviewContainer}>
         {this.renderCurrentLocation()}
+        <Text style={styles.timeContainer}>{this.getLocationTimes()}</Text>
         {!this.state.submit ? (
           <StarRating
             disabled={false}
@@ -100,6 +101,24 @@ class SurveyScreen extends React.Component {
     ) : (
       <Text>No new locations to review, you're all set!</Text>
     );
+  };
+
+  getLocationTimes = () => {
+    if (this.state.loaded && this.inLocationsIndex()) {
+      const currIndex = this.state.currLocationIndex;
+      const location = this.state.locations[currIndex];
+      const start = location.startTime;
+      const end = location.endTime;
+      const startString = this.timeToString(start);
+      const endString = this.timeToString(end);
+      const timeFromNow = moment(end * 1000).fromNow();
+      return `From ${startString} to ${endString}? (${timeFromNow})`;
+    } else return '';
+  };
+
+  timeToString = time => {
+    const hour = moment(time * 1000).format('h:mm a');
+    return hour;
   };
 
   nextAddress = () => {
@@ -161,7 +180,6 @@ class SurveyScreen extends React.Component {
 
   submit = () => {
     // TODO: Backend integration
-    console.log('submit button clicked');
     this.props.navigation.navigate('LinksStack');
   };
 
@@ -187,42 +205,36 @@ class SurveyScreen extends React.Component {
         </View>
         <View style={styles.buttonContainer}>
           {this.state.submit ? (
-            <Button
-              buttonStyle={styles.nextButton}
-              color="#293C44"
+            <TouchableOpacity
+              style={styles.nextButtonContainer}
               onPress={() => {
-                // console.log('next button clicked');
                 this.submit();
-              }}
-              title="SUBMIT"
-            />
+              }}>
+              <Text style={styles.navButton}>SUBMIT</Text>
+            </TouchableOpacity>
           ) : (
             [
               <Text style={styles.progressText}>
                 {this.state.currLocationIndex + 1}
                 {this.state.loaded ? ` / ${this.state.locations.length}` : null}
               </Text>,
-              <Button
-                buttonStyle={styles.nextButton}
-                color="#293C44"
+              <TouchableOpacity
+                style={styles.nextButtonContainer}
                 onPress={() => {
-                  // console.log('next button clicked');
                   this.nextAddress();
-                }}
-                title="NEXT >"
-              />,
+                }}>
+                <Text style={styles.navButton}>NEXT ></Text>
+              </TouchableOpacity>,
             ]
           )}
           {!this.state.atZero ? (
-            <Button
-              buttonStyle={styles.prevButton}
-              color="#293C44"
+            <TouchableOpacity
+              style={styles.prevButtonContainer}
               onPress={() => {
-                // console.log('previous button clicked');
                 this.prevAddress();
-              }}
-              title="< BACK"
-            />
+              }}>
+              <Text style={styles.navButton}>{`< BACK`}</Text>
+            </TouchableOpacity>
           ) : null}
         </View>
       </SafeAreaView>
@@ -284,6 +296,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 30,
     marginBottom: 30,
+    textAlign: 'center',
   },
   ratingsLabelContainer: {
     flex: 1,
@@ -303,27 +316,28 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     paddingRight: 40,
   },
-  nextButton: {
+  navButton: {
+    fontFamily: 'Raleway-SemiBold',
+    fontSize: 22,
+    zIndex: 999,
+    color: '#293C44',
+  },
+  nextButtonContainer: {
     position: 'absolute',
     bottom: 35,
     right: 30,
     backgroundColor: 'transparent',
-    fontFamily: 'Raleway-SemiBold',
-    fontSize: 28,
     zIndex: 999,
-    fontColor: 'red',
   },
-  prevButton: {
+  prevButtonContainer: {
     position: 'absolute',
     bottom: 35,
     left: 30,
     backgroundColor: 'transparent',
-    fontFamily: 'Raleway-SemiBold',
-    fontSize: 28,
   },
   progressText: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 35,
     textAlign: 'center',
     fontFamily: 'Raleway-Light',
     color: '#FEFEFE',
@@ -334,6 +348,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     zIndex: 999,
+  },
+  timeContainer: {
+    textAlign: 'center',
+    color: '#FEFEFE',
+    fontSize: 28,
+    fontFamily: 'Raleway-SemiBold',
+    marginBottom: 40,
   },
 });
 
