@@ -49,6 +49,8 @@ class SurveyScreen extends React.Component {
       newData: true,
       loaded: false,
       starCount: 3,
+      submit: false,
+      atZero: true,
     };
   }
 
@@ -64,8 +66,13 @@ class SurveyScreen extends React.Component {
   };
 
   renderCurrentLocation = () => {
-    const i = this.state.currLocationIndex;
-    const address = this.state.locations[i].location.address;
+    let address = '';
+    if (this.inLocationsIndex()) {
+      const i = this.state.currLocationIndex;
+      address = this.state.locations[i].location.address;
+    } else {
+      address = "That's it! Click submit when done. ";
+    }
     return <Text style={styles.address}>{address}</Text>;
   };
 
@@ -77,16 +84,18 @@ class SurveyScreen extends React.Component {
     return this.state.newData ? (
       <View style={styles.reviewContainer}>
         {this.renderCurrentLocation()}
-        <StarRating
-          disabled={false}
-          emptyStar={'ios-star-outline'}
-          fullStar={'ios-star'}
-          iconSet={'Ionicons'}
-          maxStars={5}
-          rating={this.state.starCount}
-          selectedStar={rating => this.onStarRatingPress(rating)}
-          fullStarColor={'#293C44'}
-        />
+        {!this.state.submit ? (
+          <StarRating
+            disabled={false}
+            emptyStar={'ios-star-outline'}
+            fullStar={'ios-star'}
+            iconSet={'Ionicons'}
+            maxStars={5}
+            rating={this.state.starCount}
+            selectedStar={rating => this.onStarRatingPress(rating)}
+            fullStarColor={'#293C44'}
+          />
+        ) : null}
       </View>
     ) : (
       <Text>No new locations to review, you're all set!</Text>
@@ -94,16 +103,65 @@ class SurveyScreen extends React.Component {
   };
 
   nextAddress = () => {
-    if (true) {
+    if (this.inLocationsIndex()) {
+      this.saveProductivityScore(this.state.currLocationIndex, this.state.starCount);
       this.setState(prevState => {
-        console.log(prevState.currLocationIndex + 1);
-        return { currLocationIndex: prevState.currLocationIndex + 1 };
+        const newIndex = prevState.currLocationIndex + 1;
+        this.updateStarRating(newIndex);
+        let submit = false;
+        if (newIndex >= this.state.locations.length) submit = true;
+        return { currLocationIndex: newIndex, submit, atZero: false };
       });
     }
   };
 
   prevAddress = () => {
-    console.log('prevAddress function called');
+    if (this.state.currLocationIndex > 0) {
+      this.saveProductivityScore(this.state.currLocationIndex, this.state.starCount);
+      this.setState(prevState => {
+        const newIndex = prevState.currLocationIndex - 1;
+        this.updateStarRating(newIndex);
+        let atZero = false;
+        if (newIndex === 0) atZero = true;
+        return { currLocationIndex: prevState.currLocationIndex - 1, submit: false, atZero };
+      });
+    }
+  };
+
+  saveProductivityScore = (currIndex, rating) => {
+    if (currIndex < this.state.locations.length) {
+      this.setState(prevState => {
+        // update location object with new productivity score
+        const locations = prevState.locations.map((location, i) => {
+          if (currIndex === i) location['productivity'] = rating;
+          return location;
+        });
+        console.log(locations);
+        // update state
+        return {
+          locations,
+        };
+      });
+    }
+  };
+
+  updateStarRating = newIndex => {
+    if (
+      newIndex < this.state.locations.length &&
+      'productivity' in this.state.locations[newIndex]
+    ) {
+      const prodScore = this.state.locations[newIndex]['productivity'];
+      this.setState({ starCount: prodScore });
+    }
+  };
+
+  inLocationsIndex = () => {
+    return this.state.currLocationIndex < this.state.locations.length;
+  };
+
+  submit = () => {
+    // TODO: Backend integration
+    console.log('submit button clicked');
   };
 
   render() {
@@ -116,31 +174,49 @@ class SurveyScreen extends React.Component {
               <Text style={styles.topQuestionAreaText}>How Productive Were You At...</Text>
               {this.state.loaded ? this.loadLocationPrompts() : <Text>Loading...</Text>}
               <View style={styles.ratingsLabelContainer}>
-                <Text style={styles.ratingsLabel}>Not Productive</Text>
-                <Text style={styles.ratingsLabel}>Very Productive</Text>
+                {!this.state.submit
+                  ? [
+                      <Text style={styles.ratingsLabel}>Not Productive</Text>,
+                      <Text style={styles.ratingsLabel}>Very Productive</Text>,
+                    ]
+                  : null}
               </View>
             </View>
           </ScrollView>
         </View>
         <View style={styles.buttonContainer}>
-          <Button
-            buttonStyle={styles.nextButton}
-            color="#293C44"
-            onPress={() => {
-              console.log('next button clicked');
-              this.nextAddress();
-            }}
-            title="NEXT >"
-          />
-          <Button
-            buttonStyle={styles.prevButton}
-            color="#293C44"
-            onPress={() => {
-              console.log('previous button clicked');
-              this.prevAddress();
-            }}
-            title="< BACK"
-          />
+          {this.state.submit ? (
+            <Button
+              buttonStyle={styles.nextButton}
+              color="#293C44"
+              onPress={() => {
+                // console.log('next button clicked');
+                this.submit();
+              }}
+              title="SUBMIT"
+            />
+          ) : (
+            <Button
+              buttonStyle={styles.nextButton}
+              color="#293C44"
+              onPress={() => {
+                // console.log('next button clicked');
+                this.nextAddress();
+              }}
+              title="NEXT >"
+            />
+          )}
+          {!this.state.atZero ? (
+            <Button
+              buttonStyle={styles.prevButton}
+              color="#293C44"
+              onPress={() => {
+                // console.log('previous button clicked');
+                this.prevAddress();
+              }}
+              title="< BACK"
+            />
+          ) : null}
         </View>
       </SafeAreaView>
     );
@@ -217,26 +293,26 @@ const styles = StyleSheet.create({
     width: 120,
   },
   reviewContainer: {
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: 40,
+    paddingRight: 40,
   },
   nextButton: {
     position: 'absolute',
     bottom: 35,
     right: 30,
-    //   backgroundColor: 'transparent',
-    //   fontFamily: 'Raleway-SemiBold',
-    //   fontSize: 20,
-    // zIndex: 9999,
+    backgroundColor: 'transparent',
+    fontFamily: 'Raleway-SemiBold',
+    fontSize: 28,
+    zIndex: 999,
     fontColor: 'red',
   },
   prevButton: {
     position: 'absolute',
     bottom: 35,
     left: 30,
-    //   backgroundColor: 'transparent',
-    //   fontFamily: 'Raleway-SemiBold',
-    //   fontSize: 20,
+    backgroundColor: 'transparent',
+    fontFamily: 'Raleway-SemiBold',
+    fontSize: 28,
   },
   buttonContainer: {
     zIndex: 999,
