@@ -22,9 +22,7 @@ const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
         uid,
         dataToBeProcessed,
       })
-      .then(function(response) {
-        console.log(response);
-      })
+      .then(response => {})
       .catch(function(error) {
         console.log(error);
       });
