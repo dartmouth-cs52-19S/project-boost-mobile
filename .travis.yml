@@ -4,6 +4,6 @@
  sudo: true
  before_install:
    - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-   - openssl aes-256-cbc -K $encrypted_1bf041fba012_key -iv $encrypted_1bf041fba012_iv -in .env.enc -out .env -d
+   - openssl aes-256-cbc -K $encrypted_1bf041fba012_key -iv $encrypted_1bf041fba012_iv -in env.enc -out .env -d
  cache:
    yarn: true
