@@ -26,7 +26,10 @@ const updateUserSettings = (
       .put(`${API_URL}/updateUserSettings`, {
         userID,
         homeLocation,
-        homeLocationLatLong,
+        homeLocationLatLong:
+          homeLocationLatLong.length > 0
+            ? `${homeLocationLatLong[0]} , ${homeLocationLatLong[1]}`
+            : '',
         presetProductiveLocations,
       })
       .then(response => {
