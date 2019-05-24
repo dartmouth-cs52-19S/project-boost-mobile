@@ -79,6 +79,7 @@ export default class ProvideInitialInfo extends React.Component {
         })
       );
     });
+
     // promises.all waits checks to make sure all google maps async calls complete successfully
     Promise.all(promises)
       .then(elements => {
@@ -104,6 +105,7 @@ export default class ProvideInitialInfo extends React.Component {
         if (index === j) location.productivity = value ? 5 : 0;
         return location;
       });
+      // console.log(locations); // 2D
       // update specified switch state
       return {
         [key]: value,
@@ -138,6 +140,8 @@ export default class ProvideInitialInfo extends React.Component {
       // Alert.alert("You're almost there!", 'Please specify a home location');
     } else {
       this.props.navigation.navigate('App');
+      // console.log(this.state.homeLocation); // 2d
+      // console.log(this.state.homeLocationLatLong); // 2d
     }
   };
 
@@ -159,7 +163,6 @@ export default class ProvideInitialInfo extends React.Component {
             renderDescription={row => row.description} // custom description render
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              console.log(details);
               const latLong = [details.geometry.location.lat, details.geometry.location.lng];
               this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
             }}
@@ -173,6 +176,7 @@ export default class ProvideInitialInfo extends React.Component {
             styles={{
               description: {
                 fontWeight: 'bold',
+                color: '#293C44',
               },
               textInputContainer: {
                 width: '100%',
@@ -239,7 +243,7 @@ export default class ProvideInitialInfo extends React.Component {
                           style={styles.switch}
                           value={this.state[key]}
                           onValueChange={value => this.toggleSwitch(i, value)}
-                          trackColor={{ true: '#293C44' }}
+                          trackColor={{ true: '#388CAB' }}
                           ios_backgroundColor="#388CAB"
                         />
                         <Text style={styles.switchText}>YES</Text>
@@ -319,6 +323,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   columnText: {
+    paddingTop: 5,
     color: '#FEFEFE',
     fontSize: 20,
     fontFamily: 'Raleway-Light',
@@ -331,10 +336,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 10,
     marginRight: 10,
+    borderWidth: 0.5,
+    borderColor: '#FEFEFE',
+    color: 'rgba(0,0,0,0)',
   },
   switchText: {
-    color: '#FEFEFE',
     fontSize: 18,
+    color: '#E5E5E5',
   },
   switchContainer: {
     flexDirection: 'row',
