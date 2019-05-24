@@ -24,6 +24,8 @@ const FireBaseConfig = {
   messagingSenderId: firebase_messagingSenderId.slice(0, -2),
 };
 
+console.disableYellowBox = true;
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
