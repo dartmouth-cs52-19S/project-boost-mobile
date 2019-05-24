@@ -1,117 +1,38 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, SafeAreaView, View, Switch, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
+import StarRating from 'react-native-star-rating';
 import axios from 'axios';
+import * as firebase from 'firebase';
+import * as api from '../datastore/api_requests';
+import { setUserData } from '../state/actions';
 
 import NavBar from '../components/NavBar';
 
-// fake data that should look very similar to server data
-const fakeData = {
-  locationAlgorithmOutput: {
-    '44.308140 , -71.800171': [
-      {
-        startTime: '1234',
-        endTime: '5678',
-      },
-    ],
-    '41.148499 , -73.493698': [
-      {
-        startTime: '1324',
-        endTime: '9876',
-      },
-      {
-        startTime: '1234',
-        endTime: '4321',
-      },
-    ],
-  },
-};
-
-export default class ProvideInitialInfo extends React.Component {
+class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       // home location info
-      homeLocation: 'Just Outside Of Boston Ya Goons',
+      homeLocation: this.props.userData.homeLocation
+        ? this.props.userData.homeLocation
+        : 'Enter Your Home Addresss',
+      presetProductiveLocations: this.props.userData.presetProductiveLocations,
       homeLocationLatLong: [],
-      locationLoaded: false, // is backend location history fully processed (including Google reverse Geocoding)
-      locationHistory: null, // Object with updated location info (address, productivity score, etc.)
+      locationNameToAdd: '',
+      locationProductivityToAdd: 0,
+      homeLocationDropdown: 'auto',
+      addLocationDropdown: 'auto',
     };
-  }
 
-  componentDidMount = () => {
-    this.getLocationHistory();
-  };
+    console.log(this.props.userData);
+  }
 
   static navigationOptions = {
     header: null,
-  };
-
-  getLocationHistory = () => {
-    const locations = [];
-    // For now parsing fake data defined above and adding productivity score, which by default is 0
-    Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
-      locations.push({
-        coords: key,
-        times: fakeData.locationAlgorithmOutput[key],
-        productivity: 0,
-      });
-    });
-    // Sort fake data by most frequently visited locations
-    if (locations.length > 1) {
-      locations.sort(function(a, b) {
-        if (a.times.length === b.times.length) return 0;
-        if (a.times.length > b.times.length) return -1;
-        if (a.times.length < b.times.length) return 1;
-      });
-    }
-    // create list of promises, which if successful should just be a list of addresses
-    let promises = [];
-    locations.map(value => {
-      promises.push(
-        new Promise((resolve, reject) => {
-          // getAddress does the google maps reverse geocoding api call to get address
-          this.getAddress(value.coords)
-            .then(address => {
-              resolve(address);
-            })
-            .catch(error => reject(error));
-        })
-      );
-    });
-    // promises.all waits checks to make sure all google maps async calls complete successfully
-    Promise.all(promises)
-      .then(elements => {
-        elements.forEach((element, i) => {
-          const key = `switch${i}`; // each location needs a unique switch state specifiec (ex: switch0, switch1, etc.)
-          locations[i]['address'] = element; // add address attribute to location object
-          this.setState({ [key]: false }); // by default, set switch to false (unproductive)
-        });
-        this.setState({
-          locationHistory: locations, // store updated location info
-          locationLoaded: true, // tell app location data parsing is complete
-          addresses: elements, // for rendering switches in render function (see map function call in line 223)
-        });
-      })
-      .catch(error => Alert.alert(error));
-  };
-
-  toggleSwitch = (index, value) => {
-    const key = `switch${index}`;
-    this.setState(prevState => {
-      // update location object with new productivity score
-      const locations = prevState.locationHistory.map((location, j) => {
-        if (index === j) location.productivity = value ? 5 : 0;
-        return location;
-      });
-      // update specified switch state
-      return {
-        [key]: value,
-        locationHistory: locations,
-      };
-    });
   };
 
   // makes google maps reverse geocoding api call with lat long input, returns an address if promise is resolved
@@ -133,13 +54,247 @@ export default class ProvideInitialInfo extends React.Component {
     });
   };
 
-  // checks if home location is provided
-  formValidation = () => {
-    if (this.state.homeLocation === null) {
-      Alert.alert("You're almost there!", 'Please specify a home location');
-    } else {
-      this.props.navigation.navigate('App');
+  saveInfo = () => {
+    const presetProductiveLocations = this.state.presetProductiveLocations;
+
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      presetProductiveLocations[
+        this.state.locationNameToAdd
+      ] = this.state.locationProductivityToAdd;
     }
+
+    this.setState(
+      {
+        presetProductiveLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
+      },
+      () => {
+        api
+          .updateUserSettings(
+            firebase.auth().currentUser.uid,
+            this.state.homeLocation,
+            this.state.homeLocationLatLong,
+            this.state.presetProductiveLocations
+          )
+          .then(() => {
+            api
+              .getUserInfo(firebase.auth().currentUser.uid)
+              .then(response => {
+                this.props.setUserData(response);
+              })
+              .catch(err => {
+                Alert.alert(err.message);
+              });
+          });
+      }
+    );
+  };
+
+  renderHomeLocationInput = () => {
+    return (
+      <GooglePlacesAutocomplete
+        placeholder={this.state.homeLocation}
+        placeholderTextColor="#BCC4C7"
+        minLength={2} // minimum length of text to search
+        autoFocus={false}
+        returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+        keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+        listViewDisplayed={this.state.homeLocationDropdown} // true/false/undefined
+        fetchDetails
+        renderDescription={row => row.description} // custom description render
+        onPress={(data, details = null) => {
+          // 'details' is provided when fetchDetails = true
+          const latLong = [details.geometry.location.lat, details.geometry.location.lng];
+          this.setState({
+            homeLocation: data.description,
+            homeLocationLatLong: latLong,
+            homeLocationDropdown: 'false',
+          });
+        }}
+        getDefaultValue={() => ''}
+        query={{
+          // available options: https://developers.google.com/places/web-service/autocomplete
+          key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
+          language: 'en', // language of the results
+          types: 'address', // default: 'geocode'
+        }}
+        styles={{
+          description: {
+            fontWeight: 'bold',
+            color: '#388CAB',
+          },
+          textInputContainer: {
+            width: '100%',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderTopWidth: 0,
+            borderBottomWidth: 0,
+            outline: 'none',
+          },
+          textInput: {
+            marginLeft: 0,
+            marginRight: 0,
+            height: 38,
+            color: '#FEFEFE',
+            fontFamily: 'Raleway-Light',
+            backgroundColor: '#293C44',
+            borderBottomColor: '#FEFEFE',
+            borderBottomWidth: 0.25,
+            fontSize: 20,
+            paddingBottom: 5,
+            paddingLeft: 5,
+          },
+          poweredContainer: {
+            display: 'none',
+          },
+          row: {
+            color: '#FEFEFE',
+          },
+        }}
+        // currentLocation // Will add a 'Current location' button at the top of the predefined places list
+        currentLocationLabel="Current location"
+        nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+        GooglePlacesDetailsQuery={{
+          // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
+          fields: 'formatted_address',
+        }}
+        GooglePlacesSearchQuery={{
+          // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+          rankby: 'prominence',
+        }}
+        debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+      />
+    );
+  };
+
+  renderPresetRows = () => {
+    return Object.keys(this.state.presetProductiveLocations).map((location, index) => {
+      return (
+        <View style={styles.presetRow} key={index}>
+          <View style={styles.locationColumn}>
+            <Text style={styles.address}>{location}</Text>
+          </View>
+          <View style={styles.productivityColumn}>
+            <StarRating
+              disabled={false}
+              emptyStar={'ios-star-outline'}
+              fullStar={'ios-star'}
+              iconSet={'Ionicons'}
+              maxStars={5}
+              starSize={25}
+              rating={this.state.presetProductiveLocations[location]}
+              selectedStar={rating => {
+                const obj = this.state.presetProductiveLocations;
+                obj[location] = rating;
+
+                this.setState({
+                  presetProductiveLocations: obj,
+                });
+              }}
+              fullStarColor={'white'}
+            />
+          </View>
+        </View>
+      );
+    });
+  };
+
+  addAnotherPreset = () => {
+    return (
+      <View>
+        <Text style={styles.addAnotherPreset}>Add Another Preset Location:</Text>
+        <View style={styles.presetRow}>
+          <View style={styles.locationColumn}>
+            <GooglePlacesAutocomplete
+              placeholder={this.state.locationNameToAdd}
+              placeholderTextColor="#BCC4C7"
+              minLength={2} // minimum length of text to search
+              autoFocus={false}
+              returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+              keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+              listViewDisplayed={this.state.addLocationDropdown} // true/false/undefined
+              fetchDetails
+              renderDescription={row => row.description} // custom description render
+              onPress={(data, details = null) => {
+                // 'details' is provided when fetchDetails = true
+                this.setState({
+                  locationNameToAdd: data.description,
+                  addLocationDropdown: 'false',
+                });
+              }}
+              getDefaultValue={() => ''}
+              query={{
+                // available options: https://developers.google.com/places/web-service/autocomplete
+                key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
+                language: 'en', // language of the results
+                types: 'address', // default: 'geocode'
+              }}
+              styles={{
+                description: {
+                  fontWeight: 'bold',
+                  color: '#388CAB',
+                },
+                textInputContainer: {
+                  width: '100%',
+                  backgroundColor: 'rgba(0,0,0,0)',
+                  borderTopWidth: 0,
+                  borderBottomWidth: 0,
+                  outline: 'none',
+                },
+                textInput: {
+                  marginLeft: 0,
+                  marginRight: 0,
+                  height: 38,
+                  color: '#FEFEFE',
+                  fontFamily: 'Raleway-Light',
+                  backgroundColor: '#293C44',
+                  borderBottomColor: '#FEFEFE',
+                  borderBottomWidth: 0.25,
+                  fontSize: 20,
+                  paddingBottom: 5,
+                  paddingLeft: 5,
+                },
+                poweredContainer: {
+                  display: 'none',
+                },
+                row: {
+                  color: '#FEFEFE',
+                },
+              }}
+              // currentLocation // Will add a 'Current location' button at the top of the predefined places list
+              currentLocationLabel="Current location"
+              nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+              GooglePlacesDetailsQuery={{
+                // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
+                fields: 'formatted_address',
+              }}
+              GooglePlacesSearchQuery={{
+                // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                rankby: 'prominence',
+              }}
+              debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+            />
+          </View>
+          <View style={styles.productivityColumn}>
+            <StarRating
+              disabled={false}
+              emptyStar={'ios-star-outline'}
+              fullStar={'ios-star'}
+              iconSet={'Ionicons'}
+              maxStars={5}
+              starSize={25}
+              rating={this.state.locationProductivityToAdd}
+              selectedStar={rating => {
+                this.setState({
+                  locationProductivityToAdd: rating,
+                });
+              }}
+              fullStarColor={'white'}
+            />
+          </View>
+        </View>
+      </View>
+    );
   };
 
   render() {
@@ -150,115 +305,32 @@ export default class ProvideInitialInfo extends React.Component {
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.settingsContainer}>
               <Text style={styles.formLabel}>Your Home Location:</Text>
-              <GooglePlacesAutocomplete
-                placeholder={this.state.homeLocation}
-                placeholderTextColor="#BCC4C7"
-                minLength={2} // minimum length of text to search
-                autoFocus={false}
-                returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-                keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-                listViewDisplayed="auto" // true/false/undefined
-                fetchDetails
-                renderDescription={row => row.description} // custom description render
-                onPress={(data, details = null) => {
-                  // 'details' is provided when fetchDetails = true
-                  const latLong = [details.geometry.location.lat, details.geometry.location.long];
-                  this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
-                }}
-                getDefaultValue={() => ''}
-                query={{
-                  // available options: https://developers.google.com/places/web-service/autocomplete
-                  key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-                  language: 'en', // language of the results
-                  types: 'address', // default: 'geocode'
-                }}
-                styles={{
-                  description: {
-                    fontWeight: 'bold',
-                    color: '#388CAB',
-                  },
-                  textInputContainer: {
-                    width: '100%',
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderTopWidth: 0,
-                    borderBottomWidth: 0,
-                    outline: 'none',
-                  },
-                  textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
-                    height: 38,
-                    color: '#FEFEFE',
-                    fontFamily: 'Raleway-Light',
-                    backgroundColor: '#293C44',
-                    borderBottomColor: '#FEFEFE',
-                    borderBottomWidth: 0.25,
-                    fontSize: 20,
-                    paddingBottom: 5,
-                    paddingLeft: 5,
-                  },
-                  poweredContainer: {
-                    display: 'none',
-                  },
-                  row: {
-                    color: '#FEFEFE',
-                  },
-                }}
-                // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-                currentLocationLabel="Current location"
-                nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-                GooglePlacesDetailsQuery={{
-                  // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-                  fields: 'formatted_address',
-                }}
-                GooglePlacesSearchQuery={{
-                  // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                  rankby: 'prominence',
-                }}
-                debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-              />
-              <Text style={styles.formLabel}>Where You're Productive and Unproductive:</Text>
-              <View style={styles.columnContainer}>
-                <View style={styles.column}>
+              {this.renderHomeLocationInput()}
+              <Text style={styles.formLabel}>Preset Productive Locations:</Text>
+              <Text style={styles.formDescription}>
+                Whenever you visit these locations, we preset your productivity level with the value
+                below.
+              </Text>
+              <View style={styles.presetRow}>
+                <View style={styles.locationColumn}>
                   <Text style={styles.columnHeader}>Location:</Text>
                 </View>
-                <View style={styles.column}>
-                  <Text style={styles.columnHeader}>I am Productive:</Text>
+                <View style={styles.productivityColumn}>
+                  <Text style={styles.columnHeader}>Productivity:</Text>
                 </View>
-                {this.state.locationLoaded
-                  ? this.state.addresses.map((address, i) => {
-                      const key = `switch${i}`;
-                      return [
-                        <View key={i} style={styles.column}>
-                          <Text style={styles.columnText}>{address}</Text>
-                        </View>,
-                        <View key={i + 0.5} style={styles.column}>
-                          <View style={styles.switchContainer}>
-                            <Text style={styles.switchText}>NO</Text>
-                            <Switch
-                              style={styles.switch}
-                              value={this.state[key]}
-                              onValueChange={value => this.toggleSwitch(i, value)}
-                              trackColor={{ true: '#293C44' }}
-                              ios_backgroundColor="#293C44"
-                            />
-                            <Text style={styles.switchText}>YES</Text>
-                          </View>
-                        </View>,
-                      ];
-                    })
-                  : null}
               </View>
-              <Button
-                buttonStyle={styles.saveButton}
-                color="#FEFEFE"
-                onPress={() => {
-                  this.formValidation();
-                }}
-                title="Save"
-              />
+              <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
+              {this.addAnotherPreset()}
             </View>
           </ScrollView>
+          <Button
+            buttonStyle={styles.saveButton}
+            color="#FEFEFE"
+            onPress={() => {
+              this.saveInfo();
+            }}
+            title="Save"
+          />
         </View>
       </SafeAreaView>
     );
@@ -288,10 +360,15 @@ const styles = StyleSheet.create({
   },
   formLabel: {
     color: '#FEFEFE',
-    fontSize: 30,
+    fontSize: 28,
     fontFamily: 'Raleway-Bold',
+    marginTop: 30,
+  },
+  formDescription: {
     marginBottom: 20,
-    marginTop: 50,
+    fontFamily: 'Raleway-Light',
+    fontSize: 16,
+    color: 'white',
   },
   text: {
     margin: 20,
@@ -317,14 +394,45 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
   },
+  presetContainer: {
+    flex: 1,
+  },
+  presetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  addAnotherPreset: {
+    color: '#FEFEFE',
+    fontSize: 20,
+    fontFamily: 'Raleway-Bold',
+    marginVertical: 15,
+  },
+  address: {
+    color: 'white',
+    fontFamily: 'Raleway-Light',
+    fontSize: 18,
+  },
+  score: {
+    color: 'white',
+    fontFamily: 'Raleway-Light',
+    fontSize: 18,
+    textAlign: 'center',
+  },
   column: {
     width: '50%',
+  },
+  locationColumn: {
+    width: '60%',
+  },
+  productivityColumn: {
+    width: '35%',
+    marginHorizontal: 20,
   },
   columnHeader: {
     color: '#e5e5e5',
     fontFamily: 'Raleway-Bold',
     fontSize: 20,
-    marginBottom: 20,
   },
   columnText: {
     paddingTop: 5,
@@ -354,3 +462,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setUserData: object => {
+      dispatch(setUserData(object));
+    },
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SettingsScreen);
