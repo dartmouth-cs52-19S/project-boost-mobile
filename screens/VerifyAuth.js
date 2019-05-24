@@ -1,8 +1,19 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Image,
+  SafeAreaView,
+} from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 import * as api from '../datastore/api_requests';
+import loadingGIF from '../assets/gifs/loading-white.gif';
+import NavBar from '../components/NavBar';
 
 import { setUserData } from '../state/actions';
 
@@ -30,30 +41,43 @@ class VerifyAuth extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.contentContainer}>
-          <Text>Loading...</Text>
-
-          <TouchableOpacity
-            onPress={() => {
-              firebase.auth().signOut();
-            }}>
-            <Text style={{ marginTop: 50 }}>sign out</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={styles.safeArea}>
+        <NavBar backgroundColor="#388CAB" />
+        <View style={styles.container}>
+          <View style={styles.contentContainer}>
+            <Text style={styles.loading}>Loading...</Text>
+            <Image style={styles.loadingGIF} source={loadingGIF} />
+          </View>
         </View>
-      </ScrollView>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#388CAB',
+  },
   container: {
     flex: 1,
-    paddingTop: 100,
-    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#388CAB',
   },
   contentContainer: {
-    alignItems: 'center',
+    backgroundColor: '#388CAB',
+  },
+  loadingGIF: {
+    width: 95,
+    height: 95,
+    marginBottom: 50,
+  },
+  loading: {
+    fontFamily: 'Raleway-Light',
+    fontSize: 20,
+    color: '#e5e5e5',
+    marginLeft: 10,
   },
 });
 
