@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// const API_URL = 'https://project-boost.herokuapp.com/api';
-const API_URL = 'http://localhost:9090/api';
+const API_URL = 'https://project-boost.herokuapp.com/api';
 
 const getUserInfo = id => {
   return new Promise((resolve, reject) => {
