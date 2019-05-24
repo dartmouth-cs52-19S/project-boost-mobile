@@ -3,129 +3,45 @@ import { ScrollView, StyleSheet, Text, SafeAreaView, View, Switch, Alert } from 
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Button } from 'react-native-elements';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import * as firebase from 'firebase';
+import { setUserData } from '../state/actions';
+// import console = require('console');
 
-// fake data that should look very similar to server data
-const fakeData = {
-  locationAlgorithmOutput: {
-    '44.308140 , -71.800171': [
-      {
-        startTime: '1234',
-        endTime: '5678',
-      },
-    ],
-    '41.148499 , -73.493698': [
-      {
-        startTime: '1324',
-        endTime: '9876',
-      },
-      {
-        startTime: '1234',
-        endTime: '4321',
-      },
-    ],
-  },
-};
-
-export default class ProvideInitialInfo extends React.Component {
+class ProvideInitialInfo extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       // home location info
-      homeLocation: null,
-      homeLocationLatLong: [],
-      locationLoaded: false, // is backend location history fully processed (including Google reverse Geocoding)
-      locationHistory: null, // Object with updated location info (address, productivity score, etc.)
+      homeLocation: this.props.userData.homeLocation
+        ? this.props.userData.homeLocation
+        : 'Please Enter A Home Location',
+      frequentLocations: Object,
+      homeLocationDropdown: 'auto',
+      locationNameToToggle: '',
+      locationProductivityToToggle: false,
     };
   }
 
   componentDidMount = () => {
-    this.getLocationHistory();
+    this.getFrequentLocations();
   };
 
   static navigationOptions = {
     header: null,
   };
 
-  getLocationHistory = () => {
-    const locations = [];
-    // For now parsing fake data defined above and adding productivity score, which by default is 0
-    Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
-      locations.push({
-        coords: key,
-        times: fakeData.locationAlgorithmOutput[key],
-        productivity: 0,
-      });
-    });
-    // Sort fake data by most frequently visited locations
-    if (locations.length > 1) {
-      locations.sort(function(a, b) {
-        if (a.times.length === b.times.length) return 0;
-        if (a.times.length > b.times.length) return -1;
-        if (a.times.length < b.times.length) return 1;
-      });
-    }
-    // create list of promises, which if successful should just be a list of addresses
-    let promises = [];
-    locations.map(value => {
-      promises.push(
-        new Promise((resolve, reject) => {
-          // getAddress does the google maps reverse geocoding api call to get address
-          this.getAddress(value.coords)
-            .then(address => {
-              resolve(address);
-            })
-            .catch(error => reject(error));
-        })
-      );
-    });
-
-    // promises.all waits checks to make sure all google maps async calls complete successfully
-    Promise.all(promises)
-      .then(elements => {
-        elements.forEach((element, i) => {
-          const key = `switch${i}`; // each location needs a unique switch state specifiec (ex: switch0, switch1, etc.)
-          locations[i]['address'] = element; // add address attribute to location object
-          this.setState({ [key]: false }); // by default, set switch to false (unproductive)
-        });
-        this.setState({
-          locationHistory: locations, // store updated location info
-          locationLoaded: true, // tell app location data parsing is complete
-          addresses: elements, // for rendering switches in render function (see map function call in line 223)
-        });
-      })
-      .catch(error => Alert.alert(error));
-  };
-
-  toggleSwitch = (index, value) => {
-    const key = `switch${index}`;
-    this.setState(prevState => {
-      // update location object with new productivity score
-      const locations = prevState.locationHistory.map((location, j) => {
-        if (index === j) location.productivity = value ? 5 : 0;
-        return location;
-      });
-      // console.log(locations); // 2D
-      // update specified switch state
-      return {
-        [key]: value,
-        locationHistory: locations,
-      };
-    });
-  };
-
-  // makes google maps reverse geocoding api call with lat long input, returns an address if promise is resolved
-  getAddress = coords => {
-    const coordList = coords.split(' , ');
+  // get frequentLocations to data from firebase
+  getFrequentLocations = () => {
     return new Promise((resolve, reject) => {
       axios
         .get(
           // eslint-disable-next-line prettier/prettier
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordList[0]},${coordList[1]}&key=AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk`
+            `/api/mostFrequentlyVisitedLocationsRanked?uid=${firebase.auth().currentUser.uid}=&numberOfItems=${10}`
         )
-        // FOR THOMAS – placeid = result.data.results[0].place_id
         .then(result => {
-          resolve(result.data.results[0].formatted_address);
+          resolve(this.setState({ frequentLocations: result }));
         })
         .catch(error => {
           reject(error);
@@ -135,14 +51,111 @@ export default class ProvideInitialInfo extends React.Component {
 
   // checks if home location is provided
   formValidation = () => {
-    if (this.state.homeLocation === null) {
-      this.props.navigation.navigate('App');
-      // Alert.alert("You're almost there!", 'Please specify a home location');
+    if (this.state.homeLocation === 'Please Enter A Home Location') {
+      Alert.alert("You're almost there!", 'Please specify a home location');
     } else {
+      const frequentLocations = this.state.frequentLocations;
+      if ((this.state.locationNameToToggle = true)) {
+        frequentLocations[
+          this.state.locationNameToToggle
+        ] = this.state.locationProductivityToToggle;
+      }
       this.props.navigation.navigate('App');
-      // console.log(this.state.homeLocation); // 2d
-      // console.log(this.state.homeLocationLatLong); // 2d
     }
+  };
+
+  renderHomeLocationInput = () => {
+    return (
+      <GooglePlacesAutocomplete
+        placeholder={this.state.homeLocation}
+        placeholderTextColor="#BCC4C7"
+        minLength={2} // minimum length of text to search
+        autoFocus={false}
+        returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+        keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
+        listViewDisplayed={this.state.homeLocationDropdown} // true/false/undefined
+        fetchDetails
+        renderDescription={row => row.description} // custom description render
+        onPress={(data, details = null) => {
+          // 'details' is provided when fetchDetails = true
+          const latLong = [details.geometry.location.lat, details.geometry.location.lng];
+          this.setState({
+            homeLocation: data.description,
+            homeLocationLatLong: latLong,
+            homeLocationDropdown: 'false',
+          });
+        }}
+        getDefaultValue={() => ''}
+        query={{
+          // available options: https://developers.google.com/places/web-service/autocomplete
+          key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
+          language: 'en', // language of the results
+          types: 'address', // default: 'geocode'
+        }}
+        styles={{
+          description: {
+            fontWeight: 'bold',
+            color: '#293C44',
+          },
+          textInputContainer: {
+            width: '100%',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderTopWidth: 0,
+            borderBottomWidth: 0,
+            outline: 'none',
+          },
+          textInput: {
+            marginLeft: 0,
+            marginRight: 0,
+            height: 38,
+            color: '#FEFEFE',
+            fontFamily: 'Raleway-Light',
+            backgroundColor: '#388CAB',
+            borderBottomColor: '#FEFEFE',
+            borderBottomWidth: 0.25,
+            fontSize: 20,
+            paddingBottom: 5,
+            paddingLeft: 5,
+          },
+          poweredContainer: {
+            display: 'none',
+          },
+          row: {
+            color: '#FEFEFE',
+          },
+        }}
+        // currentLocation // Will add a 'Current location' button at the top of the predefined places list
+        currentLocationLabel="Current location"
+        nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+        GooglePlacesDetailsQuery={{
+          // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
+          fields: 'formatted_address',
+        }}
+        GooglePlacesSearchQuery={{
+          // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+          rankby: 'prominence',
+        }}
+        debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+      />
+    );
+  };
+
+  renderFrequentLocationInput = () => {
+    return Object.keys(this.state.frequentLocations).map((location, index) => {
+      return (
+        <View style={styles.presetRow} key={index}>
+          <View style={styles.locationColumn}>
+            <Text style={styles.address}>{location}</Text>
+          </View>
+          <View style={styles.productivityColumn} />
+          <View>
+            <Text>YES</Text>
+            <Switch />
+            <Text>NO</Text>
+          </View>
+        </View>
+      );
+    });
   };
 
   render() {
@@ -151,77 +164,11 @@ export default class ProvideInitialInfo extends React.Component {
         <ScrollView style={styles.container}>
           <Text style={styles.heading}>Lets Refine our Data on Your Productivity</Text>
           <Text style={styles.formLabel}>Enter Your Home Location:</Text>
-          <GooglePlacesAutocomplete
-            placeholder="Your Home Location"
-            placeholderTextColor="#BCC4C7"
-            minLength={2} // minimum length of text to search
-            autoFocus={false}
-            returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-            keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-            listViewDisplayed="auto" // true/false/undefined
-            fetchDetails
-            renderDescription={row => row.description} // custom description render
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              const latLong = [details.geometry.location.lat, details.geometry.location.lng];
-              this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
-            }}
-            getDefaultValue={() => ''}
-            query={{
-              // available options: https://developers.google.com/places/web-service/autocomplete
-              key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-              language: 'en', // language of the results
-              types: 'address', // default: 'geocode'
-            }}
-            styles={{
-              description: {
-                fontWeight: 'bold',
-                color: '#293C44',
-              },
-              textInputContainer: {
-                width: '100%',
-                backgroundColor: 'rgba(0,0,0,0)',
-                borderTopWidth: 0,
-                borderBottomWidth: 0,
-                outline: 'none',
-              },
-              textInput: {
-                marginLeft: 0,
-                marginRight: 0,
-                height: 38,
-                color: '#FEFEFE',
-                fontFamily: 'Raleway-Light',
-                backgroundColor: '#388CAB',
-                borderBottomColor: '#FEFEFE',
-                borderBottomWidth: 0.25,
-                fontSize: 20,
-                paddingBottom: 5,
-                paddingLeft: 5,
-              },
-              poweredContainer: {
-                display: 'none',
-              },
-              row: {
-                color: '#FEFEFE',
-              },
-            }}
-            // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-            currentLocationLabel="Current location"
-            nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-            GooglePlacesDetailsQuery={{
-              // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-              fields: 'formatted_address',
-            }}
-            GooglePlacesSearchQuery={{
-              // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-              rankby: 'prominence',
-            }}
-            debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-          />
-          <Text style={styles.formLabel}>
-            We've Guessed Where You're Productive and Unproductive:
+          {this.renderHomeLocationInput()}
+          <Text style={styles.formLabel}>We've Found Your Top 10 Most Visited Places:</Text>
+          <Text style={styles.formSubheading}>
+            Tell Us Whether You're Productive or Unproductive at These Locations:
           </Text>
-          <Text style={styles.formSubheading}>Change What We Got Wrong</Text>
           <View style={styles.columnContainer}>
             <View style={styles.column}>
               <Text style={styles.columnHeader}>Location:</Text>
@@ -229,29 +176,7 @@ export default class ProvideInitialInfo extends React.Component {
             <View style={styles.column}>
               <Text style={styles.columnHeader}>I am Productive:</Text>
             </View>
-            {this.state.locationLoaded
-              ? this.state.addresses.map((address, i) => {
-                  const key = `switch${i}`;
-                  return [
-                    <View key={i} style={styles.column}>
-                      <Text style={styles.columnText}>{address}</Text>
-                    </View>,
-                    <View key={i + 0.5} style={styles.column}>
-                      <View style={styles.switchContainer}>
-                        <Text style={styles.switchText}>NO</Text>
-                        <Switch
-                          style={styles.switch}
-                          value={this.state[key]}
-                          onValueChange={value => this.toggleSwitch(i, value)}
-                          trackColor={{ true: '#388CAB' }}
-                          ios_backgroundColor="#388CAB"
-                        />
-                        <Text style={styles.switchText}>YES</Text>
-                      </View>
-                    </View>,
-                  ];
-                })
-              : null}
+            {this.renderFrequentLocationInput()}
           </View>
           <Button
             buttonStyle={styles.submitButton}
@@ -350,3 +275,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setUserData: object => {
+      dispatch(setUserData(object));
+    },
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProvideInitialInfo);
