@@ -1,8 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
+import { red } from 'ansi-colors';
 import * as api from '../datastore/api_requests';
+import loadingGIF from '../assets/gifs/loading.gif';
 
 import { setUserData } from '../state/actions';
 
@@ -16,10 +18,10 @@ class VerifyAuth extends React.Component {
       .getUserInfo(firebase.auth().currentUser.uid)
       .then(response => {
         if (!Object.keys(response).includes('homeLocation')) {
-          this.props.setUserData(response);
-          this.props.navigation.navigate('ProvideInitialInfo');
-        } else {
-          this.props.navigation.navigate('App');
+          //   this.props.setUserData(response);
+          //   this.props.navigation.navigate('ProvideInitialInfo');
+          // } else {
+          //   this.props.navigation.navigate('App');
         }
       })
       .catch(err => {
@@ -31,13 +33,15 @@ class VerifyAuth extends React.Component {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.contentContainer}>
-          <Text>Loading...</Text>
+          {/* <View styles={styles.loadingContainer}> */}
+          <Image styles={styles.loagingGIF} source={loadingGIF} alt="Loading..." />
+          {/* </View> */}
 
           <TouchableOpacity
             onPress={() => {
               firebase.auth().signOut();
             }}>
-            <Text style={{ marginTop: 50 }}>sign out</Text>
+            <Text style={{ marginTop: 200 }}>sign out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -46,12 +50,15 @@ class VerifyAuth extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 100,
-    backgroundColor: '#fff',
-  },
   contentContainer: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContainer: {},
+  loadingGIF: {
+    justifyContent: 'center',
+    marginTop: 50,
     alignItems: 'center',
   },
 });
