@@ -15,13 +15,19 @@ class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    const latLong = this.props.userData.latlongHomeLocation.split(',');
+
+    latLong.forEach((obj, index) => {
+      latLong[index] = obj.replace(/^\s+|\s+$/gm, '');
+    });
+
     this.state = {
       // home location info
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
         : 'Enter Your Home Addresss',
       presetProductiveLocations: this.props.userData.presetProductiveLocations,
-      homeLocationLatLong: [],
+      homeLocationLatLong: latLong.length > 0 ? latLong : [],
       locationNameToAdd: '',
       locationProductivityToAdd: 0,
       homeLocationDropdown: 'auto',

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://project-boost.herokuapp.com/api';
+// const API_URL = 'https://project-boost.herokuapp.com/api';
+const API_URL = 'http://localhost:9090/api';
 
 const getUserInfo = id => {
   return new Promise((resolve, reject) => {
@@ -26,7 +27,10 @@ const updateUserSettings = (
       .put(`${API_URL}/updateUserSettings`, {
         userID,
         homeLocation,
-        homeLocationLatLong,
+        homeLocationLatLong:
+          homeLocationLatLong.length > 0
+            ? `${homeLocationLatLong[0]} , ${homeLocationLatLong[1]}`
+            : '',
         presetProductiveLocations,
       })
       .then(response => {
