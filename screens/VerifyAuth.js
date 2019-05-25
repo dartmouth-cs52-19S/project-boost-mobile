@@ -15,7 +15,7 @@ import * as api from '../datastore/api_requests';
 import loadingGIF from '../assets/gifs/loading-white.gif';
 import NavBar from '../components/NavBar';
 
-import { setUserData } from '../state/actions';
+import { setUserData, setFrequentLocations } from '../state/actions';
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
@@ -24,20 +24,63 @@ class VerifyAuth extends React.Component {
 
   componentDidMount() {
     api
-      .getUserInfo(firebase.auth().currentUser.uid)
+      .getUserInfo(firebase.auth().currentUser.uid) // get user information
       .then(response => {
-        this.props.setUserData(response);
+        this.props.setUserData(response); // saving user information
 
-        if (!Object.keys(response).includes('homeLocation')) {
-          this.props.navigation.navigate('ProvideInitialInfo');
-        } else {
-          this.props.navigation.navigate('App');
-        }
+        // get the frequent locations about that specific user
+        api.getFrequentLocations(firebase.auth().currentUser.uid, 15).then(response => {
+          this.props.setFrequentLocations(response);
+          // if there isnt a home location, then navigate to initial info screen
+          if (!Object.keys(response).includes('homeLocation')) {
+            this.props.navigation.navigate('ProvideInitialInfo');
+            // else go to App
+          } else {
+            this.props.navigation.navigate('ProvideInitialInfo'); //App
+          }
+        });
       })
       .catch(err => {
         Alert.alert(err.message);
       });
   }
+
+  saveInfo = () => {
+    const presetProductiveLocations = this.state.presetProductiveLocations;
+
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      presetProductiveLocations[
+        this.state.locationNameToAdd
+      ] = this.state.locationProductivityToAdd;
+    }
+
+    this.setState(
+      {
+        presetProductiveLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
+      },
+      () => {
+        api
+          .updateUserSettings(
+            firebase.auth().currentUser.uid,
+            this.state.homeLocation,
+            this.state.homeLocationLatLong,
+            this.state.presetProductiveLocations
+          )
+          .then(() => {
+            api
+              .getUserInfo(firebase.auth().currentUser.uid)
+              .then(response => {
+                this.props.setUserData(response);
+              })
+              .catch(err => {
+                Alert.alert(err.message);
+              });
+          });
+      }
+    );
+  };
 
   render() {
     return (
@@ -85,6 +128,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setUserData: object => {
       dispatch(setUserData(object));
+    },
+    setFrequentLocations: object => {
+      dispatch(setFrequentLocations(object));
     },
   };
 };
