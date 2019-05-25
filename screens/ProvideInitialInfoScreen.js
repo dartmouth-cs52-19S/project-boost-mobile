@@ -215,7 +215,7 @@ class ProvideInitialInfoScreen extends React.Component {
           <View style={styles.locationColumn}>
             <GooglePlacesAutocomplete
               placeholder={this.state.locationNameToAdd}
-              placeholderTextColor="#BCC4C7"
+              placeholderTextColor=""
               minLength={2} // minimum length of text to search
               autoFocus={false}
               returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
@@ -325,7 +325,17 @@ class ProvideInitialInfoScreen extends React.Component {
                 <Text style={styles.formLabel}>
                   We've Guessed Where You're Productive and Unproductive
                 </Text>
+
                 {this.addAnotherPreset()}
+                <Button
+                  buttonStyle={styles.saveButton}
+                  color="#FEFEFE"
+                  onPress={() => {
+                    this.saveInfo();
+                  }}
+                  title="Save"
+                />
+
                 <View
                   style={{
                     flex: 1,
@@ -342,14 +352,17 @@ class ProvideInitialInfoScreen extends React.Component {
               <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
             </View>
           </ScrollView>
+          {/* <View style={styles.buttonContainer}> */}
+
           <Button
-            buttonStyle={styles.saveButton}
+            buttonStyle={styles.nextButton}
             color="#FEFEFE"
             onPress={() => {
               this.saveInfo();
             }}
-            title="Save"
+            title="Next"
           />
+          {/* </View> */}
         </View>
       </SafeAreaView>
     );
@@ -471,7 +484,21 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: DARK_BLUE,
+    paddingHorizontal: 20,
+    marginLeft: 10,
+    margin: 20,
+    padding: 10,
+  },
+  nextButton: {
+    backgroundColor: DARK_BLUE,
+    paddingHorizontal: 40,
     margin: 40,
+    padding: 10,
+  },
+
+  addLocation: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 
