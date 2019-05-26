@@ -189,7 +189,7 @@ class ProvideInitialInfoScreen extends React.Component {
             flex: 1,
             flexDirection: 'row',
             justifyContent: 'space-between',
-            paddingHorizontal: 10,
+            paddingRight: 10,
             paddingBottom: 12,
           }}
           key={index}>
@@ -337,8 +337,8 @@ class ProvideInitialInfoScreen extends React.Component {
               {this.renderHomeLocationInput()}
               <Text style={styles.formLabel}>Frequent Locations:</Text>
               <Text style={styles.formDescription}>
-                Please provide a productivity estimate for these locations so we can learn more
-                about your habits. You can also add locations in the text field below.
+                Please estimate your productivity at each location. You can also add locations in
+                the text field below.
               </Text>
               <View style={styles.presetRow}>
                 <View style={styles.locationColumn}>
@@ -451,6 +451,9 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   address: {
+    paddingLeft: 0,
+    marginLeft: 0,
+    width: 175,
     color: 'white',
     fontFamily: 'Raleway-Light',
     fontSize: 18,
