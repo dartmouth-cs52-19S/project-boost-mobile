@@ -3,7 +3,7 @@ const initialState = [];
 const LocationReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'setLocationStars':
-      return state.filter((item, index) => index !== action.value.index);
+      // return state.filter((item, index) => index !== action.value.index);
       return state.map((location, index) => {
         if (index === action.value.index) {
           return {

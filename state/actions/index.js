@@ -19,11 +19,4 @@ const setFrequentLocations = frequentLocations => {
   };
 };
 
-const setLocationStars = ({ timesObserved, index }) => {
-  return {
-    type: 'setLocationStars',
-    value: { timesObserved, index },
-  };
-};
-
-export { setUserID, setUserData, setFrequentLocations, setLocationStars };
+export { setUserID, setUserData, setFrequentLocations };

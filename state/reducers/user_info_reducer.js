@@ -1,6 +1,7 @@
 const initialState = {
   uid: null,
   userData: null,
+  frequentLocations: [],
 };
 
 const UserInfoReducer = (state = initialState, action) => {
@@ -10,6 +11,9 @@ const UserInfoReducer = (state = initialState, action) => {
 
     case 'setUserData':
       return { ...state, userData: action.value };
+
+    case 'setFrequentLocations':
+      return { ...state, frequentLocations: action.value };
 
     default:
       return state;

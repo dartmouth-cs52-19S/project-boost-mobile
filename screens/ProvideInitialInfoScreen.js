@@ -7,7 +7,7 @@ import StarRating from 'react-native-star-rating';
 import axios from 'axios';
 import * as firebase from 'firebase';
 import * as api from '../datastore/api_requests';
-import { setUserData, setFrequentLocations, setLocationStars } from '../state/actions';
+import { setUserData } from '../state/actions';
 
 import NavBar from '../components/NavBar';
 
@@ -25,12 +25,18 @@ class ProvideInitialInfoScreen extends React.Component {
       latLong[index] = obj.replace(/^\s+|\s+$/gm, '');
     });
 
+    const frequentLocations = {};
+
+    this.props.frequentLocations.forEach(object => {
+      frequentLocations[object.address] = 0;
+    });
+
     this.state = {
       // home location info
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
         : 'Enter Your Home Address',
-      frequentLocations: this.props.userData.frequentLocations,
+      frequentLocations,
       homeLocationLatLong: latLong.length > 0 ? latLong : [],
       locationNameToAdd: '',
       locationProductivityToAdd: 0,
@@ -63,47 +69,40 @@ class ProvideInitialInfoScreen extends React.Component {
 
   // checks if home location is provided
   formValidation = () => {
-    if (this.state.homeLocation === 'Enter Your Home Address') {
-      this.props.navigation.navigate('ProvideInitialInfo');
-      Alert.alert("You're almost there!", 'Please specify a home location');
-    } else {
-      this.props.navigation.navigate('App');
-    }
+    return (
+      this.state.homeLocation !== 'Enter Your Home Address' &&
+      this.state.homeLocation !== null &&
+      this.state.homeLocation !== undefined &&
+      this.state.homeLocation.length !== 0
+    );
   };
 
   saveInfo = () => {
-    console.log('At save info!');
-    const frequentLocations = this.props.frequentLocations;
-
-    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
-      frequentLocations.push({
-        address: this.state.locationNameToAdd,
-        timesObserved: this.state.locationProductivityToAdd,
-      });
+    if (this.formValidation()) {
+      api
+        .updateUserSettings(
+          firebase.auth().currentUser.uid,
+          this.state.homeLocation,
+          this.state.homeLocationLatLong,
+          this.state.frequentLocations
+        )
+        .then(() => {
+          api
+            .getUserInfo(firebase.auth().currentUser.uid)
+            .then(response => {
+              this.props.setUserData(response);
+              this.props.navigation.navigate('App');
+            })
+            .catch(error => {
+              Alert.alert(error.message);
+            });
+        })
+        .catch(error => {
+          Alert.alert(error.message);
+        });
+    } else {
+      Alert.alert("You're almost there!", 'Please specify a home location.');
     }
-
-    this.setState(
-      {
-        frequentLocations,
-        locationNameToAdd: '',
-        locationProductivityToAdd: 0,
-      },
-      () => {
-        api
-          .updateUserSettings(firebase.auth().currentUser.uid, this.props.frequentLocations)
-          .then(() => {
-            api
-              .getUserInfo(firebase.auth().currentUser.uid)
-              .then(response => {
-                console.log(response);
-                this.props.setFrequentLocations(response.frequentLocations);
-              })
-              .catch(err => {
-                Alert.alert(err.message);
-              });
-          });
-      }
-    );
   };
 
   renderHomeLocationInput = () => {
@@ -183,7 +182,7 @@ class ProvideInitialInfoScreen extends React.Component {
   };
 
   renderPresetRows = () => {
-    return this.props.frequentLocations.map((location, index) => {
+    return Object.keys(this.state.frequentLocations).map((address, index) => {
       return (
         <View
           style={{
@@ -194,8 +193,7 @@ class ProvideInitialInfoScreen extends React.Component {
             paddingBottom: 12,
           }}
           key={index}>
-          <Text style={styles.address}>{location.address}</Text>
-
+          <Text style={styles.address}>{address}</Text>
           <StarRating
             disabled={false}
             emptyStar={'ios-star-outline'}
@@ -203,10 +201,13 @@ class ProvideInitialInfoScreen extends React.Component {
             iconSet={'Ionicons'}
             maxStars={5}
             starSize={25}
-            rating={location.timesObserved}
-            selectedStar={timesObserved => {
-              this.props.setLocationStars({ timesObserved, index });
-              this.forceUpdate();
+            rating={this.state.frequentLocations[address]}
+            selectedStar={rating => {
+              const frequentLocations = this.state.frequentLocations;
+              frequentLocations[address] = rating;
+              this.setState({
+                frequentLocations,
+              });
             }}
             fullStarColor={WHITE}
             emptyStarColor={WHITE}
@@ -220,7 +221,7 @@ class ProvideInitialInfoScreen extends React.Component {
     return (
       <View>
         <Text style={styles.addAnotherPreset}>Add Another Location:</Text>
-        <View>
+        <View style={styles.presetRow}>
           <View style={styles.locationColumn}>
             <GooglePlacesAutocomplete
               placeholder={this.state.locationNameToAdd}
@@ -255,7 +256,7 @@ class ProvideInitialInfoScreen extends React.Component {
                 textInputContainer: {
                   padding: 0,
                   margin: 0,
-                  width: 250,
+                  width: 225,
                   backgroundColor: 'rgba(0,0,0,0)',
                   borderTopWidth: 0,
                   borderBottomWidth: 0,
@@ -303,7 +304,6 @@ class ProvideInitialInfoScreen extends React.Component {
               rating={this.state.locationProductivityToAdd}
               selectedStar={rating => {
                 this.setState({ locationProductivityToAdd: rating });
-                setFrequentLocations(rating);
               }}
               fullStarColor={WHITE}
               emptyStarColor={WHITE}
@@ -314,8 +314,18 @@ class ProvideInitialInfoScreen extends React.Component {
     );
   };
 
+  addLocation = () => {
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      const frequentLocations = this.state.frequentLocations;
+      frequentLocations[this.state.locationNameToAdd] = this.state.locationProductivityToAdd;
+
+      this.setState({
+        frequentLocations,
+      });
+    }
+  };
+
   render() {
-    console.log('render', this.props.frequentLocations);
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
@@ -325,48 +335,38 @@ class ProvideInitialInfoScreen extends React.Component {
               <Text style={styles.title}>Let's Refine Our Data On Your Productivity</Text>
               <Text style={styles.formLabel}>Enter Your Home Location:</Text>
               {this.renderHomeLocationInput()}
-              <View style={{ flex: 1, flexDirection: 'column' }}>
-                <Text style={styles.formLabel}>
-                  We've Guessed Where You're Productive and Unproductive
-                </Text>
-
-                {this.addAnotherPreset()}
-                {/* <Button
-                  buttonStyle={styles.saveButton}
-                  color="#FEFEFE"
-                  onPress={() => {
-                    this.saveInfo();
-                  }}
-                  title="Save"
-                /> */}
-
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    padding: 10,
-                    color: DARK_BLUE,
-                  }}>
-                  <Text style={styles.columnHeader}>Location</Text>
-                  <Text style={styles.columnHeader}>Productivity</Text>
+              <Text style={styles.formLabel}>Frequent Locations:</Text>
+              <Text style={styles.formDescription}>
+                Please provide a productivity estimate for these locations so we can learn more
+                about your habits. You can also add locations in the text field below.
+              </Text>
+              <View style={styles.presetRow}>
+                <View style={styles.locationColumn}>
+                  <Text style={styles.columnHeader}>Location:</Text>
+                </View>
+                <View style={styles.productivityColumn}>
+                  <Text style={styles.columnHeader}>Productivity:</Text>
                 </View>
               </View>
-
               <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
+              {this.addAnotherPreset()}
+
+              <Button
+                buttonStyle={styles.nextButton}
+                color="#FEFEFE"
+                onPress={this.addLocation}
+                title="Add Location"
+              />
             </View>
           </ScrollView>
-          {/* <View style={styles.buttonContainer}> */}
-
           <Button
             buttonStyle={styles.nextButton}
             color="#FEFEFE"
             onPress={() => {
               this.saveInfo();
             }}
-            title="Next"
+            title="Save and Continue"
           />
-          {/* </View> */}
         </View>
       </SafeAreaView>
     );
@@ -374,9 +374,6 @@ class ProvideInitialInfoScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  test: {
-    backgroundColor: 'red',
-  },
   title: {
     color: WHITE,
     fontSize: 28,
@@ -451,16 +448,15 @@ const styles = StyleSheet.create({
     color: WHITE,
     fontSize: 20,
     fontFamily: 'Raleway-Bold',
-    marginTop: 15,
+    marginVertical: 15,
   },
   address: {
-    width: 175,
-    color: WHITE,
+    color: 'white',
     fontFamily: 'Raleway-Light',
     fontSize: 18,
   },
   score: {
-    color: WHITE,
+    color: 'white',
     fontFamily: 'Raleway-Light',
     fontSize: 18,
     textAlign: 'center',
@@ -469,14 +465,14 @@ const styles = StyleSheet.create({
     width: '50%',
   },
   locationColumn: {
-    width: '100%',
+    width: '60%',
   },
   productivityColumn: {
     width: '35%',
     marginHorizontal: 20,
   },
   columnHeader: {
-    color: WHITE,
+    color: '#e5e5e5',
     fontFamily: 'Raleway-Bold',
     fontSize: 20,
   },
@@ -486,6 +482,27 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Raleway-Light',
   },
+  nextButton: {
+    backgroundColor: DARK_BLUE,
+    margin: 40,
+  },
+  switch: {
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+    borderWidth: 0.5,
+    borderColor: '#E5E5E5',
+    color: 'rgba(0,0,0,0)',
+  },
+  switchText: {
+    fontSize: 18,
+    color: '#293C44',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   saveButton: {
     backgroundColor: DARK_BLUE,
     paddingHorizontal: 20,
@@ -493,13 +510,6 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 10,
   },
-  nextButton: {
-    backgroundColor: DARK_BLUE,
-    paddingHorizontal: 40,
-    margin: 40,
-    padding: 10,
-  },
-
   addLocation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -509,7 +519,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     userData: state.user.userData,
-    frequentLocations: state.locations,
+    frequentLocations: state.user.frequentLocations,
   };
 };
 
@@ -518,9 +528,6 @@ const mapDispatchToProps = dispatch => {
   return {
     setUserData: object => {
       dispatch(setUserData(object));
-    },
-    setLocationStars: ({ timesObserved, index }) => {
-      dispatch(setLocationStars({ timesObserved, index }));
     },
   };
 };

@@ -59,7 +59,6 @@ class SettingsScreen extends React.Component {
   };
 
   saveInfo = () => {
-    console.log('At save info!');
     const presetProductiveLocations = this.state.presetProductiveLocations;
 
     if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {

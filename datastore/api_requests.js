@@ -1,6 +1,4 @@
 import axios from 'axios';
-import * as firebase from 'firebase';
-// import console = require('console');
 
 const API_URL = 'https://project-boost.herokuapp.com/api';
 

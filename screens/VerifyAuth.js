@@ -30,7 +30,7 @@ class VerifyAuth extends React.Component {
 
         // get the frequent locations about that specific user
         api.getFrequentLocations(firebase.auth().currentUser.uid, 15).then(response => {
-          this.props.setFrequentLocations(response);
+          this.props.setFrequentLocations(response.output);
           // if there isnt a home location, then navigate to initial info screen
           if (!Object.keys(response).includes('homeLocation')) {
             this.props.navigation.navigate('ProvideInitialInfo');
