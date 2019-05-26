@@ -67,7 +67,6 @@ class ProvideInitialInfoScreen extends React.Component {
       this.props.navigation.navigate('ProvideInitialInfo');
       Alert.alert("You're almost there!", 'Please specify a home location');
     } else {
-      console.log(this.state.homeLocation);
       this.props.navigation.navigate('App');
     }
   };
@@ -332,14 +331,14 @@ class ProvideInitialInfoScreen extends React.Component {
                 </Text>
 
                 {this.addAnotherPreset()}
-                <Button
+                {/* <Button
                   buttonStyle={styles.saveButton}
                   color="#FEFEFE"
                   onPress={() => {
                     this.saveInfo();
                   }}
                   title="Save"
-                />
+                /> */}
 
                 <View
                   style={{
@@ -363,7 +362,7 @@ class ProvideInitialInfoScreen extends React.Component {
             buttonStyle={styles.nextButton}
             color="#FEFEFE"
             onPress={() => {
-              this.formValidation();
+              this.saveInfo();
             }}
             title="Next"
           />
