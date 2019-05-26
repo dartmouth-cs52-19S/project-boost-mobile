@@ -29,7 +29,7 @@ class ProvideInitialInfoScreen extends React.Component {
       // home location info
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
-        : 'Enter Your Home Addresss',
+        : 'Enter Your Home Address',
       frequentLocations: this.props.userData.frequentLocations,
       homeLocationLatLong: latLong.length > 0 ? latLong : [],
       locationNameToAdd: '',
@@ -59,6 +59,17 @@ class ProvideInitialInfoScreen extends React.Component {
           reject(error);
         });
     });
+  };
+
+  // checks if home location is provided
+  formValidation = () => {
+    if (this.state.homeLocation === 'Enter Your Home Address') {
+      this.props.navigation.navigate('ProvideInitialInfo');
+      Alert.alert("You're almost there!", 'Please specify a home location');
+    } else {
+      console.log(this.state.homeLocation);
+      this.props.navigation.navigate('App');
+    }
   };
 
   saveInfo = () => {
@@ -127,7 +138,7 @@ class ProvideInitialInfoScreen extends React.Component {
         styles={{
           description: {
             fontWeight: 'bold',
-            color: LIGHT_BLUE,
+            color: WHITE,
           },
           textInputContainer: {
             width: '100%',
@@ -184,9 +195,8 @@ class ProvideInitialInfoScreen extends React.Component {
             paddingBottom: 12,
           }}
           key={index}>
-          {/* <View style={styles.locationColumn}> */}
           <Text style={styles.address}>{location.address}</Text>
-          {/* </View> */}
+
           <StarRating
             disabled={false}
             emptyStar={'ios-star-outline'}
@@ -313,14 +323,9 @@ class ProvideInitialInfoScreen extends React.Component {
           <NavBar backgroundColor="#388CAB" />
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             <View style={styles.settingsContainer}>
-              <Text style={styles.title}>Let's Refine Out Data On Your Productivity</Text>
+              <Text style={styles.title}>Let's Refine Our Data On Your Productivity</Text>
               <Text style={styles.formLabel}>Enter Your Home Location:</Text>
               {this.renderHomeLocationInput()}
-
-              {/* <Text style={styles.formDescription}>
-                Whenever you visit these locations, we preset your productivity level with the value
-                below.
-              </Text> */}
               <View style={{ flex: 1, flexDirection: 'column' }}>
                 <Text style={styles.formLabel}>
                   We've Guessed Where You're Productive and Unproductive
@@ -358,7 +363,7 @@ class ProvideInitialInfoScreen extends React.Component {
             buttonStyle={styles.nextButton}
             color="#FEFEFE"
             onPress={() => {
-              this.saveInfo();
+              this.formValidation();
             }}
             title="Next"
           />

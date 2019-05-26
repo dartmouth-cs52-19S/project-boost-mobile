@@ -36,7 +36,7 @@ class VerifyAuth extends React.Component {
             this.props.navigation.navigate('ProvideInitialInfo');
             // else go to App
           } else {
-            this.props.navigation.navigate('ProvideInitialInfo'); //App
+            this.props.navigation.navigate('App'); //App
           }
         });
       })
