@@ -1,6 +1,5 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
@@ -97,11 +96,11 @@ class SettingsScreen extends React.Component {
             homeLocationDropdown: 'false',
           });
         }}
-        placeholderTextColor={'BCC4C7'}
+        placeholderTextColor={'#BCC4C7'}
         inputColor={'#BCC4C7'}
-        inputBackgroundColor={'#388CAB'}
+        inputBackgroundColor={'#293C44'}
         inputBorderBottomColor={'#BCC4C7'}
-        rowColor={'#388CAB'}
+        rowColor={'#293C44'}
       />
     );
   };
@@ -171,9 +170,9 @@ class SettingsScreen extends React.Component {
               }}
               placeholderTextColor={'BCC4C7'}
               inputColor={'#BCC4C7'}
-              inputBackgroundColor={'#388CAB'}
+              inputBackgroundColor={'#293C44'}
               inputBorderBottomColor={'#BCC4C7'}
-              rowColor={'#388CAB'}
+              rowColor={'#293C44'}
             />
           </View>
           <View style={styles.productivityColumn}>
