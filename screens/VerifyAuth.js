@@ -47,6 +47,8 @@ class VerifyAuth extends React.Component {
       })
     );
 
+    // TODO @faustino: make API call to get null productivity levels (push as promise to promises aray)
+
     // when all desired information has been received, redirect user
     Promise.all(promises)
       .then(result => {
