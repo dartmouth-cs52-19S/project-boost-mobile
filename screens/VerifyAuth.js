@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Image,
-  SafeAreaView,
-} from 'react-native';
+import { StyleSheet, View, Text, Alert, Image, SafeAreaView } from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 import * as api from '../datastore/api_requests';
@@ -23,62 +14,61 @@ class VerifyAuth extends React.Component {
   };
 
   componentDidMount() {
-    api
-      .getUserInfo(firebase.auth().currentUser.uid) // get user information
-      .then(response => {
-        this.props.setUserData(response); // saving user information
+    // holds promises for API requests
+    const promises = [];
 
-        // get the frequent locations about that specific user
-        api.getFrequentLocations(firebase.auth().currentUser.uid, 15).then(response => {
-          this.props.setFrequentLocations(response.output);
-          // if there isnt a home location, then navigate to initial info screen
-          if (!Object.keys(response).includes('homeLocation')) {
-            this.props.navigation.navigate('ProvideInitialInfo');
-            // else go to App
-          } else {
-            this.props.navigation.navigate('App'); //App
-          }
-        });
+    // get user information
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getUserInfo(firebase.auth().currentUser.uid) // get user information
+          .then(response => {
+            this.props.setUserData(response); // saving user information
+            resolve(response);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
       })
-      .catch(err => {
-        Alert.alert(err.message);
+    );
+
+    // get frequent locations
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getFrequentLocations(firebase.auth().currentUser.uid, 15) // get frequent locations
+          .then(response => {
+            this.props.setFrequentLocations(response.output); // saving frequent locations
+            resolve(response.output);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
+
+    // when all desired information has been received, redirect user
+    Promise.all(promises)
+      .then(result => {
+        // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
+        if (this.mustProvideMoreInformation(result[0])) {
+          this.props.navigation.navigate('ProvideInitialInfo');
+        } else {
+          this.props.navigation.navigate('App');
+        }
+      })
+      .catch(error => {
+        Alert.alert(error.message);
       });
   }
 
-  saveInfo = () => {
-    const presetProductiveLocations = this.state.presetProductiveLocations;
-
-    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
-      presetProductiveLocations[
-        this.state.locationNameToAdd
-      ] = this.state.locationProductivityToAdd;
-    }
-
-    this.setState(
-      {
-        presetProductiveLocations,
-        locationNameToAdd: '',
-        locationProductivityToAdd: 0,
-      },
-      () => {
-        api
-          .updateUserSettings(
-            firebase.auth().currentUser.uid,
-            this.state.homeLocation,
-            this.state.homeLocationLatLong,
-            this.state.presetProductiveLocations
-          )
-          .then(() => {
-            api
-              .getUserInfo(firebase.auth().currentUser.uid)
-              .then(response => {
-                this.props.setUserData(response);
-              })
-              .catch(err => {
-                Alert.alert(err.message);
-              });
-          });
-      }
+  // determine if user must provide more information before proceeding to app
+  mustProvideMoreInformation = userData => {
+    return (
+      !Object.keys(userData).includes('homeLocation') ||
+      userData.homeLocation === null ||
+      userData.homeLocation === undefined ||
+      userData.homeLocation.length === 0
     );
   };
 
@@ -124,6 +114,12 @@ const styles = StyleSheet.create({
   },
 });
 
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     setUserData: object => {
@@ -136,6 +132,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(VerifyAuth);
