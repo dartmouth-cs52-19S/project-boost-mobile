@@ -12,4 +12,11 @@ const setUserData = userData => {
   };
 };
 
-export { setUserID, setUserData };
+const setFrequentLocations = frequentLocations => {
+  return {
+    type: 'setFrequentLocations',
+    value: frequentLocations,
+  };
+};
+
+export { setUserID, setUserData, setFrequentLocations };

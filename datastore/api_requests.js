@@ -15,6 +15,21 @@ const getUserInfo = id => {
   });
 };
 
+const getFrequentLocations = (id, numberOfItems) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${API_URL}/mostFrequentlyVisitedLocationsRanked?uid=${'vSBrHUpwFZPqGIisDcBPS6cuLTx1'}&numberOfItems=${numberOfItems}`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
 const updateUserSettings = (
   userID,
   homeLocation,
@@ -41,4 +56,4 @@ const updateUserSettings = (
   });
 };
 
-export { getUserInfo, updateUserSettings };
+export { getUserInfo, getFrequentLocations, updateUserSettings };

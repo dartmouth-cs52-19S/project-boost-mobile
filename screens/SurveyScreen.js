@@ -155,7 +155,6 @@ class SurveyScreen extends React.Component {
           if (currIndex === i) location['productivity'] = rating;
           return location;
         });
-        console.log(locations);
         // update state
         return {
           locations,
