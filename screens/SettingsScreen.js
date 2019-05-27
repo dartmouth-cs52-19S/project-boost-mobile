@@ -4,18 +4,19 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
-import axios from 'axios';
 import * as firebase from 'firebase';
 import Swipeout from 'react-native-swipeout';
 import * as api from '../datastore/api_requests';
 import { setUserData } from '../state/actions';
 
 import NavBar from '../components/NavBar';
+import AddresSearch from '../components/AddressSearch';
 
 class SettingsScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    // split up lat long for local state
     const latLong = this.props.userData.latlongHomeLocation.split(',');
 
     latLong.forEach((obj, index) => {
@@ -26,13 +27,13 @@ class SettingsScreen extends React.Component {
       // home location info
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
-        : 'Enter Your Home Addresss',
-      presetProductiveLocations: this.props.userData.presetProductiveLocations,
-      homeLocationLatLong: latLong.length > 0 ? latLong : [],
-      locationNameToAdd: '',
-      locationProductivityToAdd: 0,
-      homeLocationDropdown: 'auto',
-      addLocationDropdown: 'auto',
+        : 'Enter Your Home Addresss', // home location info
+      presetProductiveLocations: this.props.userData.presetProductiveLocations, // locations where you've defined your avg productivity
+      homeLocationLatLong: latLong.length > 0 ? latLong : [], // lat long of home address
+      locationNameToAdd: '', // address field in item to add
+      locationProductivityToAdd: 0, // productivity field in item to add
+      homeLocationDropdown: 'auto', // whether or not to display dropdown for home location search
+      addLocationDropdown: 'auto', // whether or not to display dropdown for add location location search
     };
   }
 
@@ -40,34 +41,18 @@ class SettingsScreen extends React.Component {
     header: null,
   };
 
-  // makes google maps reverse geocoding api call with lat long input, returns an address if promise is resolved
-  getAddress = coords => {
-    const coordList = coords.split(' , ');
-    return new Promise((resolve, reject) => {
-      axios
-        .get(
-          // eslint-disable-next-line prettier/prettier
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordList[0]},${coordList[1]}&key=AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk`
-        )
-        // FOR THOMAS – placeid = result.data.results[0].place_id
-        .then(result => {
-          resolve(result.data.results[0].formatted_address);
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
-  };
-
+  // save user info
   saveInfo = () => {
     const presetProductiveLocations = this.state.presetProductiveLocations;
 
+    // add item to preset productive locations if user entered something
     if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
       presetProductiveLocations[
         this.state.locationNameToAdd
       ] = this.state.locationProductivityToAdd;
     }
 
+    // set state, then call API to update settings
     this.setState(
       {
         presetProductiveLocations,
@@ -75,6 +60,7 @@ class SettingsScreen extends React.Component {
         locationProductivityToAdd: 0,
       },
       () => {
+        // push changes
         api
           .updateUserSettings(
             firebase.auth().currentUser.uid,
@@ -83,6 +69,7 @@ class SettingsScreen extends React.Component {
             this.state.presetProductiveLocations
           )
           .then(() => {
+            // retrieve updates
             api
               .getUserInfo(firebase.auth().currentUser.uid)
               .then(response => {
@@ -96,20 +83,13 @@ class SettingsScreen extends React.Component {
     );
   };
 
+  // user's ability to enter their home location
   renderHomeLocationInput = () => {
     return (
-      <GooglePlacesAutocomplete
+      <AddresSearch
         placeholder={this.state.homeLocation}
-        placeholderTextColor="#BCC4C7"
-        minLength={2} // minimum length of text to search
-        autoFocus={false}
-        returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-        keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-        listViewDisplayed={this.state.homeLocationDropdown} // true/false/undefined
-        fetchDetails
-        renderDescription={row => row.description} // custom description render
-        onPress={(data, details = null) => {
-          // 'details' is provided when fetchDetails = true
+        listViewDisplayed={this.state.homeLocationDropdown}
+        handlePress={(data, details) => {
           const latLong = [details.geometry.location.lat, details.geometry.location.lng];
           this.setState({
             homeLocation: data.description,
@@ -117,63 +97,18 @@ class SettingsScreen extends React.Component {
             homeLocationDropdown: 'false',
           });
         }}
-        getDefaultValue={() => ''}
-        query={{
-          // available options: https://developers.google.com/places/web-service/autocomplete
-          key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-          language: 'en', // language of the results
-          types: 'address', // default: 'geocode'
-        }}
-        styles={{
-          description: {
-            fontWeight: 'bold',
-            color: '#388CAB',
-          },
-          textInputContainer: {
-            width: '100%',
-            backgroundColor: 'rgba(0,0,0,0)',
-            borderTopWidth: 0,
-            borderBottomWidth: 0,
-            outline: 'none',
-          },
-          textInput: {
-            marginLeft: 0,
-            marginRight: 0,
-            height: 38,
-            color: '#FEFEFE',
-            fontFamily: 'Raleway-Light',
-            backgroundColor: '#293C44',
-            borderBottomColor: '#FEFEFE',
-            borderBottomWidth: 0.25,
-            fontSize: 20,
-            paddingBottom: 5,
-            paddingLeft: 5,
-          },
-          poweredContainer: {
-            display: 'none',
-          },
-          row: {
-            color: '#FEFEFE',
-          },
-        }}
-        // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-        currentLocationLabel="Current location"
-        nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-        GooglePlacesDetailsQuery={{
-          // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-          fields: 'formatted_address',
-        }}
-        GooglePlacesSearchQuery={{
-          // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-          rankby: 'prominence',
-        }}
-        debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+        placeholderTextColor={'BCC4C7'}
+        inputColor={'#BCC4C7'}
+        inputBackgroundColor={'#388CAB'}
+        inputBorderBottomColor={'#BCC4C7'}
+        rowColor={'#388CAB'}
       />
     );
   };
 
   renderPresetRows = () => {
     return Object.keys(this.state.presetProductiveLocations).map((location, index) => {
+      // define buttons for swipe
       const swipeBtns = [
         {
           text: 'Delete',
@@ -186,6 +121,7 @@ class SettingsScreen extends React.Component {
         },
       ];
 
+      // return row
       return (
         <Swipeout right={swipeBtns} autoClose backgroundColor="transparent" key={index}>
           <View style={styles.presetRow}>
@@ -224,74 +160,20 @@ class SettingsScreen extends React.Component {
         <Text style={styles.addAnotherPreset}>Add Another Preset Location:</Text>
         <View style={styles.presetRow}>
           <View style={styles.locationColumn}>
-            <GooglePlacesAutocomplete
+            <AddresSearch
               placeholder={this.state.locationNameToAdd}
-              placeholderTextColor="#BCC4C7"
-              minLength={2} // minimum length of text to search
-              autoFocus={false}
-              returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-              keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-              listViewDisplayed={this.state.addLocationDropdown} // true/false/undefined
-              fetchDetails
-              renderDescription={row => row.description} // custom description render
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
+              listViewDisplayed={this.state.addLocationDropdown}
+              handlePress={(data, details) => {
                 this.setState({
                   locationNameToAdd: data.description,
                   addLocationDropdown: 'false',
                 });
               }}
-              getDefaultValue={() => ''}
-              query={{
-                // available options: https://developers.google.com/places/web-service/autocomplete
-                key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-                language: 'en', // language of the results
-                types: 'address', // default: 'geocode'
-              }}
-              styles={{
-                description: {
-                  fontWeight: 'bold',
-                  color: '#388CAB',
-                },
-                textInputContainer: {
-                  width: '100%',
-                  backgroundColor: 'rgba(0,0,0,0)',
-                  borderTopWidth: 0,
-                  borderBottomWidth: 0,
-                  outline: 'none',
-                },
-                textInput: {
-                  marginLeft: 0,
-                  marginRight: 0,
-                  height: 38,
-                  color: '#FEFEFE',
-                  fontFamily: 'Raleway-Light',
-                  backgroundColor: '#293C44',
-                  borderBottomColor: '#FEFEFE',
-                  borderBottomWidth: 0.25,
-                  fontSize: 20,
-                  paddingBottom: 5,
-                  paddingLeft: 5,
-                },
-                poweredContainer: {
-                  display: 'none',
-                },
-                row: {
-                  color: '#FEFEFE',
-                },
-              }}
-              // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-              currentLocationLabel="Current location"
-              nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-              GooglePlacesDetailsQuery={{
-                // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-                fields: 'formatted_address',
-              }}
-              GooglePlacesSearchQuery={{
-                // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-                rankby: 'prominence',
-              }}
-              debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+              placeholderTextColor={'BCC4C7'}
+              inputColor={'#BCC4C7'}
+              inputBackgroundColor={'#388CAB'}
+              inputBorderBottomColor={'#BCC4C7'}
+              rowColor={'#388CAB'}
             />
           </View>
           <View style={styles.productivityColumn}>
