@@ -2,6 +2,9 @@ const initialState = {
   uid: null,
   userData: null,
   frequentLocations: [],
+  mostProductiveDays: {},
+  leastProductiveDays: {},
+  mostProductiveLocations: [],
 };
 
 const UserInfoReducer = (state = initialState, action) => {
@@ -14,6 +17,15 @@ const UserInfoReducer = (state = initialState, action) => {
 
     case 'setFrequentLocations':
       return { ...state, frequentLocations: action.value };
+
+    case 'setMostProductiveDays':
+      return { ...state, mostProductiveDays: action.value };
+
+    case 'setLeastProductiveDays':
+      return { ...state, leastProductiveDays: action.value };
+
+    case 'setMostProductiveLocations':
+      return { ...state, mostProductiveLocations: action.value };
 
     default:
       return state;

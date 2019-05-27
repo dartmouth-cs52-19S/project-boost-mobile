@@ -19,4 +19,32 @@ const setFrequentLocations = frequentLocations => {
   };
 };
 
-export { setUserID, setUserData, setFrequentLocations };
+const setMostProductiveDays = days => {
+  return {
+    type: 'setMostProductiveDays',
+    value: days,
+  };
+};
+
+const setLeastProductiveDays = days => {
+  return {
+    type: 'setLeastProductiveDays',
+    value: days,
+  };
+};
+
+const setMostProductiveLocations = locations => {
+  return {
+    type: 'setMostProductiveLocations',
+    value: locations,
+  };
+};
+
+export {
+  setUserID,
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+};

@@ -6,7 +6,13 @@ import * as api from '../datastore/api_requests';
 import loadingGIF from '../assets/gifs/loading-white.gif';
 import NavBar from '../components/NavBar';
 
-import { setUserData, setFrequentLocations } from '../state/actions';
+import {
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+} from '../state/actions';
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
@@ -40,6 +46,51 @@ class VerifyAuth extends React.Component {
           .then(response => {
             this.props.setFrequentLocations(response.output); // saving frequent locations
             resolve(response.output);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
+
+    // get most productive days
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getMostProductiveDays(firebase.auth().currentUser.uid)
+          .then(response => {
+            this.props.setMostProductiveDays(response);
+            resolve(response);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
+
+    // get least productive days
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getLeastProductiveDays(firebase.auth().currentUser.uid)
+          .then(response => {
+            this.props.setLeastProductiveDays(response);
+            resolve(response);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
+
+    // set most productive locations
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getMostProductiveLocations(firebase.auth().currentUser.uid)
+          .then(response => {
+            this.props.setMostProductiveLocations(response);
+            resolve(response);
           })
           .catch(error => {
             Alert.alert(error.message);
@@ -129,6 +180,15 @@ const mapDispatchToProps = dispatch => {
     },
     setFrequentLocations: object => {
       dispatch(setFrequentLocations(object));
+    },
+    setMostProductiveDays: object => {
+      dispatch(setMostProductiveDays(object));
+    },
+    setLeastProductiveDays: object => {
+      dispatch(setLeastProductiveDays(object));
+    },
+    setMostProductiveLocations: object => {
+      dispatch(setMostProductiveLocations(object));
     },
   };
 };

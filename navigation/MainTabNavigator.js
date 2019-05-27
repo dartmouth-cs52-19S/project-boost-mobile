@@ -7,20 +7,20 @@ import SurveyScreen from '../screens/SurveyScreen';
 import DataScreen from '../screens/DataScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
-const HomeStack = createStackNavigator({
+const SurveyStack = createStackNavigator({
   Home: SurveyScreen,
 });
 
-HomeStack.navigationOptions = {
+SurveyStack.navigationOptions = {
   tabBarLabel: 'Survey',
   tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="edit-location" />,
 };
 
-const LinksStack = createStackNavigator({
+const DataStack = createStackNavigator({
   Links: DataScreen,
 });
 
-LinksStack.navigationOptions = {
+DataStack.navigationOptions = {
   tabBarLabel: 'Data',
   tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="insert-chart" />,
 };
@@ -55,8 +55,8 @@ const BottomTabNavigatorConfig = {
 
 export default createBottomTabNavigator(
   {
-    HomeStack,
-    LinksStack,
+    SurveyStack,
+    DataStack,
     SettingsStack,
   },
   BottomTabNavigatorConfig
