@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   score: {
-    color: 'white',
+    color: WHITE,
     fontFamily: 'Raleway-Light',
     fontSize: 18,
     textAlign: 'center',
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   columnHeader: {
-    color: '#e5e5e5',
+    color: WHITE,
     fontFamily: 'Raleway-Bold',
     fontSize: 20,
   },
@@ -489,23 +489,6 @@ const styles = StyleSheet.create({
   nextButton: {
     backgroundColor: DARK_BLUE,
     margin: 40,
-  },
-  switch: {
-    alignItems: 'center',
-    marginLeft: 10,
-    marginRight: 10,
-    borderWidth: 0.5,
-    borderColor: '#E5E5E5',
-    color: 'rgba(0,0,0,0)',
-  },
-  switchText: {
-    fontSize: 18,
-    color: '#293C44',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   saveButton: {
     backgroundColor: DARK_BLUE,
