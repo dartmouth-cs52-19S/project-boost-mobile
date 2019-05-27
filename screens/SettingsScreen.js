@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import axios from 'axios';
 import * as firebase from 'firebase';
+import Swipeout from 'react-native-swipeout';
 import * as api from '../datastore/api_requests';
 import { setUserData } from '../state/actions';
 
@@ -173,32 +174,46 @@ class SettingsScreen extends React.Component {
 
   renderPresetRows = () => {
     return Object.keys(this.state.presetProductiveLocations).map((location, index) => {
-      return (
-        <View style={styles.presetRow} key={index}>
-          <View style={styles.locationColumn}>
-            <Text style={styles.address}>{location}</Text>
-          </View>
-          <View style={styles.productivityColumn}>
-            <StarRating
-              disabled={false}
-              emptyStar={'ios-star-outline'}
-              fullStar={'ios-star'}
-              iconSet={'Ionicons'}
-              maxStars={5}
-              starSize={25}
-              rating={this.state.presetProductiveLocations[location]}
-              selectedStar={rating => {
-                const obj = this.state.presetProductiveLocations;
-                obj[location] = rating;
+      const swipeBtns = [
+        {
+          text: 'Delete',
+          backgroundColor: 'red',
+          underlayColor: '#293C44',
+          onPress: () => {
+            delete this.state.presetProductiveLocations[location];
+            this.saveInfo();
+          },
+        },
+      ];
 
-                this.setState({
-                  presetProductiveLocations: obj,
-                });
-              }}
-              fullStarColor={'white'}
-            />
+      return (
+        <Swipeout right={swipeBtns} autoClose backgroundColor="transparent" key={index}>
+          <View style={styles.presetRow}>
+            <View style={styles.locationColumn}>
+              <Text style={styles.address}>{location}</Text>
+            </View>
+            <View style={styles.productivityColumn}>
+              <StarRating
+                disabled={false}
+                emptyStar={'ios-star-outline'}
+                fullStar={'ios-star'}
+                iconSet={'Ionicons'}
+                maxStars={5}
+                starSize={25}
+                rating={this.state.presetProductiveLocations[location]}
+                selectedStar={rating => {
+                  const obj = this.state.presetProductiveLocations;
+                  obj[location] = rating;
+
+                  this.setState({
+                    presetProductiveLocations: obj,
+                  });
+                }}
+                fullStarColor={'white'}
+              />
+            </View>
           </View>
-        </View>
+        </Swipeout>
       );
     });
   };
@@ -404,7 +419,8 @@ const styles = StyleSheet.create({
   presetRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    paddingVertical: 8,
+    backgroundColor: '#293C44',
   },
   addAnotherPreset: {
     color: '#FEFEFE',

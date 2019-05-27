@@ -36,7 +36,7 @@ class VerifyAuth extends React.Component {
     promises.push(
       new Promise((resolve, reject) => {
         api
-          .getFrequentLocations(firebase.auth().currentUser.uid, 15) // get frequent locations
+          .getFrequentLocations(firebase.auth().currentUser.uid, 10) // get frequent locations
           .then(response => {
             this.props.setFrequentLocations(response.output); // saving frequent locations
             resolve(response.output);
