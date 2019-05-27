@@ -67,31 +67,48 @@ class ProvideInitialInfoScreen extends React.Component {
 
   // save user info
   saveInfo = () => {
-    if (this.isReadyToSave()) {
-      api
-        .updateUserSettings(
-          firebase.auth().currentUser.uid,
-          this.state.homeLocation,
-          this.state.homeLocationLatLong,
-          this.state.frequentLocations
-        )
-        .then(() => {
+    const frequentLocations = this.state.frequentLocations;
+
+    // add item to preset productive locations if user entered something
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      frequentLocations[this.state.locationNameToAdd] = this.state.locationProductivityToAdd;
+    }
+
+    // set state, then call API to update settings
+    this.setState(
+      {
+        frequentLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
+      },
+      () => {
+        if (this.isReadyToSave()) {
           api
-            .getUserInfo(firebase.auth().currentUser.uid)
-            .then(response => {
-              this.props.setUserData(response);
-              this.props.navigation.navigate('App');
+            .updateUserSettings(
+              firebase.auth().currentUser.uid,
+              this.state.homeLocation,
+              this.state.homeLocationLatLong,
+              this.state.frequentLocations
+            )
+            .then(() => {
+              api
+                .getUserInfo(firebase.auth().currentUser.uid)
+                .then(response => {
+                  this.props.setUserData(response);
+                  this.props.navigation.navigate('App');
+                })
+                .catch(error => {
+                  Alert.alert(error.message);
+                });
             })
             .catch(error => {
               Alert.alert(error.message);
             });
-        })
-        .catch(error => {
-          Alert.alert(error.message);
-        });
-    } else {
-      Alert.alert("You're almost there!", 'Please specify a home location.');
-    }
+        } else {
+          Alert.alert("You're almost there!", 'Please specify a home location.');
+        }
+      }
+    );
   };
 
   // user's ability to enter their home location
@@ -223,6 +240,8 @@ class ProvideInitialInfoScreen extends React.Component {
 
       this.setState({
         frequentLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
       });
     }
   };
