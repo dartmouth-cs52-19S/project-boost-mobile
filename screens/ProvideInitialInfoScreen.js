@@ -407,9 +407,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   formDescription: {
+    paddingTop: 10,
     marginBottom: 20,
     fontFamily: 'Raleway-Light',
-    fontSize: 16,
+    fontSize: 20,
     color: WHITE,
   },
   text: {
