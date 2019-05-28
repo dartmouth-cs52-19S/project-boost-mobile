@@ -19,4 +19,11 @@ const setFrequentLocations = frequentLocations => {
   };
 };
 
-export { setUserID, setUserData, setFrequentLocations };
+const setNewLocations = newLocations => {
+  return {
+    type: 'setNewLocations',
+    value: newLocations,
+  };
+};
+
+export { setUserID, setUserData, setFrequentLocations, setNewLocations };

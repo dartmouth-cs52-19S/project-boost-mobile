@@ -6,7 +6,7 @@ import * as api from '../datastore/api_requests';
 import loadingGIF from '../assets/gifs/loading-white.gif';
 import NavBar from '../components/NavBar';
 
-import { setUserData, setFrequentLocations } from '../state/actions';
+import { setUserData, setFrequentLocations, setNewLocations } from '../state/actions';
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
@@ -47,7 +47,20 @@ class VerifyAuth extends React.Component {
       })
     );
 
-    // TODO @faustino: make API call to get null productivity levels (push as promise to promises aray)
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getNewLocations(firebase.auth().currentUser.uid)
+          .then(response => {
+            this.props.setNewLocations(response);
+            // console.log(response);
+            resolve(response);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
 
     // when all desired information has been received, redirect user
     Promise.all(promises)
@@ -130,6 +143,11 @@ const mapDispatchToProps = dispatch => {
     setFrequentLocations: object => {
       dispatch(setFrequentLocations(object));
     },
+    setNewLocations: object =>
+      new Promise((resolve, reject) => {
+        dispatch(setNewLocations(object));
+        resolve();
+      }),
   };
 };
 
