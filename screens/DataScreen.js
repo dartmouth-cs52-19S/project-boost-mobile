@@ -1,9 +1,19 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableHighlight, Dimensions } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import { LineChart } from 'react-native-chart-kit';
+import Modal from 'react-native-modal';
 import NavBar from '../components/NavBar';
+import MapPopup from '../components/MapPopup';
 
 class DataScreen extends React.Component {
   static navigationOptions = {
@@ -15,6 +25,7 @@ class DataScreen extends React.Component {
 
     this.state = {
       selectedTimeframe: 'ALL',
+      selectedAddress: null,
     };
   }
 
@@ -75,7 +86,14 @@ class DataScreen extends React.Component {
 
     if (locations.length > 0) {
       return locations.map(location => {
-        return <Text style={styles.topLocation}>{location.address}</Text>;
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({ selectedAddress: location.address });
+            }}>
+            <Text style={styles.topLocation}>{location.address}</Text>
+          </TouchableOpacity>
+        );
       });
     } else {
       return (
@@ -189,10 +207,26 @@ class DataScreen extends React.Component {
               </View>
             </View>
           </ScrollView>
+          <Modal
+            isVisible={this.state.selectedAddress !== null}
+            onBackdropPress={this.closeModal}
+            // swipeDirection={['up', 'down', 'left', 'right']}
+            onSwipeComplete={this.closeModal}
+            animationIn="zoomIn"
+            animationInTiming={400}
+            animationOut="fadeOut">
+            <MapPopup address={this.state.selectedAddress} />
+          </Modal>
         </View>
       </SafeAreaView>
     );
   }
+
+  closeModal = () => {
+    this.setState({
+      selectedAddress: null,
+    });
+  };
 }
 
 const styles = StyleSheet.create({
