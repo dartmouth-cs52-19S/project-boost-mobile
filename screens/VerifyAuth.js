@@ -30,29 +30,29 @@ class VerifyAuth extends React.Component {
     this.props.setLeastProductiveDays(id);
     this.props.setMostProductiveLocations(id);
     this.props.setProductivityScores(id);
-
-    // TODO @faustino: make API call to get null productivity levels (push as promise to promises aray)
-
-    // when all desired information has been received, redirect user
-    // Promise.all(promises)
-    //   .then(result => {
-    //     // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
-    //     if (this.mustProvideMoreInformation(result[0])) {
-    //       this.props.navigation.navigate('ProvideInitialInfo');
-    //     } else {
-    //       this.props.navigation.navigate('App');
-    //     }
-    //   })
-    //   .catch(error => {
-    //     Alert.alert(error.message);
-    //   });
   }
 
   componentWillUpdate(nextProps) {
-    console.log(nextProps);
-    // check if we have everything that we sent API requests for
-    // if so, then see if we should go to initial auth screen or if we should go straight to the app
-    // if not, do nothing
+    // determine if there was a server error
+    if (Object.keys(nextProps.apiError).length > 0) {
+      Alert.alert(nextProps.apiError.message);
+    }
+    // determine if we've received everything from the server
+    else if (
+      Object.keys(nextProps.userData).length > 0 &&
+      Object.keys(nextProps.frequentLocations).length > 0 &&
+      Object.keys(nextProps.mostProductiveDays).length > 0 &&
+      Object.keys(nextProps.leastProductiveDays).length > 0 &&
+      nextProps.mostProductiveLocations.length > 0 &&
+      Object.keys(nextProps.productivityScores).length > 0
+    ) {
+      // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
+      if (this.mustProvideMoreInformation(nextProps.userData)) {
+        this.props.navigation.navigate('ProvideInitialInfo');
+      } else {
+        this.props.navigation.navigate('App');
+      }
+    }
   }
 
   // determine if user must provide more information before proceeding to app
