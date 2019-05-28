@@ -3489,10 +3489,10 @@ expo@^32.0.0:
     uuid-js "^0.7.5"
     whatwg-fetch "^2.0.4"
 
-expokit@32.0.7:
-  version "32.0.7"
-  resolved "https://registry.yarnpkg.com/expokit/-/expokit-32.0.7.tgz#8395bae17c53c469d5f749fd567efe2d88907cf7"
-  integrity sha512-nYLpffUxCj8pk11p+rdO0VZlR98mP6M3nzaGSr1dbrUgVtxtzOmAYPqEwFMNYp4vPviaVgCQ7LUTT5G6lJPPSw==
+expokit@32.1.1:
+  version "32.1.1"
+  resolved "https://registry.yarnpkg.com/expokit/-/expokit-32.1.1.tgz#55e763d4fa26eb3627d06fcb12d0e3c87d767c2c"
+  integrity sha512-mUorcCKpI11afzPolBJhpq1trnUcDq5lYoDc/uTOQEJwdFqF8oDa608p50LbNPxC6/583+PrwIgQmiKqKO3VIA==
   dependencies:
     jsc-android "^224109.1.0"
 

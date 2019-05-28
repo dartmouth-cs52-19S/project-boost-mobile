@@ -52,21 +52,121 @@ class DataScreen extends React.Component {
 
   getMostProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
-      return this.props.mostProductiveDays.mostProductiveWeekDayLast7Days;
+      if (
+        this.props.mostProductiveDays.mostProductiveWeekDayLast7Days === 'Not enough information'
+      ) {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.mostProductiveDays.mostProductiveWeekDayLast7Days
+          }s`}</Text>
+        );
+      }
     } else if (this.state.selectedTimeframe === '30 DAYS') {
-      return this.props.mostProductiveDays.mostProductiveWeekDayLast30Days;
+      if (
+        this.props.mostProductiveDays.mostProductiveWeekDayLast30Days === 'Not enough information'
+      ) {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.mostProductiveDays.mostProductiveWeekDayLast30Days
+          }s`}</Text>
+        );
+      }
     } else {
-      return this.props.mostProductiveDays.mostProductiveWeekDayAllTime;
+      if (this.props.mostProductiveDays.mostProductiveWeekDayAllTime === 'Not enough information') {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.mostProductiveDays.mostProductiveWeekDayAllTime
+          }s`}</Text>
+        );
+      }
     }
   };
 
   getLeastProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
-      return this.props.leastProductiveDays.leastProductiveWeekDayLast7Days;
+      if (
+        this.props.leastProductiveDays.leastProductiveWeekDayLast7Days === 'Not enough information'
+      ) {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.leastProductiveDays.leastProductiveWeekDayLast7Days
+          }s`}</Text>
+        );
+      }
     } else if (this.state.selectedTimeframe === '30 DAYS') {
-      return this.props.leastProductiveDays.leastProductiveWeekDayLast30Days;
+      if (
+        this.props.leastProductiveDays.leastProductiveWeekDayLast30Days === 'Not enough information'
+      ) {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.leastProductiveDays.leastProductiveWeekDayLast30Days
+          }s`}</Text>
+        );
+      }
     } else {
-      return this.props.leastProductiveDays.leastProductiveWeekDayAllTime;
+      if (
+        this.props.leastProductiveDays.leastProductiveWeekDayAllTime === 'Not enough information'
+      ) {
+        return (
+          <Text
+            style={
+              styles.badLocationsData
+            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+            this.state.selectedTimeframe.split(' ')[0]
+          } days.`}</Text>
+        );
+      } else {
+        return (
+          <Text style={styles.cardText}>{`${
+            this.props.leastProductiveDays.leastProductiveWeekDayAllTime
+          }s`}</Text>
+        );
+      }
     }
   };
 
@@ -186,12 +286,12 @@ class DataScreen extends React.Component {
 
               <View style={styles.card}>
                 <Text style={styles.cardHeaderText}>YOU ARE MOST PRODUCTIVE ON</Text>
-                <Text style={styles.cardText}>{`${this.getMostProductiveDay()}s`}</Text>
+                {this.getMostProductiveDay()}
               </View>
 
               <View style={styles.card}>
                 <Text style={styles.cardHeaderText}>YOU ARE LEAST PRODUCTIVE ON</Text>
-                <Text style={styles.cardText}>{`${this.getLeastProductiveDay()}s`}</Text>
+                {this.getLeastProductiveDay()}
               </View>
 
               <Text style={styles.header}>Aggregate Productivity</Text>
@@ -295,7 +395,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontFamily: 'Raleway-SemiBold',
-    fontSize: 60,
+    fontSize: 45,
     color: 'white',
     textAlign: 'center',
     paddingVertical: 30,
@@ -316,7 +416,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     textAlign: 'center',
-    marginVertical: 10,
+    marginVertical: 20,
     marginHorizontal: 20,
   },
   chartArea: {
