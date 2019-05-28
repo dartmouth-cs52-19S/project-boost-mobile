@@ -28,6 +28,7 @@ const AddressSearch = props => {
         description: {
           fontWeight: 'bold',
           color: '#fefefe',
+          width: '100%',
         },
         textInputContainer: {
           width: '100%',
