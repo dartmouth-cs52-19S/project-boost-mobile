@@ -9,25 +9,18 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { connect } from 'react-redux';
 import { Google, Constants } from 'expo';
 import * as firebase from 'firebase';
-import { setUserId } from '../state/actions/index';
 
 const { width } = Dimensions.get('window');
 
-class LoginScreen extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+export default class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   componentWillMount() {
     if (firebase.auth().currentUser) {
-      this.props.setUserId(firebase.auth().currentUser.uid);
       this.props.navigation.navigate('VerifyAuth');
     }
   }
@@ -78,7 +71,6 @@ class LoginScreen extends React.Component {
           .auth()
           .signInAndRetrieveDataWithCredential(credential)
           .then(() => {
-            this.props.setUserId(firebase.auth().currentUser.uid);
             this.props.navigation.navigate('VerifyAuth');
           });
       } else {
@@ -133,8 +125,3 @@ const styles = StyleSheet.create({
     width,
   },
 });
-
-export default connect(
-  null,
-  { setUserId }
-)(LoginScreen);
