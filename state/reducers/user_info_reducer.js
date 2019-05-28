@@ -2,7 +2,7 @@ import { ActionTypes } from '../actions/index';
 
 const initialState = {
   uid: null,
-  userData: null,
+  userData: {},
   topFive: null,
   avgProductivity: null,
 };

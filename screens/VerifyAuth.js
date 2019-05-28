@@ -6,26 +6,19 @@ import { connect } from 'react-redux';
 import { fetchUserInfo } from '../state/actions';
 
 class VerifyAuth extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   static navigationOptions = {
     header: null,
   };
 
   componentDidMount() {
-    this.props
-      .fetchUserInfo(firebase.auth().currentUser.uid)
-      .then(() => {
-        if (!Object.keys(this.props.user.userData).includes('homeLocation')) {
-          this.props.navigation.navigate('ProvideInitialInfo');
-        } else {
-          this.props.navigation.navigate('App');
-        }
-      })
-      .catch(err => {
-        Alert.alert(err.message);
-      });
+    this.props.fetchUserInfo(firebase.auth().currentUser.uid);
+  }
+
+  componentWillUpdate(nextProps) {
+    console.log(nextProps.userData);
+    // check if we have everything that we sent API requests for
+    // if so, then see if we should go to initial auth screen or if we should go straight to the app
+    // if not, do nothing
   }
 
   render() {

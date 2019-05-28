@@ -5,17 +5,18 @@ export const ActionTypes = {
   SET_USER_ID: 'SET_USER_ID',
   FETCH_TOP_FIVE: 'FETCH_TOP_FIVE',
   FETCH_AVG: 'FETCH_AVG',
+  API_ERROR: 'API_ERROR',
 };
 
 const fetchUserInfo = id => {
-  return (dispatch, reject) => {
+  return dispatch => {
     api
       .getUserInfo(id)
       .then(response => {
-        dispatch({ type: ActionTypes.FETCH_USER_INFO, payload: response.data });
+        dispatch({ type: ActionTypes.FETCH_USER_INFO, payload: response });
       })
       .catch(error => {
-        reject(error);
+        dispatch({ type: ActionTypes.API_ERROR, payload: error });
       });
   };
 };
