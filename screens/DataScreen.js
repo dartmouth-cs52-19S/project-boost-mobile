@@ -1,9 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableHighlight, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableHighlight, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
-import * as firebase from 'firebase';
-import * as api from '../datastore/api_requests';
+import { LineChart } from 'react-native-chart-kit';
 import NavBar from '../components/NavBar';
 
 class DataScreen extends React.Component {
@@ -90,6 +89,71 @@ class DataScreen extends React.Component {
     }
   };
 
+  renderChart = () => {
+    if (this.state.selectedTimeframe === 'ALL') {
+      return (
+        <Text style={styles.badLocationsData}>
+          Please select 7 or 30 days to view a chart of your average productivity levels over that
+          period of time.
+        </Text>
+      );
+    }
+
+    let data = {};
+
+    if (this.state.selectedTimeframe === '7 DAYS' && this.props.productivityScores['7']) {
+      data = this.props.productivityScores['7'];
+    } else if (this.state.selectedTimeframe === '30 DAYS' && this.props.productivityScores['30']) {
+      data = this.props.productivityScores['30'];
+    }
+
+    if (Object.keys(data).length === 0) {
+      return (
+        <Text
+          style={
+            styles.badLocationsData
+          }>{`Uh oh! Looks like we don't have enough data for you in the last ${
+          this.state.selectedTimeframe.split(' ')[0]
+        } days.`}</Text>
+      );
+    }
+
+    const values = [];
+
+    Object.keys(data).forEach(value => {
+      values.push(data[value]);
+    });
+
+    return (
+      <LineChart
+        data={{
+          labels: [],
+          datasets: [
+            {
+              data: values,
+            },
+          ],
+        }}
+        width={Dimensions.get('window').width - 80} // from react-native
+        height={300}
+        chartConfig={{
+          backgroundColor: '#586368',
+          backgroundGradientFrom: '#586368',
+          backgroundGradientTo: '#586368',
+          color: (opacity = 1) => `rgba(255, 255, 255, 1)`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        bezier
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
+      />
+    );
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -115,7 +179,7 @@ class DataScreen extends React.Component {
               <Text style={styles.header}>Aggregate Productivity</Text>
 
               <View style={styles.card}>
-                <Text>Graph placeholder</Text>
+                <View style={styles.chartArea}>{this.renderChart()}</View>
               </View>
 
               <Text style={styles.header}>Most Productive Locations</Text>
@@ -176,7 +240,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: 'rgba(254, 254, 254, 0.2)',
+    backgroundColor: '#586368',
+    borderRadius: 5,
+    overflow: 'hidden',
     margin: 20,
     width: 350,
     height: 300,
@@ -216,6 +282,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
+  chartArea: {
+    marginVertical: 20,
+  },
 });
 
 const mapStateToProps = state => {
@@ -224,6 +293,7 @@ const mapStateToProps = state => {
     mostProductiveDays: state.user.mostProductiveDays,
     leastProductiveDays: state.user.leastProductiveDays,
     mostProductiveLocations: state.user.mostProductiveLocations,
+    productivityScores: state.user.productivityScores,
   };
 };
 

@@ -135,6 +135,42 @@ const getMostProductiveLocations = id => {
   });
 };
 
+const getProductivityScores = id => {
+  return new Promise((resolve, reject) => {
+    const promises = [];
+    const timelines = [1000000, 7, 30];
+
+    timelines.forEach(time => {
+      promises.push(
+        new Promise((resolve, reject) => {
+          axios
+            .get(`${API_URL}/productivityScoresLastNDays?uid=${id}&days=${time}`)
+            .then(response => {
+              resolve(response.data);
+            })
+            .catch(error => {
+              reject(error);
+            });
+        })
+      );
+    });
+
+    Promise.all(promises)
+      .then(result => {
+        const output = {};
+
+        result.forEach(obj => {
+          output[obj.days] = obj.output;
+        });
+
+        resolve(output);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
 const updateUserSettings = (
   userID,
   homeLocation,
@@ -168,4 +204,5 @@ export {
   getMostProductiveDays,
   getLeastProductiveDays,
   getMostProductiveLocations,
+  getProductivityScores,
 };

@@ -5,6 +5,7 @@ const initialState = {
   mostProductiveDays: {},
   leastProductiveDays: {},
   mostProductiveLocations: [],
+  productivityScores: {},
 };
 
 const UserInfoReducer = (state = initialState, action) => {
@@ -26,6 +27,9 @@ const UserInfoReducer = (state = initialState, action) => {
 
     case 'setMostProductiveLocations':
       return { ...state, mostProductiveLocations: action.value };
+
+    case 'setProductivityScores':
+      return { ...state, productivityScores: action.value };
 
     default:
       return state;

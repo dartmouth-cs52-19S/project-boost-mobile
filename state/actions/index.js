@@ -40,6 +40,13 @@ const setMostProductiveLocations = locations => {
   };
 };
 
+const setProductivityScores = scores => {
+  return {
+    type: 'setProductivityScores',
+    value: scores,
+  };
+};
+
 export {
   setUserID,
   setUserData,
@@ -47,4 +54,5 @@ export {
   setMostProductiveDays,
   setLeastProductiveDays,
   setMostProductiveLocations,
+  setProductivityScores,
 };

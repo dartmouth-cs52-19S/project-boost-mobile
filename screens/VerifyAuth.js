@@ -12,6 +12,7 @@ import {
   setMostProductiveDays,
   setLeastProductiveDays,
   setMostProductiveLocations,
+  setProductivityScores,
 } from '../state/actions';
 
 class VerifyAuth extends React.Component {
@@ -90,6 +91,21 @@ class VerifyAuth extends React.Component {
           .getMostProductiveLocations(firebase.auth().currentUser.uid)
           .then(response => {
             this.props.setMostProductiveLocations(response);
+            resolve(response);
+          })
+          .catch(error => {
+            Alert.alert(error.message);
+          });
+      })
+    );
+
+    // get productivity scores for graph
+    promises.push(
+      new Promise((resolve, reject) => {
+        api
+          .getProductivityScores(firebase.auth().currentUser.uid)
+          .then(response => {
+            this.props.setProductivityScores(response);
             resolve(response);
           })
           .catch(error => {
@@ -189,6 +205,9 @@ const mapDispatchToProps = dispatch => {
     },
     setMostProductiveLocations: object => {
       dispatch(setMostProductiveLocations(object));
+    },
+    setProductivityScores: object => {
+      dispatch(setProductivityScores(object));
     },
   };
 };
