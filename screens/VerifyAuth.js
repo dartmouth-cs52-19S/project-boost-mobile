@@ -3,9 +3,12 @@ import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'rea
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 
-import { fetchUserInfo } from '../state/actions/index';
+import { fetchUserInfo } from '../state/actions';
 
 class VerifyAuth extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static navigationOptions = {
     header: null,
   };
@@ -13,8 +16,8 @@ class VerifyAuth extends React.Component {
   componentDidMount() {
     this.props
       .fetchUserInfo(firebase.auth().currentUser.uid)
-      .then(response => {
-        if (!Object.keys(response).includes('homeLocation')) {
+      .then(() => {
+        if (!Object.keys(this.props.user.userData).includes('homeLocation')) {
           this.props.navigation.navigate('ProvideInitialInfo');
         } else {
           this.props.navigation.navigate('App');
@@ -54,7 +57,13 @@ const styles = StyleSheet.create({
   },
 });
 
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+  };
+};
+
 export default connect(
-  null,
+  mapStateToProps,
   { fetchUserInfo }
 )(VerifyAuth);

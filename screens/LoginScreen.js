@@ -14,9 +14,13 @@ import { Google, Constants } from 'expo';
 import * as firebase from 'firebase';
 import { setUserId } from '../state/actions/index';
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 class LoginScreen extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   static navigationOptions = {
     header: null,
   };
@@ -74,7 +78,7 @@ class LoginScreen extends React.Component {
           .auth()
           .signInAndRetrieveDataWithCredential(credential)
           .then(() => {
-            this.props.setUserID(firebase.auth().currentUser.uid);
+            this.props.setUserId(firebase.auth().currentUser.uid);
             this.props.navigation.navigate('VerifyAuth');
           });
       } else {

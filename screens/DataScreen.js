@@ -162,9 +162,9 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => {
+  console.log(state);
   return {
-    productivePrecent: state.user.productivityPrecent,
-    uid: state.user.uid,
+    uid: state.uid,
   };
 };
 

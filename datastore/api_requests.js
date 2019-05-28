@@ -1,10 +1,8 @@
 import axios from 'axios';
-
 const API_URL = 'https://project-boost.herokuapp.com/api';
 
 const getUserInfo = id => {
-  console.log(id);
-  return new Promise((resolve, reject) => {
+  return (resolve, reject) => {
     axios
       .post(`${API_URL}/getAuth`, { userID: id })
       .then(response => {
@@ -13,7 +11,7 @@ const getUserInfo = id => {
       .catch(error => {
         reject(error);
       });
-  });
+  };
 };
 
 const getTopFive = id => {
