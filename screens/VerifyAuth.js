@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     backgroundColor: '#388CAB',
+    alignItems: 'center',
   },
   loadingGIF: {
     width: 95,

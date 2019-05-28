@@ -210,7 +210,6 @@ class DataScreen extends React.Component {
           <Modal
             isVisible={this.state.selectedAddress !== null}
             onBackdropPress={this.closeModal}
-            // swipeDirection={['up', 'down', 'left', 'right']}
             onSwipeComplete={this.closeModal}
             animationIn="zoomIn"
             animationInTiming={400}
@@ -291,6 +290,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     paddingTop: 50,
+    marginHorizontal: 20,
   },
   cardText: {
     fontFamily: 'Raleway-SemiBold',
@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     paddingVertical: 30,
+    marginHorizontal: 20,
   },
   topLocation: {
     fontFamily: 'Raleway-Light',
@@ -315,6 +316,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     marginVertical: 10,
+    marginHorizontal: 20,
   },
   chartArea: {
     marginVertical: 20,
