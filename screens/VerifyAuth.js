@@ -20,22 +20,36 @@ class VerifyAuth extends React.Component {
     header: null,
   };
 
-  componentDidMount() {
-    const id = firebase.auth().currentUser.uid;
+  constructor(props) {
+    super(props);
 
-    // fire off all necessary API requests
-    this.props.setUserData(id);
-    this.props.setFrequentLocations(id, 10);
-    this.props.setMostProductiveDays(id);
-    this.props.setLeastProductiveDays(id);
-    this.props.setMostProductiveLocations(id);
-    this.props.setProductivityScores(id);
+    this.state = {
+      id: firebase.auth().currentUser.uid,
+      sentRequests: false,
+    };
+  }
+
+  // get user account or create one
+  componentDidMount() {
+    this.props.setUserData(this.state.id);
   }
 
   componentWillUpdate(nextProps) {
     // determine if there was a server error
     if (Object.keys(nextProps.apiError).length > 0) {
       Alert.alert(nextProps.apiError.message);
+    }
+    // once we have the user data, then an account definitely exists, so fire off additional requests async of each other
+    else if (Object.keys(nextProps.userData).length > 0 && !this.state.sentRequests) {
+      this.props.setFrequentLocations(this.state.id, 10);
+      this.props.setMostProductiveDays(this.state.id);
+      this.props.setLeastProductiveDays(this.state.id);
+      this.props.setMostProductiveLocations(this.state.id);
+      this.props.setProductivityScores(this.state.id);
+
+      this.setState({
+        sentRequests: true,
+      });
     }
     // determine if we've received everything from the server
     else if (

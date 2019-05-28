@@ -6,7 +6,15 @@ import StarRating from 'react-native-star-rating';
 import * as firebase from 'firebase';
 import Swipeout from 'react-native-swipeout';
 import * as api from '../datastore/api_requests';
-import { setUserData } from '../state/actions';
+
+import {
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+  setProductivityScores,
+} from '../state/actions';
 
 import NavBar from '../components/NavBar';
 import AddresSearch from '../components/AddressSearch';
@@ -19,17 +27,23 @@ class ProvideInitialInfoScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    // split up lat long for local state
-    const latLong = this.props.userData.latlongHomeLocation.split(',');
+    let latLong;
 
-    latLong.forEach((obj, index) => {
-      latLong[index] = obj.replace(/^\s+|\s+$/gm, '');
-    });
+    if (this.props.userData.latlongHomeLocation.length > 0) {
+      // split up lat long for local state
+      latLong = this.props.userData.latlongHomeLocation.split(',');
+
+      latLong.forEach((obj, index) => {
+        latLong[index] = obj.replace(/^\s+|\s+$/gm, '');
+      });
+    } else {
+      latLong = ['', ''];
+    }
 
     const frequentLocations = {};
 
     // build from frequent locations
-    this.props.frequentLocations.forEach(object => {
+    this.props.frequentLocations.output.forEach(object => {
       frequentLocations[object.address] = 0;
     });
 
@@ -43,7 +57,7 @@ class ProvideInitialInfoScreen extends React.Component {
         ? this.props.userData.homeLocation
         : 'Enter Your Home Address', // home location info
       frequentLocations, // top visited locations from users background data plus any previously set preset places
-      homeLocationLatLong: latLong.length > 0 ? latLong : [], // lat long of home address
+      homeLocationLatLong: latLong, // lat long of home address
       locationNameToAdd: '', // address field in item to add
       locationProductivityToAdd: 0, // productivity field in item to add
       homeLocationDropdown: 'auto', // whether or not to display dropdown for home location search
@@ -91,15 +105,18 @@ class ProvideInitialInfoScreen extends React.Component {
               this.state.frequentLocations
             )
             .then(() => {
-              api
-                .getUserInfo(firebase.auth().currentUser.uid)
-                .then(response => {
-                  this.props.setUserData(response);
-                  this.props.navigation.navigate('App');
-                })
-                .catch(error => {
-                  Alert.alert(error.message);
-                });
+              const id = firebase.auth().currentUser.uid;
+
+              // fire off all necessary API requests
+              this.props.setUserData(id);
+              this.props.setFrequentLocations(id, 10);
+              this.props.setMostProductiveDays(id);
+              this.props.setLeastProductiveDays(id);
+              this.props.setMostProductiveLocations(id);
+              this.props.setProductivityScores(id);
+
+              // bring user to app
+              this.props.navigation.navigate('App');
             })
             .catch(error => {
               Alert.alert(error.message);
@@ -435,16 +452,14 @@ const mapStateToProps = state => {
   };
 };
 
-// updating the reducer
-const mapDispatchToProps = dispatch => {
-  return {
-    setUserData: object => {
-      dispatch(setUserData(object));
-    },
-  };
-};
-
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  {
+    setUserData,
+    setFrequentLocations,
+    setMostProductiveDays,
+    setLeastProductiveDays,
+    setMostProductiveLocations,
+    setProductivityScores,
+  }
 )(ProvideInitialInfoScreen);

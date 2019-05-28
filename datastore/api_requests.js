@@ -6,7 +6,11 @@ const getUserInfo = id => {
     axios
       .post(`${API_URL}/getAuth`, { userID: id })
       .then(response => {
-        resolve(response.data);
+        if (Object.keys(response.data).includes('response')) {
+          resolve(response.data.response);
+        } else {
+          resolve(response.data);
+        }
       })
       .catch(error => {
         reject(error);
