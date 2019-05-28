@@ -1,19 +1,11 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  View,
-  Alert,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import * as firebase from 'firebase';
 import Swipeout from 'react-native-swipeout';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as api from '../datastore/api_requests';
 import { setUserData } from '../state/actions';
 import NavBar from '../components/NavBar';
@@ -47,7 +39,8 @@ class ProvideInitialInfoScreen extends React.Component {
     });
 
     this.state = {
-      behavior: 'position', //position
+      // behavior: 'position', //position
+      // behaviorTwo: 'position', //position
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
         : 'Enter Your Home Address', // home location info
@@ -258,55 +251,50 @@ class ProvideInitialInfoScreen extends React.Component {
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <NavBar backgroundColor="#388CAB" />
-          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <View style={styles.settingsContainer}>
-              <KeyboardAvoidingView
-                behavior={this.state.behavior}
-                style={styles.keyboardViewContainer}>
-                <Text style={styles.title}>Let's Refine Our Data On Your Productivity</Text>
-                <Text style={styles.formLabel}>Enter Your Home Location:</Text>
-                {this.renderHomeLocationInput()}
-                <Text style={styles.formLabel}>Frequent Locations:</Text>
-                <Text style={styles.formDescription}>
-                  We found your top 10 most frequently visited locations from the data you provided.
-                  Please estimate your productivity at each location. You can also add locations in
-                  the text field below.
-                </Text>
-                <View style={styles.presetRow}>
-                  <View style={styles.locationColumn}>
-                    <Text style={styles.columnHeader}>Location:</Text>
-                  </View>
-                  <View style={styles.productivityColumn}>
-                    <Text style={styles.columnHeader}>Productivity:</Text>
-                  </View>
-                </View>
-                <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
-
-                {this.addAnotherPreset()}
-
-                {this.state.locationNameToAdd.length > 0 &&
-                this.state.locationProductivityToAdd > 0 ? (
-                  <Button
-                    buttonStyle={styles.nextButton}
-                    color="#FEFEFE"
-                    onPress={this.addLocation}
-                    title="Add Location"
-                  />
-                ) : null}
-              </KeyboardAvoidingView>
+        <NavBar backgroundColor="#388CAB" />
+        <KeyboardAwareScrollView
+          extraHeight="-20"
+          innerRef={ref => {
+            this.scroll = ref;
+          }}>
+          <View style={styles.settingsContainer}>
+            <Text style={styles.title}>Let's Refine Our Data On Your Productivity</Text>
+            <Text style={styles.formLabel}>Enter Your Home Location:</Text>
+            {this.renderHomeLocationInput()}
+            <Text style={styles.formLabel}>Frequent Locations:</Text>
+            <Text style={styles.formDescription}>
+              We found your top 10 most frequently visited locations from the data you provided.
+              Please estimate your productivity at each location. You can also add locations in the
+              text field below.
+            </Text>
+            <View style={styles.presetRow}>
+              <View style={styles.locationColumn}>
+                <Text style={styles.columnHeader}>Location:</Text>
+              </View>
+              <View style={styles.productivityColumn}>
+                <Text style={styles.columnHeader}>Productivity:</Text>
+              </View>
             </View>
-          </ScrollView>
-          <Button
-            buttonStyle={styles.nextButton}
-            color="#FEFEFE"
-            onPress={() => {
-              this.saveInfo();
-            }}
-            title="Save and Continue"
-          />
-        </View>
+            <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
+            {this.addAnotherPreset()}
+            {this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0 ? (
+              <Button
+                buttonStyle={styles.nextButton}
+                color="#FEFEFE"
+                onPress={this.addLocation}
+                title="Add Location"
+              />
+            ) : null}
+          </View>
+        </KeyboardAwareScrollView>
+        <Button
+          buttonStyle={styles.nextButton}
+          color="#FEFEFE"
+          onPress={() => {
+            this.saveInfo();
+          }}
+          title="Save and Continue"
+        />
       </SafeAreaView>
     );
   }
@@ -439,11 +427,6 @@ const styles = StyleSheet.create({
   addLocation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  keyboardViewContainer: {
-    flexGrow: 1,
-    // paddingTop: 200,
-    // paddingBottom: 0,
   },
 });
 

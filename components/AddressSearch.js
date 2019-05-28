@@ -1,5 +1,6 @@
 import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { white } from 'ansi-colors';
 
 const AddressSearch = props => {
   return (
@@ -51,6 +52,9 @@ const AddressSearch = props => {
         },
         poweredContainer: {
           display: 'none',
+        },
+        predefinedPlacesDescription: {
+          color: '#cc8b9b',
         },
         row: {
           color: props.rowColor,
