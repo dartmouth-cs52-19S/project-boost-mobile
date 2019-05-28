@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 const API_URL = 'https://project-boost.herokuapp.com/api';
 
 const getUserInfo = id => {
