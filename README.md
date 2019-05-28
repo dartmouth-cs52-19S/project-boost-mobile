@@ -1,6 +1,6 @@
 # project-boost-mobile
 
-![*how?*](./src/assets/team.jpg)
+![*how?*](https://github.com/dartmouth-cs52-19S/project-boost-web/blob/master/src/assets/team.jpg)
 team photo + sofia!
 
 ## Setup Steps
