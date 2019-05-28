@@ -282,7 +282,8 @@ const styles = StyleSheet.create({
   },
   header: {
     color: 'white',
-    fontSize: 21,
+    fontSize: 24,
+    fontFamily: 'Raleway-SemiBold',
   },
   cardHeaderText: {
     fontFamily: 'Raleway-Light',
