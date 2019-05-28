@@ -15,4 +15,45 @@ const getUserInfo = id => {
   });
 };
 
-export { getUserInfo };
+const getFrequentLocations = (id, numberOfItems) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${API_URL}/mostFrequentlyVisitedLocationsRanked?uid=${'vSBrHUpwFZPqGIisDcBPS6cuLTx1'}&numberOfItems=${numberOfItems}`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+const updateUserSettings = (
+  userID,
+  homeLocation,
+  homeLocationLatLong,
+  presetProductiveLocations
+) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(`${API_URL}/updateUserSettings`, {
+        userID,
+        homeLocation,
+        homeLocationLatLong:
+          homeLocationLatLong.length > 0
+            ? `${homeLocationLatLong[0]} , ${homeLocationLatLong[1]}`
+            : '',
+        presetProductiveLocations,
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+export { getUserInfo, getFrequentLocations, updateUserSettings };

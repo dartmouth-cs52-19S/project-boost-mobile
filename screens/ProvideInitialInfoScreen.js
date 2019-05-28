@@ -1,307 +1,357 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, SafeAreaView, View, Switch, Alert } from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { ScrollView, StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
+import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
-import axios from 'axios';
+import StarRating from 'react-native-star-rating';
+import * as firebase from 'firebase';
+import Swipeout from 'react-native-swipeout';
+import * as api from '../datastore/api_requests';
+import { setUserData } from '../state/actions';
 
-// fake data that should look very similar to server data
-const fakeData = {
-  locationAlgorithmOutput: {
-    '44.308140 , -71.800171': [
-      {
-        startTime: '1234',
-        endTime: '5678',
-      },
-    ],
-    '41.148499 , -73.493698': [
-      {
-        startTime: '1324',
-        endTime: '9876',
-      },
-      {
-        startTime: '1234',
-        endTime: '4321',
-      },
-    ],
-  },
-};
+import NavBar from '../components/NavBar';
+import AddresSearch from '../components/AddressSearch';
 
-export default class ProvideInitialInfo extends React.Component {
+const LIGHT_BLUE = '#388CAB';
+const DARK_BLUE = '#293C44';
+const WHITE = '#FEFEFE';
+
+class ProvideInitialInfoScreen extends React.Component {
   constructor(props) {
     super(props);
 
+    // split up lat long for local state
+    const latLong = this.props.userData.latlongHomeLocation.split(',');
+
+    latLong.forEach((obj, index) => {
+      latLong[index] = obj.replace(/^\s+|\s+$/gm, '');
+    });
+
+    const frequentLocations = {};
+
+    // build from frequent locations
+    this.props.frequentLocations.forEach(object => {
+      frequentLocations[object.address] = 0;
+    });
+
+    // add in any preset productive locations the user has created
+    Object.keys(this.props.userData.presetProductiveLocations).forEach(location => {
+      frequentLocations[location] = this.props.userData.presetProductiveLocations[location];
+    });
+
     this.state = {
-      // home location info
-      homeLocation: null,
-      homeLocationLatLong: [],
-      locationLoaded: false, // is backend location history fully processed (including Google reverse Geocoding)
-      locationHistory: null, // Object with updated location info (address, productivity score, etc.)
+      homeLocation: this.props.userData.homeLocation
+        ? this.props.userData.homeLocation
+        : 'Enter Your Home Address', // home location info
+      frequentLocations, // top visited locations from users background data plus any previously set preset places
+      homeLocationLatLong: latLong.length > 0 ? latLong : [], // lat long of home address
+      locationNameToAdd: '', // address field in item to add
+      locationProductivityToAdd: 0, // productivity field in item to add
+      homeLocationDropdown: 'auto', // whether or not to display dropdown for home location search
+      addLocationDropdown: 'auto', // whether or not to display dropdown for add location location search
     };
   }
-
-  componentDidMount = () => {
-    this.getLocationHistory();
-  };
 
   static navigationOptions = {
     header: null,
   };
 
-  getLocationHistory = () => {
-    const locations = [];
-    // For now parsing fake data defined above and adding productivity score, which by default is 0
-    Object.keys(fakeData.locationAlgorithmOutput).forEach(key => {
-      locations.push({
-        coords: key,
-        times: fakeData.locationAlgorithmOutput[key],
-        productivity: 0,
-      });
-    });
-    // Sort fake data by most frequently visited locations
-    if (locations.length > 1) {
-      locations.sort(function(a, b) {
-        if (a.times.length === b.times.length) return 0;
-        if (a.times.length > b.times.length) return -1;
-        if (a.times.length < b.times.length) return 1;
-      });
+  // checks if home location is provided
+  isReadyToSave = () => {
+    return (
+      this.state.homeLocation !== 'Enter Your Home Address' &&
+      this.state.homeLocation !== null &&
+      this.state.homeLocation !== undefined &&
+      this.state.homeLocation.length !== 0
+    );
+  };
+
+  // save user info
+  saveInfo = () => {
+    const frequentLocations = this.state.frequentLocations;
+
+    // add item to preset productive locations if user entered something
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      frequentLocations[this.state.locationNameToAdd] = this.state.locationProductivityToAdd;
     }
-    // create list of promises, which if successful should just be a list of addresses
-    let promises = [];
-    locations.map(value => {
-      promises.push(
-        new Promise((resolve, reject) => {
-          // getAddress does the google maps reverse geocoding api call to get address
-          this.getAddress(value.coords)
-            .then(address => {
-              resolve(address);
+
+    // set state, then call API to update settings
+    this.setState(
+      {
+        frequentLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
+      },
+      () => {
+        if (this.isReadyToSave()) {
+          api
+            .updateUserSettings(
+              firebase.auth().currentUser.uid,
+              this.state.homeLocation,
+              this.state.homeLocationLatLong,
+              this.state.frequentLocations
+            )
+            .then(() => {
+              api
+                .getUserInfo(firebase.auth().currentUser.uid)
+                .then(response => {
+                  this.props.setUserData(response);
+                  this.props.navigation.navigate('App');
+                })
+                .catch(error => {
+                  Alert.alert(error.message);
+                });
             })
-            .catch(error => reject(error));
-        })
+            .catch(error => {
+              Alert.alert(error.message);
+            });
+        } else {
+          Alert.alert("You're almost there!", 'Please specify a home location.');
+        }
+      }
+    );
+  };
+
+  // user's ability to enter their home location
+  renderHomeLocationInput = () => {
+    return (
+      <AddresSearch
+        placeholder={this.state.homeLocation}
+        listViewDisplayed={this.state.homeLocationDropdown}
+        handlePress={(data, details) => {
+          const latLong = [details.geometry.location.lat, details.geometry.location.lng];
+          this.setState({
+            homeLocation: data.description,
+            homeLocationLatLong: latLong,
+            homeLocationDropdown: 'false',
+          });
+        }}
+        placeholderTextColor={WHITE}
+        inputColor={WHITE}
+        inputBackgroundColor={LIGHT_BLUE}
+        inputBorderBottomColor={WHITE}
+        rowColor={LIGHT_BLUE}
+      />
+    );
+  };
+
+  renderPresetRows = () => {
+    return Object.keys(this.state.frequentLocations).map((address, index) => {
+      // define buttons for swipe
+      const swipeBtns = [
+        {
+          text: 'Delete',
+          backgroundColor: 'red',
+          underlayColor: '#293C44',
+          onPress: () => {
+            delete this.state.frequentLocations[address];
+
+            // update state to re-render
+            this.setState({
+              frequentLocations: this.state.frequentLocations,
+            });
+          },
+        },
+      ];
+
+      // return row
+      return (
+        <Swipeout right={swipeBtns} autoClose backgroundColor="transparent" key={index}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingRight: 10,
+              paddingBottom: 12,
+            }}
+            key={index}>
+            <Text style={styles.address}>{address}</Text>
+            <StarRating
+              disabled={false}
+              emptyStar={'ios-star-outline'}
+              fullStar={'ios-star'}
+              iconSet={'Ionicons'}
+              maxStars={5}
+              starSize={25}
+              rating={this.state.frequentLocations[address]}
+              selectedStar={rating => {
+                const frequentLocations = this.state.frequentLocations;
+                frequentLocations[address] = rating;
+                this.setState({
+                  frequentLocations,
+                });
+              }}
+              fullStarColor={WHITE}
+              emptyStarColor={WHITE}
+            />
+          </View>
+        </Swipeout>
       );
     });
-
-    // promises.all waits checks to make sure all google maps async calls complete successfully
-    Promise.all(promises)
-      .then(elements => {
-        elements.forEach((element, i) => {
-          const key = `switch${i}`; // each location needs a unique switch state specifiec (ex: switch0, switch1, etc.)
-          locations[i]['address'] = element; // add address attribute to location object
-          this.setState({ [key]: false }); // by default, set switch to false (unproductive)
-        });
-        this.setState({
-          locationHistory: locations, // store updated location info
-          locationLoaded: true, // tell app location data parsing is complete
-          addresses: elements, // for rendering switches in render function (see map function call in line 223)
-        });
-      })
-      .catch(error => Alert.alert(error));
   };
 
-  toggleSwitch = (index, value) => {
-    const key = `switch${index}`;
-    this.setState(prevState => {
-      // update location object with new productivity score
-      const locations = prevState.locationHistory.map((location, j) => {
-        if (index === j) location.productivity = value ? 5 : 0;
-        return location;
+  addAnotherPreset = () => {
+    return (
+      <View>
+        <Text style={styles.addAnotherPreset}>Add Another Location:</Text>
+        <View style={styles.presetRow}>
+          <View style={styles.locationColumn}>
+            <AddresSearch
+              placeholder={this.state.locationNameToAdd}
+              listViewDisplayed={this.state.addLocationDropdown}
+              handlePress={(data, details) => {
+                this.setState({
+                  locationNameToAdd: data.description,
+                  addLocationDropdown: 'false',
+                });
+              }}
+              placeholderTextColor={WHITE}
+              inputColor={WHITE}
+              inputBackgroundColor={LIGHT_BLUE}
+              inputBorderBottomColor={WHITE}
+              rowColor={LIGHT_BLUE}
+            />
+          </View>
+          <View style={styles.productivityColumn}>
+            <StarRating
+              disabled={false}
+              emptyStar={'ios-star-outline'}
+              fullStar={'ios-star'}
+              iconSet={'Ionicons'}
+              maxStars={5}
+              starSize={25}
+              rating={this.state.locationProductivityToAdd}
+              selectedStar={rating => {
+                this.setState({ locationProductivityToAdd: rating });
+              }}
+              fullStarColor={WHITE}
+              emptyStarColor={WHITE}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  addLocation = () => {
+    if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
+      const frequentLocations = this.state.frequentLocations;
+      frequentLocations[this.state.locationNameToAdd] = this.state.locationProductivityToAdd;
+
+      this.setState({
+        frequentLocations,
+        locationNameToAdd: '',
+        locationProductivityToAdd: 0,
       });
-      // console.log(locations); // 2D
-      // update specified switch state
-      return {
-        [key]: value,
-        locationHistory: locations,
-      };
-    });
-  };
-
-  // makes google maps reverse geocoding api call with lat long input, returns an address if promise is resolved
-  getAddress = coords => {
-    const coordList = coords.split(' , ');
-    return new Promise((resolve, reject) => {
-      axios
-        .get(
-          // eslint-disable-next-line prettier/prettier
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordList[0]},${coordList[1]}&key=AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk`
-        )
-        // FOR THOMAS – placeid = result.data.results[0].place_id
-        .then(result => {
-          resolve(result.data.results[0].formatted_address);
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
-  };
-
-  // checks if home location is provided
-  formValidation = () => {
-    if (this.state.homeLocation === null) {
-      Alert.alert("You're almost there!", 'Please specify a home location');
-    } else {
-      this.props.navigation.navigate('App');
-      // console.log(this.state.homeLocation); // 2d
-      // console.log(this.state.homeLocationLatLong); // 2d
     }
   };
 
   render() {
     return (
-      <SafeAreaView style={styles.safeAreaContainer}>
-        <ScrollView style={styles.container}>
-          <Text style={styles.heading}>Lets Refine our Data on Your Productivity</Text>
-          <Text style={styles.formLabel}>Enter Your Home Location:</Text>
-          <GooglePlacesAutocomplete
-            placeholder="Your Home Location"
-            placeholderTextColor="#BCC4C7"
-            minLength={2} // minimum length of text to search
-            autoFocus={false}
-            returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
-            keyboardAppearance={'light'} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/textinput.html#keyboardappearance
-            listViewDisplayed="auto" // true/false/undefined
-            fetchDetails
-            renderDescription={row => row.description} // custom description render
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              const latLong = [details.geometry.location.lat, details.geometry.location.lng];
-              this.setState({ homeLocation: data.description, homeLocationLatLong: latLong });
-            }}
-            getDefaultValue={() => ''}
-            query={{
-              // available options: https://developers.google.com/places/web-service/autocomplete
-              key: 'AIzaSyC-NzR3fMLRX_6R9-sFCX7EBLVPFUgRjgk',
-              language: 'en', // language of the results
-              types: 'address', // default: 'geocode'
-            }}
-            styles={{
-              description: {
-                fontWeight: 'bold',
-                color: '#293C44',
-              },
-              textInputContainer: {
-                width: '100%',
-                backgroundColor: 'rgba(0,0,0,0)',
-                borderTopWidth: 0,
-                borderBottomWidth: 0,
-                outline: 'none',
-              },
-              textInput: {
-                marginLeft: 0,
-                marginRight: 0,
-                height: 38,
-                color: '#FEFEFE',
-                fontFamily: 'Raleway-Light',
-                backgroundColor: '#388CAB',
-                borderBottomColor: '#FEFEFE',
-                borderBottomWidth: 0.25,
-                fontSize: 20,
-                paddingBottom: 5,
-                paddingLeft: 5,
-              },
-              poweredContainer: {
-                display: 'none',
-              },
-              row: {
-                color: '#FEFEFE',
-              },
-            }}
-            // currentLocation // Will add a 'Current location' button at the top of the predefined places list
-            currentLocationLabel="Current location"
-            nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-            GooglePlacesDetailsQuery={{
-              // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
-              fields: 'formatted_address',
-            }}
-            GooglePlacesSearchQuery={{
-              // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-              rankby: 'prominence',
-            }}
-            debounce={500} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-          />
-          <Text style={styles.formLabel}>
-            We've Guessed Where You're Productive and Unproductive:
-          </Text>
-          <Text style={styles.formSubheading}>Change What We Got Wrong</Text>
-          <View style={styles.columnContainer}>
-            <View style={styles.column}>
-              <Text style={styles.columnHeader}>Location:</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <NavBar backgroundColor="#388CAB" />
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.settingsContainer}>
+              <Text style={styles.title}>Let's Refine Our Data On Your Productivity</Text>
+              <Text style={styles.formLabel}>Enter Your Home Location:</Text>
+              {this.renderHomeLocationInput()}
+              <Text style={styles.formLabel}>Frequent Locations:</Text>
+              <Text style={styles.formDescription}>
+                We found your top 10 most frequently visited locations from the data you provided.
+                Please estimate your productivity at each location. You can also add locations in
+                the text field below.
+              </Text>
+              <View style={styles.presetRow}>
+                <View style={styles.locationColumn}>
+                  <Text style={styles.columnHeader}>Location:</Text>
+                </View>
+                <View style={styles.productivityColumn}>
+                  <Text style={styles.columnHeader}>Productivity:</Text>
+                </View>
+              </View>
+              <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
+              {this.addAnotherPreset()}
+
+              {this.state.locationNameToAdd.length > 0 &&
+              this.state.locationProductivityToAdd > 0 ? (
+                <Button
+                  buttonStyle={styles.nextButton}
+                  color="#FEFEFE"
+                  onPress={this.addLocation}
+                  title="Add Location"
+                />
+              ) : null}
             </View>
-            <View style={styles.column}>
-              <Text style={styles.columnHeader}>I am Productive:</Text>
-            </View>
-            {this.state.locationLoaded
-              ? this.state.addresses.map((address, i) => {
-                  const key = `switch${i}`;
-                  return [
-                    <View key={i} style={styles.column}>
-                      <Text style={styles.columnText}>{address}</Text>
-                    </View>,
-                    <View key={i + 0.5} style={styles.column}>
-                      <View style={styles.switchContainer}>
-                        <Text style={styles.switchText}>NO</Text>
-                        <Switch
-                          style={styles.switch}
-                          value={this.state[key]}
-                          onValueChange={value => this.toggleSwitch(i, value)}
-                          trackColor={{ true: '#388CAB' }}
-                          ios_backgroundColor="#388CAB"
-                        />
-                        <Text style={styles.switchText}>YES</Text>
-                      </View>
-                    </View>,
-                  ];
-                })
-              : null}
-          </View>
+          </ScrollView>
           <Button
-            buttonStyle={styles.submitButton}
+            buttonStyle={styles.nextButton}
             color="#FEFEFE"
             onPress={() => {
-              this.formValidation();
+              this.saveInfo();
             }}
-            title="Submit"
+            title="Save and Continue"
           />
-        </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  safeAreaContainer: {
+  title: {
+    color: WHITE,
+    fontSize: 28,
+    fontFamily: 'Raleway-Bold',
+    marginTop: 30,
+  },
+  safeArea: {
     flex: 1,
-    backgroundColor: '#388CAB',
+    backgroundColor: LIGHT_BLUE,
   },
   container: {
-    paddingTop: 30,
-    paddingLeft: 20,
-    paddingRight: 20,
+    flex: 1,
+    backgroundColor: LIGHT_BLUE,
+  },
+  contentContainer: {
+    backgroundColor: LIGHT_BLUE,
+  },
+  settingsContainer: {
+    marginLeft: 18,
+    marginRight: 18,
   },
   heading: {
     fontSize: 35,
-    color: 'white',
+    color: WHITE,
     fontFamily: 'Raleway-Bold',
   },
   formLabel: {
-    color: '#293C44',
-    fontSize: 30,
+    color: DARK_BLUE,
+    fontSize: 28,
     fontFamily: 'Raleway-Bold',
+    marginTop: 30,
+  },
+  formDescription: {
+    paddingTop: 10,
     marginBottom: 20,
-    marginTop: 50,
+    fontFamily: 'Raleway-Light',
+    fontSize: 20,
+    color: WHITE,
   },
   text: {
     margin: 20,
   },
   input: {
-    borderBottomColor: '#FEFEFE',
+    borderBottomColor: WHITE,
     borderBottomWidth: 0.25,
     fontSize: 20,
     paddingBottom: 5,
-    color: '#FEFEFE',
+    color: WHITE,
     fontFamily: 'Raleway-Light',
     fontWeight: '300',
   },
   formSubheading: {
-    color: '#FEFEFE',
+    color: WHITE,
     fontFamily: 'Raleway-Bold',
     fontSize: 20,
     marginBottom: 25,
@@ -312,40 +362,89 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
   },
+  presetContainer: {
+    flex: 1,
+  },
+  presetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  addAnotherPreset: {
+    color: WHITE,
+    fontSize: 20,
+    fontFamily: 'Raleway-Bold',
+    marginVertical: 15,
+  },
+  address: {
+    paddingLeft: 0,
+    marginLeft: 0,
+    width: 175,
+    color: 'white',
+    fontFamily: 'Raleway-Light',
+    fontSize: 18,
+  },
+  score: {
+    color: WHITE,
+    fontFamily: 'Raleway-Light',
+    fontSize: 18,
+    textAlign: 'center',
+  },
   column: {
     width: '50%',
   },
+  locationColumn: {
+    width: '60%',
+  },
+  productivityColumn: {
+    width: '35%',
+    marginHorizontal: 20,
+  },
   columnHeader: {
-    color: '#293C44',
+    color: WHITE,
     fontFamily: 'Raleway-Bold',
     fontSize: 20,
-    marginBottom: 20,
   },
   columnText: {
     paddingTop: 5,
-    color: '#FEFEFE',
+    color: WHITE,
     fontSize: 20,
     fontFamily: 'Raleway-Light',
   },
-  submitButton: {
-    backgroundColor: '#293C44',
+  nextButton: {
+    backgroundColor: DARK_BLUE,
     margin: 40,
   },
-  switch: {
-    alignItems: 'center',
+  saveButton: {
+    backgroundColor: DARK_BLUE,
+    paddingHorizontal: 20,
     marginLeft: 10,
-    marginRight: 10,
-    borderWidth: 0.5,
-    borderColor: '#FEFEFE',
-    color: 'rgba(0,0,0,0)',
+    margin: 20,
+    padding: 10,
   },
-  switchText: {
-    fontSize: 18,
-    color: '#E5E5E5',
-  },
-  switchContainer: {
+  addLocation: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
 });
+
+const mapStateToProps = state => {
+  return {
+    userData: state.user.userData,
+    frequentLocations: state.user.frequentLocations,
+  };
+};
+
+// updating the reducer
+const mapDispatchToProps = dispatch => {
+  return {
+    setUserData: object => {
+      dispatch(setUserData(object));
+    },
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProvideInitialInfoScreen);
