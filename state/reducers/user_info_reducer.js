@@ -7,6 +7,7 @@ const initialState = {
   leastProductiveDays: {},
   mostProductiveLocations: [],
   productivityScores: {},
+  newLocations: [],
 };
 
 const UserInfoReducer = (state = initialState, action) => {
@@ -28,6 +29,9 @@ const UserInfoReducer = (state = initialState, action) => {
 
     case ActionTypes.SET_PRODUCTIVITY_SCORES:
       return { ...state, productivityScores: action.payload };
+
+    case 'setNewLocations':
+      return { ...state, newLocations: action.value };
 
     default:
       return state;

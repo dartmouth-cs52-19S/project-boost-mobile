@@ -199,6 +199,36 @@ const updateUserSettings = (
   });
 };
 
+const getNewLocations = userID => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=vSBrHUpwFZPqGIisDcBPS6cuLTx1&days=${31}`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+const updateLocationProductivity = (locationID, userID, productivity) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(`${API_URL}/updateProductivityLevel/${locationID}`, {
+        userID: 'vSBrHUpwFZPqGIisDcBPS6cuLTx1',
+        productivity,
+      })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
 export {
   getUserInfo,
   getFrequentLocations,
@@ -207,4 +237,6 @@ export {
   getLeastProductiveDays,
   getMostProductiveLocations,
   getProductivityScores,
+  getNewLocations,
+  updateLocationProductivity,
 };
