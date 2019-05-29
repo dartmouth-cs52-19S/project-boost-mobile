@@ -14,7 +14,7 @@
     "@expo/samples": "2.1.1",
     "axios": "^0.18.0",
     "expo": "^32.0.0",
-    "expokit": "32.0.7",
+    "expokit": "32.1.1",
     "firebase": "^5.9.1",
     "immutable": "^4.0.0-rc.12",
     "moment": "^2.24.0",

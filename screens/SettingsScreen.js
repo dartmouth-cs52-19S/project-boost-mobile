@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
+import { StyleSheet, Text, SafeAreaView, View, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import * as firebase from 'firebase';
 import Swipeout from 'react-native-swipeout';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as api from '../datastore/api_requests';
 import { setUserData } from '../state/actions';
 
@@ -202,7 +203,9 @@ class SettingsScreen extends React.Component {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <NavBar backgroundColor="#293C44" />
-          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          <KeyboardAwareScrollView
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}>
             <View style={styles.settingsContainer}>
               <Text style={styles.formLabel}>Your Home Location:</Text>
               {this.renderHomeLocationInput()}
@@ -222,7 +225,7 @@ class SettingsScreen extends React.Component {
               <View style={styles.presetContainer}>{this.renderPresetRows()}</View>
               {this.addAnotherPreset()}
             </View>
-          </ScrollView>
+          </KeyboardAwareScrollView>
           <Button
             buttonStyle={styles.saveButton}
             color="#FEFEFE"
