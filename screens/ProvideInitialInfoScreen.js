@@ -15,6 +15,7 @@ import {
   setLeastProductiveDays,
   setMostProductiveLocations,
   setProductivityScores,
+  setNewLocations,
 } from '../state/actions';
 
 import NavBar from '../components/NavBar';
@@ -69,7 +70,29 @@ class ProvideInitialInfoScreen extends React.Component {
       locationProductivityToAdd: 0, // productivity field in item to add
       homeLocationDropdown: 'auto', // whether or not to display dropdown for home location search
       addLocationDropdown: 'auto', // whether or not to display dropdown for add location location search
+      sentRequests: false,
     };
+  }
+
+  componentWillUpdate(nextProps) {
+    // determine if there was a server error
+    if (Object.keys(nextProps.apiError).length > 0) {
+      Alert.alert(nextProps.apiError.message);
+    }
+    // determine if we've received everything from the server
+    else if (
+      this.state.sentRequests &&
+      !nextProps.setUserDataInProgress &&
+      !nextProps.setFrequentLocationsInProgress &&
+      !nextProps.setMostProductiveDaysInProgress &&
+      !nextProps.setLeastProductiveDaysInProgress &&
+      !nextProps.setMostProductiveLocationsInProgress &&
+      !nextProps.setProductivityScoresInProgress &&
+      !nextProps.setNewLocationsInProgress
+    ) {
+      // bring user to app if done
+      this.props.navigation.navigate('App');
+    }
   }
 
   // checks if home location is provided
@@ -108,6 +131,10 @@ class ProvideInitialInfoScreen extends React.Component {
               this.state.frequentLocations
             )
             .then(() => {
+              this.setState({
+                sentRequests: true,
+              });
+
               const id = firebase.auth().currentUser.uid;
 
               // fire off all necessary API requests
@@ -117,9 +144,7 @@ class ProvideInitialInfoScreen extends React.Component {
               this.props.setLeastProductiveDays(id);
               this.props.setMostProductiveLocations(id);
               this.props.setProductivityScores(id);
-
-              // bring user to app
-              this.props.navigation.navigate('App');
+              this.props.setNewLocations(id);
             })
             .catch(error => {
               Alert.alert(error.message);
@@ -304,6 +329,7 @@ class ProvideInitialInfoScreen extends React.Component {
               />
             ) : null}
           </View>
+          {this.state.sentRequests ? <Text style={styles.loading}>Loading...</Text> : null}
         </KeyboardAwareScrollView>
         <Button
           buttonStyle={styles.nextButton}
@@ -446,12 +472,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  loading: {
+    marginVertical: 10,
+    color: WHITE,
+    fontSize: 20,
+    fontFamily: 'Raleway-Light',
+    textAlign: 'center',
+  },
 });
 
 const mapStateToProps = state => {
   return {
     userData: state.user.userData,
     frequentLocations: state.user.frequentLocations,
+    apiError: state.api.error,
+    setUserDataInProgress: state.api.setUserDataInProgress,
+    setFrequentLocationsInProgress: state.api.setFrequentLocationsInProgress,
+    setMostProductiveDaysInProgress: state.api.setMostProductiveDaysInProgress,
+    setLeastProductiveDaysInProgress: state.api.setLeastProductiveDaysInProgress,
+    setMostProductiveLocationsInProgress: state.api.setMostProductiveLocationsInProgress,
+    setProductivityScoresInProgress: state.api.setProductivityScoresInProgress,
+    setNewLocationsInProgress: state.api.setNewLocationsInProgress,
   };
 };
 
@@ -464,5 +505,6 @@ export default connect(
     setLeastProductiveDays,
     setMostProductiveLocations,
     setProductivityScores,
+    setNewLocations,
   }
 )(ProvideInitialInfoScreen);

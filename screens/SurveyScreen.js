@@ -16,6 +16,17 @@ import moment from 'moment';
 import * as api from '../datastore/api_requests';
 import NavBar from '../components/NavBar';
 
+import {
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+  setProductivityScores,
+  setNewLocations,
+  setProvidedBackgroundLocation,
+} from '../state/actions';
+
 class SurveyScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -25,6 +36,7 @@ class SurveyScreen extends React.Component {
     super(props);
 
     this.state = {
+      id: firebase.auth().currentUser.uid,
       locations: null,
       currLocationIndex: 0,
       newData: true,
@@ -33,6 +45,7 @@ class SurveyScreen extends React.Component {
       submit: false,
       atZero: true,
       submitInProgress: false,
+      sentRequests: false,
     };
   }
 
@@ -40,6 +53,27 @@ class SurveyScreen extends React.Component {
     this.getNewLocationData();
     this.setState({ loaded: true });
   };
+
+  componentWillUpdate(nextProps) {
+    // determine if there was a server error
+    if (Object.keys(nextProps.apiError).length > 0) {
+      Alert.alert(nextProps.apiError.message);
+    }
+    // determine if we've received everything from the server
+    else if (
+      this.state.sentRequests &&
+      !nextProps.setUserDataInProgress &&
+      !nextProps.setFrequentLocationsInProgress &&
+      !nextProps.setMostProductiveDaysInProgress &&
+      !nextProps.setLeastProductiveDaysInProgress &&
+      !nextProps.setMostProductiveLocationsInProgress &&
+      !nextProps.setProductivityScoresInProgress &&
+      !nextProps.setNewLocationsInProgress
+    ) {
+      // route user to data stack if done
+      this.props.navigation.navigate('DataStack');
+    }
+  }
 
   getNewLocationData = () => {
     // TODO: once backend is set, get actual data from user in database
@@ -180,11 +214,20 @@ class SurveyScreen extends React.Component {
     this.setState({ submitInProgress: true });
     Promise.all(promises)
       .then(() => {
-        this.props.navigation.navigate('DataStack');
+        this.props.setUserData(this.state.id);
+        this.props.setFrequentLocations(this.state.id, 10);
+        this.props.setMostProductiveDays(this.state.id);
+        this.props.setLeastProductiveDays(this.state.id);
+        this.props.setMostProductiveLocations(this.state.id);
+        this.props.setProductivityScores(this.state.id);
+        this.props.setNewLocations(this.state.id);
+
+        this.setState({
+          sentRequest: true,
+        });
       })
       .catch(error => {
-        console.log(error);
-        Alert.alert('Internal error saving your input');
+        Alert.alert(`Internal error saving your input: ${error.message}`);
       });
   };
 
@@ -390,10 +433,27 @@ const mapStateToProps = state => {
   return {
     userData: state.user.userData,
     newLocations: state.user.newLocations,
+    apiError: state.api.error,
+    setUserDataInProgress: state.api.setUserDataInProgress,
+    setFrequentLocationsInProgress: state.api.setFrequentLocationsInProgress,
+    setMostProductiveDaysInProgress: state.api.setMostProductiveDaysInProgress,
+    setLeastProductiveDaysInProgress: state.api.setLeastProductiveDaysInProgress,
+    setMostProductiveLocationsInProgress: state.api.setMostProductiveLocationsInProgress,
+    setProductivityScoresInProgress: state.api.setProductivityScoresInProgress,
+    setNewLocationsInProgress: state.api.setNewLocationsInProgress,
   };
 };
 
 export default connect(
   mapStateToProps,
-  null
+  {
+    setUserData,
+    setFrequentLocations,
+    setMostProductiveDays,
+    setLeastProductiveDays,
+    setMostProductiveLocations,
+    setProductivityScores,
+    setNewLocations,
+    setProvidedBackgroundLocation,
+  }
 )(SurveyScreen);
