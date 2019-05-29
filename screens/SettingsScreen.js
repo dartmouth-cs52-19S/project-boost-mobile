@@ -7,7 +7,15 @@ import * as firebase from 'firebase';
 import Swipeout from 'react-native-swipeout';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as api from '../datastore/api_requests';
-import { setUserData } from '../state/actions';
+
+import {
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+  setProductivityScores,
+} from '../state/actions';
 
 import NavBar from '../components/NavBar';
 import AddresSearch from '../components/AddressSearch';
@@ -69,15 +77,15 @@ class SettingsScreen extends React.Component {
             this.state.presetProductiveLocations
           )
           .then(() => {
-            // retrieve updates
-            api
-              .getUserInfo(firebase.auth().currentUser.uid)
-              .then(response => {
-                this.props.setUserData(response);
-              })
-              .catch(err => {
-                Alert.alert(err.message);
-              });
+            const id = firebase.auth().currentUser.uid;
+
+            // fire off all necessary API requests
+            this.props.setUserData(id);
+            this.props.setFrequentLocations(id, 10);
+            this.props.setMostProductiveDays(id);
+            this.props.setLeastProductiveDays(id);
+            this.props.setMostProductiveLocations(id);
+            this.props.setProductivityScores(id);
           });
       }
     );
@@ -373,15 +381,14 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setUserData: object => {
-      dispatch(setUserData(object));
-    },
-  };
-};
-
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  {
+    setUserData,
+    setFrequentLocations,
+    setMostProductiveDays,
+    setLeastProductiveDays,
+    setMostProductiveLocations,
+    setProductivityScores,
+  }
 )(SettingsScreen);

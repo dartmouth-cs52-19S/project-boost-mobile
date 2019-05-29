@@ -1,39 +1,20 @@
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
+import * as firebase from 'firebase';
 import StarRating from 'react-native-star-rating';
 import moment from 'moment';
+import * as api from '../datastore/api_requests';
 import NavBar from '../components/NavBar';
-
-const fakeData = [
-  {
-    _id: '123456',
-    location: {
-      // object from google places id
-      id: '98765',
-      address: '123 Something Road, Hanover, NH 05733, US',
-      type: 'residence',
-    },
-    latLongLocation: '22234234, 234234234',
-    startTime: 1558642194,
-    endTime: 1558649376,
-    // productivity: 3, // won't exist as a field if user hasn't put it in
-  },
-  {
-    _id: '234567',
-    location: {
-      // object from google places id
-      id: '87654',
-      address: '321 Another One, Hanover, NH 05733, US',
-      type: 'airport',
-    },
-    latLongLocation: '4321431, 1234123',
-    startTime: 1558642194,
-    endTime: 1558667989,
-    // productivity: 3, // won't exist as a field if user hasn't put it in
-  },
-];
 
 class SurveyScreen extends React.Component {
   static navigationOptions = {
@@ -51,6 +32,7 @@ class SurveyScreen extends React.Component {
       starCount: 3,
       submit: false,
       atZero: true,
+      submitInProgress: false,
     };
   }
 
@@ -61,19 +43,26 @@ class SurveyScreen extends React.Component {
 
   getNewLocationData = () => {
     // TODO: once backend is set, get actual data from user in database
-    if (fakeData.length === 0) this.setState({ newData: false });
-    this.setState({ locations: fakeData });
+    if (this.props.newLocations.length === 0) this.setState({ newData: false });
+    this.setState({ locations: this.props.newLocations });
   };
 
   renderCurrentLocation = () => {
     let address = '';
     if (this.inLocationsIndex()) {
       const i = this.state.currLocationIndex;
-      address = this.state.locations[i].location.address;
+      address = this.state.locations[i].location.formatted_address;
     } else {
       address = "That's it! Click submit when done. ";
     }
-    return <Text style={styles.address}>{address}</Text>;
+    return (
+      <View>
+        <Text style={styles.address}>{address}</Text>
+        {this.state.submitInProgress ? (
+          <Text style={styles.address}>Submitting (this may take a few seconds)...</Text>
+        ) : null}
+      </View>
+    );
   };
 
   onStarRatingPress = rating => {
@@ -81,7 +70,7 @@ class SurveyScreen extends React.Component {
   };
 
   loadLocationPrompts = () => {
-    return this.state.newData ? (
+    return (
       <View style={styles.reviewContainer}>
         {this.renderCurrentLocation()}
         <Text style={styles.timeContainer}>{this.getLocationTimes()}</Text>
@@ -98,8 +87,6 @@ class SurveyScreen extends React.Component {
           />
         ) : null}
       </View>
-    ) : (
-      <Text>No new locations to review, you're all set!</Text>
     );
   };
 
@@ -111,13 +98,13 @@ class SurveyScreen extends React.Component {
       const end = location.endTime;
       const startString = this.timeToString(start);
       const endString = this.timeToString(end);
-      const timeFromNow = moment(end * 1000).fromNow();
+      const timeFromNow = moment(end).fromNow();
       return `From ${startString} to ${endString}? (${timeFromNow})`;
     } else return '';
   };
 
   timeToString = time => {
-    const hour = moment(time * 1000).format('h:mm a');
+    const hour = moment(time).format('h:mm a');
     return hour;
   };
 
@@ -170,6 +157,8 @@ class SurveyScreen extends React.Component {
     ) {
       const prodScore = this.state.locations[newIndex]['productivity'];
       this.setState({ starCount: prodScore });
+    } else {
+      this.setState({ starCount: 3 });
     }
   };
 
@@ -178,19 +167,40 @@ class SurveyScreen extends React.Component {
   };
 
   submit = () => {
-    // TODO: Backend integration
-    this.props.navigation.navigate('LinksStack');
+    const promises = [];
+    this.state.locations.forEach(location => {
+      promises.push(
+        api.updateLocationProductivity(
+          location._id,
+          firebase.auth().currentUser.uid,
+          location.productivity
+        )
+      );
+    });
+    this.setState({ submitInProgress: true });
+    Promise.all(promises)
+      .then(() => {
+        this.props.navigation.navigate('DataStack');
+      })
+      .catch(error => {
+        console.log(error);
+        Alert.alert('Internal error saving your input');
+      });
   };
 
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <NavBar backgroundColor="#388CAB" />
-          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <NavBar backgroundColor="#388CAB" />
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          {this.state.newData ? (
             <View style={styles.topQuestionArea}>
               <Text style={styles.topQuestionAreaText}>How Productive Were You At...</Text>
-              {this.state.loaded ? this.loadLocationPrompts() : <Text>Loading...</Text>}
+              {this.state.loaded ? (
+                this.loadLocationPrompts()
+              ) : (
+                <Text style={styles.address}>Loading...</Text>
+              )}
               <View style={styles.ratingsLabelContainer}>
                 {!this.state.submit
                   ? [
@@ -204,21 +214,25 @@ class SurveyScreen extends React.Component {
                   : null}
               </View>
             </View>
-          </ScrollView>
-        </View>
+          ) : (
+            <View style={styles.messageContainer}>
+              <Text style={styles.address}>No new locations to review, you're all set!</Text>
+            </View>
+          )}
+        </ScrollView>
         <View style={styles.buttonContainer}>
-          {this.state.submit ? (
+          {this.state.submit || !this.state.newData ? (
             <TouchableOpacity
               style={styles.nextButtonContainer}
               onPress={() => {
                 this.submit();
               }}>
-              <Text style={styles.navButton}>SUBMIT</Text>
+              <Text style={styles.navButton}>{this.state.newData ? 'SUBMIT' : 'CLOSE'}</Text>
             </TouchableOpacity>
           ) : (
             [
               <Text style={styles.progressText} key={0}>
-                {this.state.currLocationIndex + 1}
+                {this.state.currLocationIndex + (this.state.newData ? 1 : 0)}
                 {this.state.loaded ? ` / ${this.state.locations.length}` : null}
               </Text>,
               <TouchableOpacity
@@ -260,6 +274,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     backgroundColor: '#388CAB',
+    flexGrow: 1,
   },
   tabBarInfoContainer: {
     position: 'absolute',
@@ -302,6 +317,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 30,
     marginBottom: 30,
+    marginLeft: 20,
+    marginRight: 20,
     textAlign: 'center',
   },
   ratingsLabelContainer: {
@@ -321,6 +338,7 @@ const styles = StyleSheet.create({
   reviewContainer: {
     paddingLeft: 40,
     paddingRight: 40,
+    width: '100%',
   },
   navButton: {
     fontFamily: 'Raleway-SemiBold',
@@ -362,11 +380,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway-SemiBold',
     marginBottom: 40,
   },
+  messageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
 });
 
 const mapStateToProps = state => {
   return {
     userData: state.user.userData,
+    newLocations: state.user.newLocations,
   };
 };
 
