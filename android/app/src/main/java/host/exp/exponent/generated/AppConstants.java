@@ -12,7 +12,7 @@ import host.exp.exponent.Constants;
 public class AppConstants {
 
   public static final String VERSION_NAME = "2.10.8";
-  public static String INITIAL_URL = "exp://exp.host/@faustino99/boost-mobile";
+  public static String INITIAL_URL = "exp://exp.host/@cs52-boost/boost-mobile";
   public static final String SHELL_APP_SCHEME = "exp14a2d3d016ea4231b40608ffa43a7f00";
   public static final String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;

@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,21 +9,18 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { connect } from 'react-redux';
 import { Google, Constants } from 'expo';
 import * as firebase from 'firebase';
-import { setUserID } from '../state/actions';
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-class LoginScreen extends React.Component {
+export default class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   componentWillMount() {
     if (firebase.auth().currentUser) {
-      this.props.setUserID(firebase.auth().currentUser.uid);
       this.props.navigation.navigate('VerifyAuth');
     }
   }
@@ -38,19 +34,16 @@ class LoginScreen extends React.Component {
             <Image source={require('../assets/images/shopping-woman.png')} style={styles.woman} />
           </View>
         </View>
-        <View style={styles.bottom}>
+        <View>
           <ImageBackground
             source={require('../assets/background-images/home-bottom.png')}
-            style={styles.bottomImage}>
-            <View style={styles.googleButtonArea}>
-              <TouchableOpacity onPress={this.signInGoogleAsync}>
-                <Image
-                  source={require('../assets/images/google-signin.png')}
-                  style={styles.image}
-                />
-              </TouchableOpacity>
-            </View>
-          </ImageBackground>
+            style={styles.bottomImage}
+          />
+        </View>
+        <View style={styles.googleButtonArea}>
+          <TouchableOpacity onPress={this.signInGoogleAsync}>
+            <Image source={require('../assets/images/google-signin.png')} style={styles.image} />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -78,7 +71,6 @@ class LoginScreen extends React.Component {
           .auth()
           .signInAndRetrieveDataWithCredential(credential)
           .then(() => {
-            this.props.setUserID(firebase.auth().currentUser.uid);
             this.props.navigation.navigate('VerifyAuth');
           });
       } else {
@@ -99,6 +91,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     overflow: 'visible',
+    zIndex: 2,
   },
   boostText: {
     fontSize: 30,
@@ -112,36 +105,23 @@ const styles = StyleSheet.create({
   },
   woman: {
     marginTop: 20,
-    width: 330,
-    height: 600,
+    width: 264,
+    height: 480,
   },
   image: {
     width: 250,
     height: 55,
   },
   googleButtonArea: {
-    marginTop: 'auto',
-    marginBottom: 75,
+    bottom: 75,
     alignItems: 'center',
-  },
-  bottom: {
-    zIndex: -1000,
+    zIndex: 3,
+    position: 'absolute',
+    left: 0,
+    right: 0,
   },
   bottomImage: {
     height: 456,
     width,
   },
 });
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setUserID: object => {
-      dispatch(setUserID(object));
-    },
-  };
-};
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(LoginScreen);
