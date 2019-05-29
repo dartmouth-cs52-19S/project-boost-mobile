@@ -3,12 +3,12 @@
 ![*how?*](https://github.com/dartmouth-cs52-19S/project-boost-web/blob/master/src/assets/team.jpg)
 team photo + sofia!
 
-## 🎨Design 
+## 🎨 Design 
 
 Link to Figma: https://www.figma.com/file/YOd5zqcyhMSz66wYNJ39lh3w/Boost-CS52-19S?node-id=1%3A6
 ## ⚙️ Setup Steps  
 
-## 📐Architecture 
+## 📐 Architecture 
 
 ```
 ├──[project-boost-mobile]/       # root directory
@@ -57,11 +57,11 @@ Link to Figma: https://www.figma.com/file/YOd5zqcyhMSz66wYNJ39lh3w/Boost-CS52-19
 - Run the project in Xcode by pressing the triangle start button.
 - If you haven't followed the directions above for installing for iOS, you must do so before running the iOS Simulator. Specifically, you must run `pod install` and **you must build** the project in Xcode. After doing so, you can run the app in the iOS Simulator (with hot-reloading for changes).
 
-## 🚀Deployment 
+## 🚀 Deployment 
 
 For deploying to TestFlight, please consult the Expo docs.
 
-## 👵Authors 
+## 👵 Authors 
 
 Thomas Monfre '21,
 Robert He '19,
@@ -69,6 +69,6 @@ Faustino Cortina '21,
 Varsha Iyer '21,
 Syed Tanveer '21
 
-## 💓Acknowledgments 
+## 💓 Acknowledgments 
 
 We would like to thank Tim for being a great prof and providing a wealth of knowledge, and Sofia for being an amazing resource for help and support. Also thank you to stack overflow, and just generally google.
