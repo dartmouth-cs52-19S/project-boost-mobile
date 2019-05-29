@@ -1,23 +1,37 @@
+import { ActionTypes } from '../actions/index';
+
 const initialState = {
-  uid: null,
-  userData: null,
+  userData: {},
   frequentLocations: [],
+  mostProductiveDays: {},
+  leastProductiveDays: {},
+  mostProductiveLocations: [],
+  productivityScores: {},
   newLocations: [],
 };
 
 const UserInfoReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'setUserID':
-      return { ...state, uid: action.value };
+    case ActionTypes.SET_USER_DATA:
+      return { ...state, userData: action.payload };
 
-    case 'setUserData':
-      return { ...state, userData: action.value };
+    case ActionTypes.SET_FREQUENT_LOCATIONS:
+      return { ...state, frequentLocations: action.payload };
 
-    case 'setFrequentLocations':
-      return { ...state, frequentLocations: action.value };
+    case ActionTypes.SET_MOST_PRODUCTIVE_DAYS:
+      return { ...state, mostProductiveDays: action.payload };
 
-    case 'setNewLocations':
-      return { ...state, newLocations: action.value };
+    case ActionTypes.SET_LEAST_PRODUCTIVE_DAYS:
+      return { ...state, leastProductiveDays: action.payload };
+
+    case ActionTypes.SET_MOST_PRODUCTIVE_LOCATIONS:
+      return { ...state, mostProductiveLocations: action.payload };
+
+    case ActionTypes.SET_PRODUCTIVITY_SCORES:
+      return { ...state, productivityScores: action.payload };
+
+    case ActionTypes.SET_NEW_LOCATIONS:
+      return { ...state, newLocations: action.payload };
 
     default:
       return state;

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		71A77A9D228B9DFC003A50B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 71A77A9C228B9DFC003A50B7 /* GoogleService-Info.plist */; };
 		B501732B1DC01252003445D9 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B501732A1DC01252003445D9 /* EXShell.plist */; };
 		B56386491DB9693800A0598C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B56386481DB9693800A0598C /* AppDelegate.m */; };
 		B56386511DB9693800A0598C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B56386501DB9693800A0598C /* Assets.xcassets */; };
@@ -19,27 +18,11 @@
 		B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */; };
 		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
 		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
-		DADF9F902295091F00E6ABF1 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F812295091F00E6ABF1 /* Octicons.ttf */; };
-		DADF9F912295091F00E6ABF1 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F822295091F00E6ABF1 /* Feather.ttf */; };
-		DADF9F922295091F00E6ABF1 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F832295091F00E6ABF1 /* Entypo.ttf */; };
-		DADF9F932295091F00E6ABF1 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F842295091F00E6ABF1 /* FontAwesome5_Brands.ttf */; };
-		DADF9F942295091F00E6ABF1 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F852295091F00E6ABF1 /* MaterialCommunityIcons.ttf */; };
-		DADF9F952295091F00E6ABF1 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F862295091F00E6ABF1 /* AntDesign.ttf */; };
-		DADF9F962295091F00E6ABF1 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F872295091F00E6ABF1 /* Foundation.ttf */; };
-		DADF9F972295091F00E6ABF1 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F882295091F00E6ABF1 /* Ionicons.ttf */; };
-		DADF9F982295091F00E6ABF1 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F892295091F00E6ABF1 /* FontAwesome5_Solid.ttf */; };
-		DADF9F992295091F00E6ABF1 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8A2295091F00E6ABF1 /* FontAwesome5_Regular.ttf */; };
-		DADF9F9A2295091F00E6ABF1 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8B2295091F00E6ABF1 /* FontAwesome.ttf */; };
-		DADF9F9B2295091F00E6ABF1 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8C2295091F00E6ABF1 /* Zocial.ttf */; };
-		DADF9F9C2295091F00E6ABF1 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8D2295091F00E6ABF1 /* EvilIcons.ttf */; };
-		DADF9F9D2295091F00E6ABF1 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8E2295091F00E6ABF1 /* SimpleLineIcons.ttf */; };
-		DADF9F9E2295091F00E6ABF1 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DADF9F8F2295091F00E6ABF1 /* MaterialIcons.ttf */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-boost.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-boost.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2C1548D9E4CB1AEFA5CCAE6D /* Pods-boost.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-boost.debug.xcconfig"; path = "Pods/Target Support Files/Pods-boost/Pods-boost.debug.xcconfig"; sourceTree = "<group>"; };
-		71A77A9C228B9DFC003A50B7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A47FE4D7F70906B7DC8CE39B /* Pods-boost.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-boost.release.xcconfig"; path = "Pods/Target Support Files/Pods-boost/Pods-boost.release.xcconfig"; sourceTree = "<group>"; };
 		B501732A1DC01252003445D9 /* EXShell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXShell.plist; sourceTree = "<group>"; };
 		B56386411DB9693800A0598C /* boost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = boost.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,21 +39,6 @@
 		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-boost.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-boost.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DADF9F812295091F00E6ABF1 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
-		DADF9F822295091F00E6ABF1 /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Feather.ttf; sourceTree = "<group>"; };
-		DADF9F832295091F00E6ABF1 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
-		DADF9F842295091F00E6ABF1 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
-		DADF9F852295091F00E6ABF1 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
-		DADF9F862295091F00E6ABF1 /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
-		DADF9F872295091F00E6ABF1 /* Foundation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Foundation.ttf; sourceTree = "<group>"; };
-		DADF9F882295091F00E6ABF1 /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ionicons.ttf; sourceTree = "<group>"; };
-		DADF9F892295091F00E6ABF1 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
-		DADF9F8A2295091F00E6ABF1 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
-		DADF9F8B2295091F00E6ABF1 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
-		DADF9F8C2295091F00E6ABF1 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
-		DADF9F8D2295091F00E6ABF1 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
-		DADF9F8E2295091F00E6ABF1 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
-		DADF9F8F2295091F00E6ABF1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +73,6 @@
 		B56386381DB9693800A0598C = {
 			isa = PBXGroup;
 			children = (
-				DADF9F802295091F00E6ABF1 /* Fonts */,
 				B56386431DB9693800A0598C /* boost */,
 				B56386421DB9693800A0598C /* Products */,
 				5B29BC350A332C58878A9F13 /* Pods */,
@@ -144,33 +111,9 @@
 				B501732A1DC01252003445D9 /* EXShell.plist */,
 				B56386661DB9994300A0598C /* EXSDKVersions.plist */,
 				B563865C1DB96A5E00A0598C /* Info.plist */,
-				71A77A9C228B9DFC003A50B7 /* GoogleService-Info.plist */,
 				B563865E1DB96A5E00A0598C /* main.m */,
 			);
 			path = Supporting;
-			sourceTree = "<group>";
-		};
-		DADF9F802295091F00E6ABF1 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				DADF9F812295091F00E6ABF1 /* Octicons.ttf */,
-				DADF9F822295091F00E6ABF1 /* Feather.ttf */,
-				DADF9F832295091F00E6ABF1 /* Entypo.ttf */,
-				DADF9F842295091F00E6ABF1 /* FontAwesome5_Brands.ttf */,
-				DADF9F852295091F00E6ABF1 /* MaterialCommunityIcons.ttf */,
-				DADF9F862295091F00E6ABF1 /* AntDesign.ttf */,
-				DADF9F872295091F00E6ABF1 /* Foundation.ttf */,
-				DADF9F882295091F00E6ABF1 /* Ionicons.ttf */,
-				DADF9F892295091F00E6ABF1 /* FontAwesome5_Solid.ttf */,
-				DADF9F8A2295091F00E6ABF1 /* FontAwesome5_Regular.ttf */,
-				DADF9F8B2295091F00E6ABF1 /* FontAwesome.ttf */,
-				DADF9F8C2295091F00E6ABF1 /* Zocial.ttf */,
-				DADF9F8D2295091F00E6ABF1 /* EvilIcons.ttf */,
-				DADF9F8E2295091F00E6ABF1 /* SimpleLineIcons.ttf */,
-				DADF9F8F2295091F00E6ABF1 /* MaterialIcons.ttf */,
-			);
-			name = Fonts;
-			path = "../node_modules/react-native-vector-icons/Fonts";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,6 +151,7 @@
 				TargetAttributes = {
 					B56386401DB9693800A0598C = {
 						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = C8D8QTF339;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -217,7 +161,6 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -236,29 +179,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DADF9F902295091F00E6ABF1 /* Octicons.ttf in Resources */,
-				DADF9F942295091F00E6ABF1 /* MaterialCommunityIcons.ttf in Resources */,
-				DADF9F9E2295091F00E6ABF1 /* MaterialIcons.ttf in Resources */,
-				DADF9F992295091F00E6ABF1 /* FontAwesome5_Regular.ttf in Resources */,
-				DADF9F972295091F00E6ABF1 /* Ionicons.ttf in Resources */,
-				DADF9F9C2295091F00E6ABF1 /* EvilIcons.ttf in Resources */,
-				DADF9F9D2295091F00E6ABF1 /* SimpleLineIcons.ttf in Resources */,
 				B5693E911FABD46800307FA4 /* launch_background_image.png in Resources */,
-				DADF9F912295091F00E6ABF1 /* Feather.ttf in Resources */,
-				DADF9F9B2295091F00E6ABF1 /* Zocial.ttf in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
 				B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */,
-				DADF9F9A2295091F00E6ABF1 /* FontAwesome.ttf in Resources */,
-				DADF9F952295091F00E6ABF1 /* AntDesign.ttf in Resources */,
-				DADF9F982295091F00E6ABF1 /* FontAwesome5_Solid.ttf in Resources */,
-				DADF9F932295091F00E6ABF1 /* FontAwesome5_Brands.ttf in Resources */,
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				B5693E921FABD46800307FA4 /* launch_icon.png in Resources */,
-				DADF9F922295091F00E6ABF1 /* Entypo.ttf in Resources */,
 				B5693E8E1FABD16A00307FA4 /* LaunchScreen.xib in Resources */,
 				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
-				71A77A9D228B9DFC003A50B7 /* GoogleService-Info.plist in Resources */,
-				DADF9F962295091F00E6ABF1 /* Foundation.ttf in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 			);
@@ -465,7 +392,7 @@
 			baseConfigurationReference = 2C1548D9E4CB1AEFA5CCAE6D /* Pods-boost.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = "$(SRCROOT)/boost/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cs52.boost;
@@ -479,7 +406,7 @@
 			baseConfigurationReference = A47FE4D7F70906B7DC8CE39B /* Pods-boost.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = "$(SRCROOT)/boost/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cs52.boost;
