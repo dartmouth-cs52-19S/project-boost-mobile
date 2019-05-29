@@ -178,7 +178,6 @@ class DataScreen extends React.Component {
         (parseInt(obj.days, 10) > 30 && this.state.selectedTimeframe === 'ALL')
       ) {
         locations = obj.output;
-        // console.log('After you checked if obj.days === 7 || obj.days === 30, the value of locations is: ', locations); // 2d
       }
     });
 
@@ -408,6 +407,7 @@ const styles = StyleSheet.create({
   },
   topLocation: {
     fontFamily: 'Raleway-Light',
+    textDecorationLine: 'underline',
     fontSize: 16,
     color: 'white',
     textAlign: 'center',
