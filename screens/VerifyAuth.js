@@ -38,7 +38,8 @@ class VerifyAuth extends React.Component {
     super(props);
 
     this.state = {
-      id: firebase.auth().currentUser.uid,
+      // id: firebase.auth().currentUser.uid,
+      id: 'vSBrHUpwFZPqGIisDcBPS6cuLTx1',
       sentRequests: false,
     };
   }
