@@ -159,17 +159,10 @@ class SurveyScreen extends React.Component {
   };
 
   saveProductivityScore = (currIndex, rating) => {
-    if (currIndex < this.props.newLocations.length) {
-      this.setState(prevState => {
-        // update location object with new productivity score
-        const locations = prevState.locations.map((location, i) => {
-          if (currIndex === i) location['productivity'] = rating;
-          return location;
-        });
-        // update state
-        return {
-          locations,
-        };
+    if (currIndex < this.props.newLocations.length > 0) {
+      this.props.newLocation = this.props.newLocations.map((location, i) => {
+        if (currIndex === i) location['productivity'] = rating;
+        return location;
       });
     }
   };
