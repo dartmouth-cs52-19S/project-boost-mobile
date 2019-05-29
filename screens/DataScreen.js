@@ -174,13 +174,15 @@ class DataScreen extends React.Component {
     let locations = [];
 
     // get 7 or 30 day if selectedTimeFrame is set
+
     this.props.mostProductiveLocations.forEach(obj => {
       if (
-        (obj.days === 7 && this.state.selectedTimeframe === '7 DAYS') ||
-        (obj.days === 30 && this.state.selectedTimeframe === '30 DAYS') ||
+        (obj.days === '7' && this.state.selectedTimeframe === '7 DAYS') ||
+        (obj.days === '30' && this.state.selectedTimeframe === '30 DAYS') ||
         (parseInt(obj.days, 10) > 30 && this.state.selectedTimeframe === 'ALL')
       ) {
         locations = obj.output;
+        // console.log('After you checked if obj.days === 7 || obj.days === 30, the value of locations is: ', locations); // 2d
       }
     });
 
