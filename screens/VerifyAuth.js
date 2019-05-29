@@ -24,7 +24,6 @@ TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, e
   if (error) {
     Alert(error.message);
   } else {
-    console.log(locations);
     api.uploadBackgroundLocationData(firebase.auth().currentUser.uid, locations);
   }
 });
@@ -38,8 +37,7 @@ class VerifyAuth extends React.Component {
     super(props);
 
     this.state = {
-      // id: firebase.auth().currentUser.uid,
-      id: 'vSBrHUpwFZPqGIisDcBPS6cuLTx1',
+      id: firebase.auth().currentUser.uid,
       sentRequests: false,
     };
   }

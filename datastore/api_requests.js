@@ -218,7 +218,7 @@ const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
 const getNewLocations = userID => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=${userID}&days=31`)
+      .get(`${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=${userID}&days=22`)
       .then(response => {
         resolve(response.data);
       })
