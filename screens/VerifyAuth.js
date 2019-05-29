@@ -68,14 +68,17 @@ class VerifyAuth extends React.Component {
         sentRequests: true,
       });
     }
+
     // determine if we've received everything from the server
     else if (
-      Object.keys(nextProps.userData).length > 0 &&
-      Object.keys(nextProps.frequentLocations).length > 0 &&
-      Object.keys(nextProps.mostProductiveDays).length > 0 &&
-      Object.keys(nextProps.leastProductiveDays).length > 0 &&
-      nextProps.mostProductiveLocations.length > 0 &&
-      Object.keys(nextProps.productivityScores).length > 0
+      this.state.sentRequests &&
+      !nextProps.setUserDataInProgress &&
+      !nextProps.setFrequentLocationsInProgress &&
+      !nextProps.setMostProductiveDaysInProgress &&
+      !nextProps.setLeastProductiveDaysInProgress &&
+      !nextProps.setMostProductiveLocationsInProgress &&
+      !nextProps.setProductivityScoresInProgress &&
+      !nextProps.setNewLocationsInProgress
     ) {
       // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
       if (this.mustProvideMoreInformation(nextProps.userData)) {
@@ -157,12 +160,14 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     userData: state.user.userData,
-    frequentLocations: state.user.frequentLocations,
-    mostProductiveDays: state.user.mostProductiveDays,
-    leastProductiveDays: state.user.leastProductiveDays,
-    mostProductiveLocations: state.user.mostProductiveLocations,
-    productivityScores: state.user.productivityScores,
-    apiError: state.api_error,
+    apiError: state.api.error,
+    setUserDataInProgress: state.api.setUserDataInProgress,
+    setFrequentLocationsInProgress: state.api.setFrequentLocationsInProgress,
+    setMostProductiveDaysInProgress: state.api.setMostProductiveDaysInProgress,
+    setLeastProductiveDaysInProgress: state.api.setLeastProductiveDaysInProgress,
+    setMostProductiveLocationsInProgress: state.api.setMostProductiveLocationsInProgress,
+    setProductivityScoresInProgress: state.api.setProductivityScoresInProgress,
+    setNewLocationsInProgress: state.api.setNewLocationsInProgress,
   };
 };
 
