@@ -301,7 +301,9 @@ class DataScreen extends React.Component {
               <Text style={styles.header}>Aggregate Productivity</Text>
 
               <View style={styles.card}>
-                <View style={styles.chartArea}>{this.renderChart()}</View>
+                <View style={styles.chartArea} pointerEvents="none">
+                  {this.renderChart()}
+                </View>
               </View>
 
               <Text style={styles.header}>Most Productive Locations</Text>
