@@ -95,9 +95,7 @@ class DataScreen extends React.Component {
           <Text
             style={
               styles.badLocationsData
-            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
-            this.state.selectedTimeframe.split(' ')[0]
-          } days.`}</Text>
+            }>{`Uh oh! Looks like we don't have enough data for you.`}</Text>
         );
       } else {
         return (
@@ -156,9 +154,7 @@ class DataScreen extends React.Component {
           <Text
             style={
               styles.badLocationsData
-            }>{`Uh oh! Looks like we don't have enough data for you in the last ${
-            this.state.selectedTimeframe.split(' ')[0]
-          } days.`}</Text>
+            }>{`Uh oh! Looks like we don't have enough data for you.`}</Text>
         );
       } else {
         return (
@@ -197,6 +193,13 @@ class DataScreen extends React.Component {
           </TouchableOpacity>
         );
       });
+    } else if (this.state.selectedTimeframe === 'ALL') {
+      return (
+        <Text
+          style={
+            styles.badLocationsData
+          }>{`Uh oh! Looks like we don't have enough data for you.`}</Text>
+      );
     } else {
       return (
         <Text
