@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Text, Alert, Image, SafeAreaView } from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
+import { TaskManager, Constants, Permissions, Location } from 'expo';
+import * as api from '../datastore/api_requests';
 
 import {
   setUserData,
@@ -11,10 +13,21 @@ import {
   setMostProductiveLocations,
   setProductivityScores,
   setNewLocations,
+  setProvidedBackgroundLocation,
 } from '../state/actions';
 
 import loadingGIF from '../assets/gifs/loading-white.gif';
 import NavBar from '../components/NavBar';
+
+// define background location data task for device
+TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, error }) => {
+  if (error) {
+    Alert(error.message);
+  } else {
+    console.log(locations);
+    api.uploadBackgroundLocationData(firebase.auth().currentUser.uid, locations);
+  }
+});
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
@@ -48,6 +61,7 @@ class VerifyAuth extends React.Component {
       this.props.setMostProductiveLocations(this.state.id);
       this.props.setProductivityScores(this.state.id);
       this.props.setNewLocations(this.state.id);
+      this.getUserLocation();
 
       this.setState({
         sentRequests: true,
@@ -94,6 +108,21 @@ class VerifyAuth extends React.Component {
       </SafeAreaView>
     );
   }
+
+  // start stream to get user background location data
+  getUserLocation = async () => {
+    if (Constants.isDevice) {
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+      if (status === 'granted') {
+        this.props.setProvidedBackgroundLocation(true);
+      }
+
+      Location.startLocationUpdatesAsync('GET_BACKGROUND_LOCATION_DATA', {
+        distanceInterval: 160, // ensure new location changed by 160 meters (about 0.1 miles)
+      });
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -146,5 +175,6 @@ export default connect(
     setMostProductiveLocations,
     setProductivityScores,
     setNewLocations,
+    setProvidedBackgroundLocation,
   }
 )(VerifyAuth);

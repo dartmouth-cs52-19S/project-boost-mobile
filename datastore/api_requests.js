@@ -199,6 +199,22 @@ const updateUserSettings = (
   });
 };
 
+const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .post(`${API_URL}/storeBackgroundData`, {
+        uid,
+        dataToBeProcessed,
+      })
+      .then(response => {
+        resolve(response);
+      })
+      .catch(function(error) {
+        reject(error);
+      });
+  });
+};
+
 const getNewLocations = userID => {
   return new Promise((resolve, reject) => {
     axios
@@ -227,6 +243,7 @@ const updateLocationProductivity = (locationID, userID, productivity) => {
       });
   });
 };
+
 export {
   getUserInfo,
   getFrequentLocations,
@@ -237,4 +254,5 @@ export {
   getProductivityScores,
   getNewLocations,
   updateLocationProductivity,
+  uploadBackgroundLocationData,
 };

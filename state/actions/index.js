@@ -8,6 +8,7 @@ export const ActionTypes = {
   SET_MOST_PRODUCTIVE_LOCATIONS: 'SET_MOST_PRODUCTIVE_LOCATIONS',
   SET_PRODUCTIVITY_SCORES: 'SET_PRODUCTIVITY_SCORES',
   SET_NEW_LOCATIONS: 'SET_NEW_LOCATIONS',
+  SET_PROVIDED_BACKGROUND_LOCATION: 'SET_PROVIDED_BACKGROUND_LOCATION',
   API_ERROR: 'API_ERROR',
 };
 
@@ -102,6 +103,13 @@ const setNewLocations = id => {
   };
 };
 
+const setProvidedBackgroundLocation = bool => {
+  return {
+    type: ActionTypes.SET_PROVIDED_BACKGROUND_LOCATION,
+    payload: bool,
+  };
+};
+
 export {
   setUserData,
   setFrequentLocations,
@@ -110,4 +118,5 @@ export {
   setMostProductiveLocations,
   setProductivityScores,
   setNewLocations,
+  setProvidedBackgroundLocation,
 };

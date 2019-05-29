@@ -2,6 +2,7 @@ import { ActionTypes } from '../actions/index';
 
 const initialState = {
   userData: {},
+  providedBackgroundLocation: false,
   frequentLocations: [],
   mostProductiveDays: {},
   leastProductiveDays: {},
@@ -32,6 +33,9 @@ const UserInfoReducer = (state = initialState, action) => {
 
     case ActionTypes.SET_NEW_LOCATIONS:
       return { ...state, newLocations: action.payload };
+
+    case ActionTypes.SET_PROVIDED_BACKGROUND_LOCATION:
+      return { ...state, providedBackgroundLocation: action.value };
 
     default:
       return state;

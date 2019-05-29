@@ -24,6 +24,7 @@ const FireBaseConfig = {
   messagingSenderId: firebase_messagingSenderId.slice(0, -2),
 };
 
+// disables yellow warnings to device
 console.disableYellowBox = true;
 
 export default class App extends React.Component {

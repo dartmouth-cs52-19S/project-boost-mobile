@@ -25,6 +25,10 @@ const DARK_BLUE = '#293C44';
 const WHITE = '#FEFEFE';
 
 class ProvideInitialInfoScreen extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
+
   constructor(props) {
     super(props);
 
@@ -67,10 +71,6 @@ class ProvideInitialInfoScreen extends React.Component {
       addLocationDropdown: 'auto', // whether or not to display dropdown for add location location search
     };
   }
-
-  static navigationOptions = {
-    header: null,
-  };
 
   // checks if home location is provided
   isReadyToSave = () => {
