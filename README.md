@@ -38,7 +38,7 @@ Link to Figma: https://www.figma.com/file/YOd5zqcyhMSz66wYNJ39lh3w/Boost-CS52-19
 - `cd project-boost-mobile`
 - `yarn install`
 
-## Installing for iOS 
+## Installing for iOS 🍎
 
 - `sudo gem install cocoapods -v 1.5.3`
 - `cd ios/`
