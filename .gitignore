@@ -94,3 +94,6 @@ buck-out/
 /ios/Pods/*
 !ios/Pods/Pods.xcodeproj/project.pbxproj
 ios/Podfile.lock
+
+## travis
+coverage/
