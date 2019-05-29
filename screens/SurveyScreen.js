@@ -169,7 +169,6 @@ class SurveyScreen extends React.Component {
   submit = () => {
     const promises = [];
     this.state.locations.forEach(location => {
-      // console.log(location);
       promises.push(
         api.updateLocationProductivity(
           location._id,
@@ -181,7 +180,7 @@ class SurveyScreen extends React.Component {
     this.setState({ submitInProgress: true });
     Promise.all(promises)
       .then(() => {
-        this.props.navigation.navigate('LinksStack');
+        this.props.navigation.navigate('DataStack');
       })
       .catch(error => {
         console.log(error);

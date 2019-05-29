@@ -2,79 +2,73 @@ import React from 'react';
 import { StyleSheet, View, Text, Alert, Image, SafeAreaView } from 'react-native';
 import * as firebase from 'firebase';
 import { connect } from 'react-redux';
-import * as api from '../datastore/api_requests';
+
+import {
+  setUserData,
+  setFrequentLocations,
+  setMostProductiveDays,
+  setLeastProductiveDays,
+  setMostProductiveLocations,
+  setProductivityScores,
+  setNewLocations,
+} from '../state/actions';
+
 import loadingGIF from '../assets/gifs/loading-white.gif';
 import NavBar from '../components/NavBar';
-
-import { setUserData, setFrequentLocations, setNewLocations } from '../state/actions';
 
 class VerifyAuth extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      id: firebase.auth().currentUser.uid,
+      sentRequests: false,
+    };
+  }
+
+  // get user account or create one
   componentDidMount() {
-    // holds promises for API requests
-    const promises = [];
+    this.props.setUserData(this.state.id);
+  }
 
-    // get user information
-    promises.push(
-      new Promise((resolve, reject) => {
-        api
-          .getUserInfo(firebase.auth().currentUser.uid) // get user information
-          .then(response => {
-            this.props.setUserData(response); // saving user information
-            resolve(response);
-          })
-          .catch(error => {
-            Alert.alert(error.message);
-          });
-      })
-    );
+  componentWillUpdate(nextProps) {
+    // determine if there was a server error
+    if (Object.keys(nextProps.apiError).length > 0) {
+      Alert.alert(nextProps.apiError.message);
+    }
+    // once we have the user data, then an account definitely exists, so fire off additional requests async of each other
+    else if (Object.keys(nextProps.userData).length > 0 && !this.state.sentRequests) {
+      this.props.setFrequentLocations(this.state.id, 10);
+      this.props.setMostProductiveDays(this.state.id);
+      this.props.setLeastProductiveDays(this.state.id);
+      this.props.setMostProductiveLocations(this.state.id);
+      this.props.setProductivityScores(this.state.id);
+      this.props.setNewLocations(this.state.id);
 
-    // get frequent locations
-    promises.push(
-      new Promise((resolve, reject) => {
-        api
-          .getFrequentLocations(firebase.auth().currentUser.uid, 10) // get frequent locations
-          .then(response => {
-            this.props.setFrequentLocations(response.output); // saving frequent locations
-            resolve(response.output);
-          })
-          .catch(error => {
-            Alert.alert(error.message);
-          });
-      })
-    );
-
-    promises.push(
-      new Promise((resolve, reject) => {
-        api
-          .getNewLocations(firebase.auth().currentUser.uid)
-          .then(response => {
-            this.props.setNewLocations(response);
-            // console.log(response);
-            resolve(response);
-          })
-          .catch(error => {
-            Alert.alert(error.message);
-          });
-      })
-    );
-
-    // when all desired information has been received, redirect user
-    Promise.all(promises)
-      .then(result => {
-        // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
-        if (this.mustProvideMoreInformation(result[0])) {
-          this.props.navigation.navigate('ProvideInitialInfo');
-        } else {
-          this.props.navigation.navigate('App');
-        }
-      })
-      .catch(error => {
-        Alert.alert(error.message);
+      this.setState({
+        sentRequests: true,
       });
+    }
+    // determine if we've received everything from the server
+    else if (
+      Object.keys(nextProps.userData).length > 0 &&
+      Object.keys(nextProps.frequentLocations).length > 0 &&
+      Object.keys(nextProps.mostProductiveDays).length > 0 &&
+      Object.keys(nextProps.leastProductiveDays).length > 0 &&
+      nextProps.mostProductiveLocations.length > 0 &&
+      Object.keys(nextProps.productivityScores).length > 0
+    ) {
+      // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
+      if (this.mustProvideMoreInformation(nextProps.userData)) {
+        this.props.navigation.navigate('ProvideInitialInfo');
+      } else {
+        this.props.navigation.navigate('App');
+      }
+    }
   }
 
   // determine if user must provide more information before proceeding to app
@@ -115,6 +109,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     backgroundColor: '#388CAB',
+    alignItems: 'center',
   },
   loadingGIF: {
     width: 95,
@@ -132,26 +127,24 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     userData: state.user.userData,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setUserData: object => {
-      dispatch(setUserData(object));
-    },
-    setFrequentLocations: object => {
-      dispatch(setFrequentLocations(object));
-    },
-    setNewLocations: object =>
-      new Promise((resolve, reject) => {
-        dispatch(setNewLocations(object));
-        resolve();
-      }),
+    frequentLocations: state.user.frequentLocations,
+    mostProductiveDays: state.user.mostProductiveDays,
+    leastProductiveDays: state.user.leastProductiveDays,
+    mostProductiveLocations: state.user.mostProductiveLocations,
+    productivityScores: state.user.productivityScores,
+    apiError: state.api_error,
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  {
+    setUserData,
+    setFrequentLocations,
+    setMostProductiveDays,
+    setLeastProductiveDays,
+    setMostProductiveLocations,
+    setProductivityScores,
+    setNewLocations,
+  }
 )(VerifyAuth);
