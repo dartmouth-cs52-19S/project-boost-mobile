@@ -30,8 +30,8 @@ const UserInfoReducer = (state = initialState, action) => {
     case ActionTypes.SET_PRODUCTIVITY_SCORES:
       return { ...state, productivityScores: action.payload };
 
-    case 'setNewLocations':
-      return { ...state, newLocations: action.value };
+    case ActionTypes.SET_NEW_LOCATIONS:
+      return { ...state, newLocations: action.payload };
 
     default:
       return state;

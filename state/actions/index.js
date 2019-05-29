@@ -7,6 +7,7 @@ export const ActionTypes = {
   SET_LEAST_PRODUCTIVE_DAYS: 'SET_LEAST_PRODUCTIVE_DAYS',
   SET_MOST_PRODUCTIVE_LOCATIONS: 'SET_MOST_PRODUCTIVE_LOCATIONS',
   SET_PRODUCTIVITY_SCORES: 'SET_PRODUCTIVITY_SCORES',
+  SET_NEW_LOCATIONS: 'SET_NEW_LOCATIONS',
   API_ERROR: 'API_ERROR',
 };
 
@@ -88,6 +89,19 @@ const setProductivityScores = id => {
   };
 };
 
+const setNewLocations = id => {
+  return dispatch => {
+    api
+      .getNewLocations(id)
+      .then(response => {
+        dispatch({ type: ActionTypes.SET_NEW_LOCATIONS, payload: response });
+      })
+      .catch(error => {
+        dispatch({ type: ActionTypes.API_ERROR, payload: error });
+      });
+  };
+};
+
 export {
   setUserData,
   setFrequentLocations,
@@ -95,4 +109,5 @@ export {
   setLeastProductiveDays,
   setMostProductiveLocations,
   setProductivityScores,
+  setNewLocations,
 };

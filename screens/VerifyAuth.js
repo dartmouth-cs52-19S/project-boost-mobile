@@ -10,6 +10,7 @@ import {
   setLeastProductiveDays,
   setMostProductiveLocations,
   setProductivityScores,
+  setNewLocations,
 } from '../state/actions';
 
 import loadingGIF from '../assets/gifs/loading-white.gif';
@@ -46,6 +47,7 @@ class VerifyAuth extends React.Component {
       this.props.setLeastProductiveDays(this.state.id);
       this.props.setMostProductiveLocations(this.state.id);
       this.props.setProductivityScores(this.state.id);
+      this.props.setNewLocations(this.state.id);
 
       this.setState({
         sentRequests: true,
@@ -143,5 +145,6 @@ export default connect(
     setLeastProductiveDays,
     setMostProductiveLocations,
     setProductivityScores,
+    setNewLocations,
   }
 )(VerifyAuth);

@@ -202,9 +202,7 @@ const updateUserSettings = (
 const getNewLocations = userID => {
   return new Promise((resolve, reject) => {
     axios
-      .get(
-        `${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=vSBrHUpwFZPqGIisDcBPS6cuLTx1&days=${31}`
-      )
+      .get(`${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=${userID}&days=${31}`)
       .then(response => {
         resolve(response.data);
       })
@@ -218,7 +216,7 @@ const updateLocationProductivity = (locationID, userID, productivity) => {
   return new Promise((resolve, reject) => {
     axios
       .put(`${API_URL}/updateProductivityLevel/${locationID}`, {
-        userID: 'vSBrHUpwFZPqGIisDcBPS6cuLTx1',
+        userID,
         productivity,
       })
       .then(response => {
