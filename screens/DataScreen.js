@@ -30,7 +30,7 @@ class DataScreen extends React.Component {
   }
 
   renderTopButtons = () => {
-    const options = ['ALL', '7 DAYS', '30 DAYS'];
+    const options = ['ALL', '30 DAYS', '7 DAYS'];
 
     return options.map((timeframe, index) => {
       return (
