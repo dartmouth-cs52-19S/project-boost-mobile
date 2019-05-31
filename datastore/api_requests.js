@@ -1,10 +1,11 @@
 import axios from 'axios';
 const API_URL = 'https://project-boost.herokuapp.com/api';
 
-const getUserInfo = id => {
+// mongo user info
+const getUserInfo = idToken => {
   return new Promise((resolve, reject) => {
     axios
-      .post(`${API_URL}/getAuth`, { userID: id })
+      .post(`${API_URL}/getAuth`, { userID: idToken })
       .then(response => {
         if (Object.keys(response.data).includes('response')) {
           resolve(response.data.response);
@@ -18,11 +19,12 @@ const getUserInfo = id => {
   });
 };
 
-const getFrequentLocations = (id, numberOfItems) => {
+// most frequently visited locations (different for all time data vs 30 days vs 7 days)
+const getFrequentLocations = (idToken, numberOfItems) => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        `${API_URL}/mostFrequentlyVisitedLocationsRanked?uid=${id}&numberOfItems=${numberOfItems}`
+        `${API_URL}/mostFrequentlyVisitedLocationsRanked?uid=${idToken}&numberOfItems=${numberOfItems}`
       )
       .then(response => {
         resolve(response.data);
@@ -33,7 +35,8 @@ const getFrequentLocations = (id, numberOfItems) => {
   });
 };
 
-const getMostProductiveDays = id => {
+// most productive day (different for all time data vs 30 days vs 7 days)
+const getMostProductiveDays = idToken => {
   return new Promise((resolve, reject) => {
     const promises = [];
     const timelines = [1000000, 7, 30];
@@ -42,7 +45,7 @@ const getMostProductiveDays = id => {
       promises.push(
         new Promise((resolve, reject) => {
           axios
-            .get(`${API_URL}/getMostProductiveWeekDay?userID=${id}&days=${time}`)
+            .get(`${API_URL}/getMostProductiveWeekDay?userID=${idToken}&days=${time}`)
             .then(response => {
               resolve(response.data);
             })
@@ -69,7 +72,8 @@ const getMostProductiveDays = id => {
   });
 };
 
-const getLeastProductiveDays = id => {
+// least productive day (different for all time data vs 30 days vs 7 days)
+const getLeastProductiveDays = idToken => {
   return new Promise((resolve, reject) => {
     const promises = [];
     const timelines = [1000000, 7, 30];
@@ -78,7 +82,7 @@ const getLeastProductiveDays = id => {
       promises.push(
         new Promise((resolve, reject) => {
           axios
-            .get(`${API_URL}/getLeastProductiveWeekDay?userID=${id}&days=${time}`)
+            .get(`${API_URL}/getLeastProductiveWeekDay?userID=${idToken}&days=${time}`)
             .then(response => {
               resolve(response.data);
             })
@@ -105,7 +109,8 @@ const getLeastProductiveDays = id => {
   });
 };
 
-const getMostProductiveLocations = id => {
+// most productive locations (different for all time data vs 30 days vs 7 days)
+const getMostProductiveLocations = idToken => {
   return new Promise((resolve, reject) => {
     const promises = [];
     const timelines = [1000000, 7, 30];
@@ -115,7 +120,7 @@ const getMostProductiveLocations = id => {
         new Promise((resolve, reject) => {
           axios
             .get(
-              `${API_URL}/mostProductiveLocationsRankedLastNDays?uid=${id}&numberOfItems=${5}&days=${time}`
+              `${API_URL}/mostProductiveLocationsRankedLastNDays?uid=${idToken}&numberOfItems=${5}&days=${time}`
             )
             .then(response => {
               resolve(response.data);
@@ -137,7 +142,8 @@ const getMostProductiveLocations = id => {
   });
 };
 
-const getProductivityScores = id => {
+// avg productivity scores for each day last 30 or 7 days
+const getProductivityScores = idToken => {
   return new Promise((resolve, reject) => {
     const promises = [];
     const timelines = [1000000, 7, 30];
@@ -146,7 +152,7 @@ const getProductivityScores = id => {
       promises.push(
         new Promise((resolve, reject) => {
           axios
-            .get(`${API_URL}/productivityScoresLastNDays?uid=${id}&days=${time}`)
+            .get(`${API_URL}/productivityScoresLastNDays?uid=${idToken}&days=${time}`)
             .then(response => {
               resolve(response.data);
             })
@@ -173,8 +179,9 @@ const getProductivityScores = id => {
   });
 };
 
+// send updated info for user (things you can set on settings screen like home location and preset productive locations)
 const updateUserSettings = (
-  userID,
+  idToken,
   homeLocation,
   homeLocationLatLong,
   presetProductiveLocations
@@ -182,7 +189,7 @@ const updateUserSettings = (
   return new Promise((resolve, reject) => {
     axios
       .put(`${API_URL}/updateUserSettings`, {
-        userID,
+        userID: idToken,
         homeLocation,
         homeLocationLatLong:
           homeLocationLatLong.length > 0
@@ -199,11 +206,12 @@ const updateUserSettings = (
   });
 };
 
-const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
+// send up background location data
+const uploadBackgroundLocationData = (idToken, dataToBeProcessed) => {
   return new Promise((resolve, reject) => {
     axios
       .post(`${API_URL}/storeBackgroundData`, {
-        uid,
+        uid: idToken,
         dataToBeProcessed,
       })
       .then(response => {
@@ -215,10 +223,11 @@ const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
   });
 };
 
-const getNewLocations = userID => {
+// grab new locations that need productivity score
+const getNewLocations = idToken => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=${userID}&days=22`)
+      .get(`${API_URL}/getLocationsWithProductivityNullWithinLastNDays?userID=${idToken}&days=22`)
       .then(response => {
         resolve(response.data);
       })
@@ -228,11 +237,12 @@ const getNewLocations = userID => {
   });
 };
 
-const updateLocationProductivity = (locationID, userID, productivity) => {
+// update productivity score of new locations
+const updateLocationProductivity = (locationID, idToken, productivity) => {
   return new Promise((resolve, reject) => {
     axios
       .put(`${API_URL}/updateProductivityLevel/${locationID}`, {
-        userID,
+        userID: idToken,
         productivity,
       })
       .then(response => {

@@ -15,6 +15,8 @@ import Modal from 'react-native-modal';
 import NavBar from '../components/NavBar';
 import MapPopup from '../components/MapPopup';
 
+const width = Dimensions.get('window').width;
+
 class DataScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -29,6 +31,7 @@ class DataScreen extends React.Component {
     };
   }
 
+  // renders the top switch bar between all time, last 30 days, and last 7 days
   renderTopButtons = () => {
     const options = ['ALL', '30 DAYS', '7 DAYS'];
 
@@ -50,6 +53,7 @@ class DataScreen extends React.Component {
     });
   };
 
+  // displays most productive day in top box (pulls from redux store)
   getMostProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
       if (
@@ -107,6 +111,7 @@ class DataScreen extends React.Component {
     }
   };
 
+  // displays least productive day in top box (pulls from redux store)
   getLeastProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
       if (
@@ -166,10 +171,9 @@ class DataScreen extends React.Component {
     }
   };
 
+  // display most frequently visited locations to user
   renderMostProductiveLocations = () => {
     let locations = [];
-
-    // get 7 or 30 day if selectedTimeFrame is set
 
     this.props.mostProductiveLocations.forEach(obj => {
       if (
@@ -211,7 +215,9 @@ class DataScreen extends React.Component {
     }
   };
 
+  // display the chart mapping average productivity levels over last 7 or 30 days
   renderChart = () => {
+    // reject if all
     if (this.state.selectedTimeframe === 'ALL') {
       return (
         <Text style={styles.badLocationsData}>
@@ -223,12 +229,14 @@ class DataScreen extends React.Component {
 
     let data = {};
 
+    // pull data
     if (this.state.selectedTimeframe === '7 DAYS' && this.props.productivityScores['7']) {
       data = this.props.productivityScores['7'];
     } else if (this.state.selectedTimeframe === '30 DAYS' && this.props.productivityScores['30']) {
       data = this.props.productivityScores['30'];
     }
 
+    // as long as there's enough data
     if (Object.keys(data).length === 0) {
       return (
         <Text
@@ -242,10 +250,12 @@ class DataScreen extends React.Component {
 
     const values = [];
 
+    // grab values
     Object.keys(data).forEach(value => {
       values.push(data[value]);
     });
 
+    // render line chart
     return (
       <LineChart
         data={{
@@ -346,7 +356,7 @@ const styles = StyleSheet.create({
   getStartedContainer: {
     padding: 20,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     marginLeft: 18,
     marginRight: 18,
   },
@@ -354,23 +364,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#293C44',
   },
   selectorBox: {
-    paddingVertical: 18,
-    paddingHorizontal: 24,
+    padding: 18,
     borderWidth: 1,
     borderColor: 'lightgrey',
+    width: 3 * (width / 10),
   },
   selectedBox: {
     backgroundColor: '#1A262B',
-    paddingVertical: 18,
-    paddingHorizontal: 24,
+    padding: 18,
     borderWidth: 1,
     borderColor: 'lightgrey',
+    width: 3 * (width / 10),
   },
   text: {
     fontFamily: 'Raleway-Light',
     fontSize: 21,
-    justifyContent: 'center',
     color: 'white',
+    textAlign: 'center',
   },
   insideScroll: {
     flex: 1,

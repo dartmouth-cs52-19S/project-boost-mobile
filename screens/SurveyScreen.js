@@ -36,7 +36,7 @@ class SurveyScreen extends React.Component {
     super(props);
 
     this.state = {
-      id: firebase.auth().currentUser.uid,
+      id: null,
       currLocationIndex: 0,
       starCount: 3,
       submit: false,
@@ -47,9 +47,21 @@ class SurveyScreen extends React.Component {
   }
 
   componentDidMount = () => {
-    this.setState({ loaded: true });
+    firebase
+      .auth()
+      .currentUser.getIdToken(true)
+      .then(idToken => {
+        this.setState({
+          id: idToken,
+          loaded: true,
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
   };
 
+  // grab updated info coming from redux in order to determine if user is set to advance to the app
   componentWillUpdate(nextProps) {
     // determine if there was a server error
     if (Object.keys(nextProps.apiError).length > 0) {
@@ -71,6 +83,7 @@ class SurveyScreen extends React.Component {
     }
   }
 
+  // prepping user with submit message
   renderCurrentLocation = () => {
     let address = '';
     if (this.inLocationsIndex()) {
@@ -93,6 +106,7 @@ class SurveyScreen extends React.Component {
     this.setState({ starCount: rating });
   };
 
+  // rendering each survey item
   loadLocationPrompts = () => {
     return (
       <View style={styles.reviewContainer}>
@@ -114,6 +128,7 @@ class SurveyScreen extends React.Component {
     );
   };
 
+  // grab all location times in order to determine timeperiod user observed at location
   getLocationTimes = () => {
     if (this.inLocationsIndex()) {
       const currIndex = this.state.currLocationIndex;
@@ -132,6 +147,7 @@ class SurveyScreen extends React.Component {
     return hour;
   };
 
+  // button press to advance to next address
   nextAddress = () => {
     if (this.inLocationsIndex()) {
       this.saveProductivityScore(this.state.currLocationIndex, this.state.starCount);
@@ -145,6 +161,7 @@ class SurveyScreen extends React.Component {
     }
   };
 
+  // button press to move back to previous address
   prevAddress = () => {
     if (this.state.currLocationIndex > 0) {
       this.saveProductivityScore(this.state.currLocationIndex, this.state.starCount);
@@ -158,6 +175,7 @@ class SurveyScreen extends React.Component {
     }
   };
 
+  // saving mechanism to update your productivity score at a location
   saveProductivityScore = (currIndex, rating) => {
     if (currIndex < this.props.newLocations.length > 0) {
       this.props.newLocation = this.props.newLocations.map((location, i) => {
@@ -167,6 +185,7 @@ class SurveyScreen extends React.Component {
     }
   };
 
+  // star rating for render
   updateStarRating = newIndex => {
     if (
       newIndex < this.props.newLocations.length &&
@@ -179,24 +198,24 @@ class SurveyScreen extends React.Component {
     }
   };
 
+  // determine how far through the surveys you are (i.e. 2/5)
   inLocationsIndex = () => {
     return this.state.currLocationIndex < this.props.newLocations.length;
   };
 
+  // save updates then pull new data
   submit = () => {
     const promises = [];
+    // tell api to update each productivity score at a specific sitting
     this.props.newLocations.forEach(location => {
       promises.push(
-        api.updateLocationProductivity(
-          location._id,
-          firebase.auth().currentUser.uid,
-          location.productivity
-        )
+        api.updateLocationProductivity(location._id, this.state.id, location.productivity)
       );
     });
     this.setState({ submitInProgress: true });
     Promise.all(promises)
       .then(() => {
+        // fire off api requests to get update
         this.props.setUserData(this.state.id);
         this.props.setFrequentLocations(this.state.id, 10);
         this.props.setMostProductiveDays(this.state.id);
