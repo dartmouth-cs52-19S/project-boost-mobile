@@ -36,7 +36,7 @@ class SurveyScreen extends React.Component {
     super(props);
 
     this.state = {
-      id: firebase.auth().currentUser.uid,
+      id: null,
       currLocationIndex: 0,
       starCount: 3,
       submit: false,
@@ -47,7 +47,18 @@ class SurveyScreen extends React.Component {
   }
 
   componentDidMount = () => {
-    this.setState({ loaded: true });
+    firebase
+      .auth()
+      .currentUser.getIdToken(true)
+      .then(idToken => {
+        this.setState({
+          id: idToken,
+          loaded: true,
+        });
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
   };
 
   // grab updated info coming from redux in order to determine if user is set to advance to the app
@@ -198,11 +209,7 @@ class SurveyScreen extends React.Component {
     // tell api to update each productivity score at a specific sitting
     this.props.newLocations.forEach(location => {
       promises.push(
-        api.updateLocationProductivity(
-          location._id,
-          firebase.auth().currentUser.uid,
-          location.productivity
-        )
+        api.updateLocationProductivity(location._id, this.state.id, location.productivity)
       );
     });
     this.setState({ submitInProgress: true });

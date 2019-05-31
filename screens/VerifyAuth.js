@@ -24,7 +24,15 @@ TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, e
   if (error) {
     Alert(error.message);
   } else {
-    api.uploadBackgroundLocationData(firebase.auth().currentUser.uid, locations);
+    firebase
+      .auth()
+      .currentUser.getIdToken(true)
+      .then(idToken => {
+        api.uploadBackgroundLocationData(idToken, locations);
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
   }
 });
 
@@ -38,55 +46,72 @@ class VerifyAuth extends React.Component {
     super(props);
 
     this.state = {
-      id: firebase.auth().currentUser.uid,
+      id: null,
       sentRequests: false,
     };
   }
 
   // get user account or create one
   componentDidMount() {
-    this.props.setUserData(this.state.id);
+    firebase
+      .auth()
+      .currentUser.getIdToken(true)
+      .then(idToken => {
+        this.setState(
+          {
+            id: idToken,
+          },
+          () => {
+            this.props.setUserData(this.state.id);
+          }
+        );
+      })
+      .catch(error => {
+        Alert.alert(error.message);
+      });
   }
 
   // verify new info coming in and advance user to app if received everything
   componentWillUpdate(nextProps) {
-    // determine if there was a server error
-    if (Object.keys(nextProps.apiError).length > 0) {
-      Alert.alert(nextProps.apiError.message);
-    }
-    // once we have the user data, then an account definitely exists, so fire off additional requests async of each other
-    else if (Object.keys(nextProps.userData).length > 0 && !this.state.sentRequests) {
-      this.props.setFrequentLocations(this.state.id, 10);
-      this.props.setMostProductiveDays(this.state.id);
-      this.props.setLeastProductiveDays(this.state.id);
-      this.props.setMostProductiveLocations(this.state.id);
-      this.props.setProductivityScores(this.state.id);
-      this.props.setNewLocations(this.state.id);
+    if (this.state.id !== null) {
+      // determine if there was a server error
+      if (Object.keys(nextProps.apiError).length > 0) {
+        Alert.alert(nextProps.apiError.message);
+      }
+      // once we have the user data, then an account definitely exists, so fire off additional requests async of each other
+      else if (Object.keys(nextProps.userData).length > 0 && !this.state.sentRequests) {
+        this.props.setFrequentLocations(this.state.id, 10);
+        this.props.setMostProductiveDays(this.state.id);
+        this.props.setLeastProductiveDays(this.state.id);
+        this.props.setMostProductiveLocations(this.state.id);
+        this.props.setProductivityScores(this.state.id);
+        this.props.setNewLocations(this.state.id);
 
-      // begin pulling background location data if user gave permission
-      this.getUserLocation();
+        // begin pulling background location data if user gave permission
+        this.getUserLocation();
 
-      this.setState({
-        sentRequests: true,
-      });
-    }
+        this.setState({
+          sentRequests: true,
+        });
+      }
 
-    // determine if we've received everything from the server
-    else if (
-      this.state.sentRequests &&
-      !nextProps.setUserDataInProgress &&
-      !nextProps.setFrequentLocationsInProgress &&
-      !nextProps.setMostProductiveDaysInProgress &&
-      !nextProps.setLeastProductiveDaysInProgress &&
-      !nextProps.setMostProductiveLocationsInProgress &&
-      !nextProps.setProductivityScoresInProgress &&
-      !nextProps.setNewLocationsInProgress
-    ) {
-      // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
-      if (this.mustProvideMoreInformation(nextProps.userData)) {
-        this.props.navigation.navigate('ProvideInitialInfo');
-      } else {
-        this.props.navigation.navigate('App');
+      // determine if we've received everything from the server
+      else if (
+        this.state.sentRequests &&
+        !nextProps.setUserDataInProgress &&
+        !nextProps.setFrequentLocationsInProgress &&
+        !nextProps.setMostProductiveDaysInProgress &&
+        !nextProps.setLeastProductiveDaysInProgress &&
+        !nextProps.setMostProductiveLocationsInProgress &&
+        !nextProps.setProductivityScoresInProgress &&
+        !nextProps.setNewLocationsInProgress
+      ) {
+        // if the user must provide more information to proceed, then navigate to initial info screen, otherwise send to App
+        if (this.mustProvideMoreInformation(nextProps.userData)) {
+          this.props.navigation.navigate('ProvideInitialInfo');
+        } else {
+          this.props.navigation.navigate('App');
+        }
       }
     }
   }

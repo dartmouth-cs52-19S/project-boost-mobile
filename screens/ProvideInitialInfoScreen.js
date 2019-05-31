@@ -123,28 +123,37 @@ class ProvideInitialInfoScreen extends React.Component {
       },
       () => {
         if (this.isReadyToSave()) {
-          api
-            .updateUserSettings(
-              firebase.auth().currentUser.uid,
-              this.state.homeLocation,
-              this.state.homeLocationLatLong,
-              this.state.frequentLocations
-            )
-            .then(() => {
-              this.setState({
-                sentRequests: true,
-              });
+          // get user auth token
+          firebase
+            .auth()
+            .currentUser.getIdToken(true)
+            .then(idToken => {
+              // update user settings
+              api
+                .updateUserSettings(
+                  idToken,
+                  this.state.homeLocation,
+                  this.state.homeLocationLatLong,
+                  this.state.frequentLocations
+                )
+                // update state
+                .then(() => {
+                  this.setState({
+                    sentRequests: true,
+                  });
 
-              const id = firebase.auth().currentUser.uid;
-
-              // fire off all necessary API requests
-              this.props.setUserData(id);
-              this.props.setFrequentLocations(id, 10);
-              this.props.setMostProductiveDays(id);
-              this.props.setLeastProductiveDays(id);
-              this.props.setMostProductiveLocations(id);
-              this.props.setProductivityScores(id);
-              this.props.setNewLocations(id);
+                  // fire off all necessary API requests
+                  this.props.setUserData(idToken);
+                  this.props.setFrequentLocations(idToken, 10);
+                  this.props.setMostProductiveDays(idToken);
+                  this.props.setLeastProductiveDays(idToken);
+                  this.props.setMostProductiveLocations(idToken);
+                  this.props.setProductivityScores(idToken);
+                  this.props.setNewLocations(idToken);
+                })
+                .catch(error => {
+                  Alert.alert(error.message);
+                });
             })
             .catch(error => {
               Alert.alert(error.message);
