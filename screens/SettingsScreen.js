@@ -49,7 +49,7 @@ class SettingsScreen extends React.Component {
     header: null,
   };
 
-  // save user info
+  // save user information/updates they provided
   saveInfo = () => {
     const presetProductiveLocations = this.state.presetProductiveLocations;
 
@@ -114,6 +114,7 @@ class SettingsScreen extends React.Component {
     );
   };
 
+  // addresses of preset productive locations
   renderPresetRows = () => {
     return Object.keys(this.state.presetProductiveLocations).map((location, index) => {
       // define buttons for swipe
@@ -162,6 +163,7 @@ class SettingsScreen extends React.Component {
     });
   };
 
+  // ability to add another preset productive location
   addAnotherPreset = () => {
     return (
       <View>

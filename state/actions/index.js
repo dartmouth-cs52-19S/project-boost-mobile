@@ -10,6 +10,8 @@ export const ActionTypes = {
   SET_NEW_LOCATIONS: 'SET_NEW_LOCATIONS',
   SET_PROVIDED_BACKGROUND_LOCATION: 'SET_PROVIDED_BACKGROUND_LOCATION',
   API_ERROR: 'API_ERROR',
+
+  // the following actions are booleans indicating if a request was sent for each object but not yet received
   SET_USER_DATA_IN_PROGRESS: 'SET_USER_DATA_IN_PROGRESS',
   SET_FREQUENT_LOCATIONS_IN_PROGRESS: 'SET_FREQUENT_LOCATIONS_IN_PROGRESS',
   SET_MOST_PRODUCTIVE_DAYS_IN_PROGRESS: 'SET_MOST_PRODUCTIVE_DAYS_IN_PROGRESS',
@@ -19,6 +21,7 @@ export const ActionTypes = {
   SET_NEW_LOCATIONS_IN_PROGRESS: 'SET_NEW_LOCATIONS_IN_PROGRESS',
 };
 
+// mongo user object
 const setUserData = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_USER_DATA_IN_PROGRESS, payload: true });
@@ -34,6 +37,7 @@ const setUserData = id => {
   };
 };
 
+// most frequently visited locations
 const setFrequentLocations = (id, numberOfItems) => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_FREQUENT_LOCATIONS_IN_PROGRESS, payload: true });
@@ -49,6 +53,7 @@ const setFrequentLocations = (id, numberOfItems) => {
   };
 };
 
+// most productive day for all time data, 30 day data, and 7 day data
 const setMostProductiveDays = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_MOST_PRODUCTIVE_DAYS_IN_PROGRESS, payload: true });
@@ -64,6 +69,7 @@ const setMostProductiveDays = id => {
   };
 };
 
+// least productive day for all time data, 30 day data, and 7 day data
 const setLeastProductiveDays = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_LEAST_PRODUCTIVE_DAYS_IN_PROGRESS, payload: true });
@@ -79,6 +85,7 @@ const setLeastProductiveDays = id => {
   };
 };
 
+// most productive location for all time data, 30 day data, and 7 day data
 const setMostProductiveLocations = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_MOST_PRODUCTIVE_LOCATIONS_IN_PROGRESS, payload: true });
@@ -94,6 +101,7 @@ const setMostProductiveLocations = id => {
   };
 };
 
+// average productivity level each day for last 30 or 7 days
 const setProductivityScores = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_PRODUCTIVITY_SCORES_IN_PROGRESS, payload: true });
@@ -109,6 +117,7 @@ const setProductivityScores = id => {
   };
 };
 
+// new locations without productivity scores to be set by user
 const setNewLocations = id => {
   return dispatch => {
     dispatch({ type: ActionTypes.SET_NEW_LOCATIONS_IN_PROGRESS, payload: true });
@@ -124,6 +133,7 @@ const setNewLocations = id => {
   };
 };
 
+// boolean indicating if user provided permission to get background location data
 const setProvidedBackgroundLocation = bool => {
   return {
     type: ActionTypes.SET_PROVIDED_BACKGROUND_LOCATION,

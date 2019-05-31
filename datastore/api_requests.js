@@ -1,6 +1,7 @@
 import axios from 'axios';
 const API_URL = 'https://project-boost.herokuapp.com/api';
 
+// mongo user info
 const getUserInfo = id => {
   return new Promise((resolve, reject) => {
     axios
@@ -18,6 +19,7 @@ const getUserInfo = id => {
   });
 };
 
+// most frequently visited locations (different for all time data vs 30 days vs 7 days)
 const getFrequentLocations = (id, numberOfItems) => {
   return new Promise((resolve, reject) => {
     axios
@@ -33,6 +35,7 @@ const getFrequentLocations = (id, numberOfItems) => {
   });
 };
 
+// most productive day (different for all time data vs 30 days vs 7 days)
 const getMostProductiveDays = id => {
   return new Promise((resolve, reject) => {
     const promises = [];
@@ -69,6 +72,7 @@ const getMostProductiveDays = id => {
   });
 };
 
+// least productive day (different for all time data vs 30 days vs 7 days)
 const getLeastProductiveDays = id => {
   return new Promise((resolve, reject) => {
     const promises = [];
@@ -105,6 +109,7 @@ const getLeastProductiveDays = id => {
   });
 };
 
+// most productive locations (different for all time data vs 30 days vs 7 days)
 const getMostProductiveLocations = id => {
   return new Promise((resolve, reject) => {
     const promises = [];
@@ -137,6 +142,7 @@ const getMostProductiveLocations = id => {
   });
 };
 
+// avg productivity scores for each day last 30 or 7 days
 const getProductivityScores = id => {
   return new Promise((resolve, reject) => {
     const promises = [];
@@ -173,6 +179,7 @@ const getProductivityScores = id => {
   });
 };
 
+// send updated info for user (things you can set on settings screen like home location and preset productive locations)
 const updateUserSettings = (
   userID,
   homeLocation,
@@ -199,6 +206,7 @@ const updateUserSettings = (
   });
 };
 
+// send up background location data
 const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
   return new Promise((resolve, reject) => {
     axios
@@ -215,6 +223,7 @@ const uploadBackgroundLocationData = (uid, dataToBeProcessed) => {
   });
 };
 
+// grab new locations that need productivity score
 const getNewLocations = userID => {
   return new Promise((resolve, reject) => {
     axios
@@ -228,6 +237,7 @@ const getNewLocations = userID => {
   });
 };
 
+// update productivity score of new locations
 const updateLocationProductivity = (locationID, userID, productivity) => {
   return new Promise((resolve, reject) => {
     axios

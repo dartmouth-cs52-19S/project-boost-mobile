@@ -28,6 +28,7 @@ TaskManager.defineTask('GET_BACKGROUND_LOCATION_DATA', ({ data: { locations }, e
   }
 });
 
+// user is routed here after login/auth in order to pull data about them
 class VerifyAuth extends React.Component {
   static navigationOptions = {
     header: null,
@@ -47,6 +48,7 @@ class VerifyAuth extends React.Component {
     this.props.setUserData(this.state.id);
   }
 
+  // verify new info coming in and advance user to app if received everything
   componentWillUpdate(nextProps) {
     // determine if there was a server error
     if (Object.keys(nextProps.apiError).length > 0) {
@@ -60,6 +62,8 @@ class VerifyAuth extends React.Component {
       this.props.setMostProductiveLocations(this.state.id);
       this.props.setProductivityScores(this.state.id);
       this.props.setNewLocations(this.state.id);
+
+      // begin pulling background location data if user gave permission
       this.getUserLocation();
 
       this.setState({
@@ -97,6 +101,7 @@ class VerifyAuth extends React.Component {
     );
   };
 
+  // loading icon
   render() {
     return (
       <SafeAreaView style={styles.safeArea}>

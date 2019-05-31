@@ -3,6 +3,7 @@ import { StyleSheet, View, Image } from 'react-native';
 import { Permissions, Location } from 'expo';
 import MapView from 'react-native-maps';
 
+// pop up screen with map
 export default class MapPopup extends React.Component {
   static navigationOptions = {
     header: null,
@@ -21,6 +22,7 @@ export default class MapPopup extends React.Component {
     };
   }
 
+  // make sure have location, then geocode addres into a lat/long point to display on map
   componentDidMount() {
     Permissions.askAsync(Permissions.LOCATION);
 

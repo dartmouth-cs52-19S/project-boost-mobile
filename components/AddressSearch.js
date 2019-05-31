@@ -1,6 +1,7 @@
 import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
+// search bar for address info
 const AddressSearch = props => {
   return (
     <GooglePlacesAutocomplete
