@@ -13,8 +13,10 @@ import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import StarRating from 'react-native-star-rating';
 import moment from 'moment';
+import Modal from 'react-native-modal';
 import * as api from '../datastore/api_requests';
 import NavBar from '../components/NavBar';
+import MapPopup from '../components/MapPopup';
 
 import {
   setUserData,
@@ -43,6 +45,7 @@ class SurveyScreen extends React.Component {
       atZero: true,
       submitInProgress: false,
       sentRequests: false,
+      selectedAddress: null,
     };
   }
 
@@ -78,6 +81,10 @@ class SurveyScreen extends React.Component {
       !nextProps.setProductivityScoresInProgress &&
       !nextProps.setNewLocationsInProgress
     ) {
+      if (this.state.submitInProgress) {
+        // eslint-disable-next-line react/no-will-update-set-state
+        this.setState({ submitInProgress: false });
+      }
       // route user to data stack if done
       this.props.navigation.navigate('DataStack');
     }
@@ -94,7 +101,16 @@ class SurveyScreen extends React.Component {
     }
     return (
       <View>
-        <Text style={styles.address}>{address}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            let selectedAddress = null;
+            if (this.inLocationsIndex() && this.props.newLocations.length > 0)
+              selectedAddress = address;
+            console.log(selectedAddress);
+            this.setState({ selectedAddress });
+          }}>
+          <Text style={styles.address}>{address}</Text>
+        </TouchableOpacity>
         {this.state.submitInProgress ? (
           <Text style={styles.address}>Submitting (this may take a few seconds)...</Text>
         ) : null}
@@ -225,12 +241,20 @@ class SurveyScreen extends React.Component {
         this.props.setNewLocations(this.state.id);
 
         this.setState({
-          sentRequest: true,
+          sentRequests: true,
+          currLocationIndex: 0,
         });
       })
       .catch(error => {
         Alert.alert(`Internal error saving your input: ${error.message}`);
       });
+  };
+
+  // closes modal popup of address map view
+  closeModal = () => {
+    this.setState({
+      selectedAddress: null,
+    });
   };
 
   render() {
@@ -300,6 +324,15 @@ class SurveyScreen extends React.Component {
             </TouchableOpacity>
           ) : null}
         </View>
+        <Modal
+          isVisible={this.state.selectedAddress !== null}
+          onBackdropPress={this.closeModal}
+          onSwipeComplete={this.closeModal}
+          animationIn="zoomIn"
+          animationInTiming={400}
+          animationOut="fadeOut">
+          <MapPopup address={this.state.selectedAddress} />
+        </Modal>
       </SafeAreaView>
     );
   }
