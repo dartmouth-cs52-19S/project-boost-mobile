@@ -57,8 +57,8 @@ Link to Figma: https://www.figma.com/file/YOd5zqcyhMSz66wYNJ39lh3w/Boost-CS52-19
 - Run the project in Xcode by pressing the triangle start button.
 - If you haven't followed the directions above for installing for iOS, you must do so before running the iOS Simulator. Specifically, you must run `pod install` and **you must build** the project in Xcode. After doing so, you can run the app in the iOS Simulator (with hot-reloading for changes).
 
-** important! **
-If you happen to get a `Error: File 'file:///Users/[username]/Library/Developer/CoreSimulator/Devices/F9FE3531-7797-4A6D-8869-F3D9807F63F3/data/Containers/Bundle/Application/B877E994-3065-4CAA-B61F-364961FEEA30/boost.app/asset_b2e0fc821c6886fb3940f85a3320003e.ttf' for font '320F258F-C01A-4D91-9620-B18B45B87F36-ionicons' doesn't exist` Error follow the steps below:
+**important!**
+If you happen to get a `Error: File 'file:///Users/[username]/Library/Developer/CoreSimulator/Devices/F9FE3531-7797-4A6D-8869-F3D9807F63F3/data/Containers/Bundle/Application/B877E994-3065-4CAA-B61F-364961FEEA30/boost.app/asset_b2e0fc821c6886fb3940f85a3320003e.ttf' for font '320F258F-C01A-4D91-9620-B18B45B87F36-ionicons' doesn't exist` Error that prevents the app from rendering, follow the steps below:
 
 - Copy the Podfile in `project-boost-mobile/ios/Podfile` and move it to a folder you can access late
 - Delete the `project-boost-mobile/ios` folder
