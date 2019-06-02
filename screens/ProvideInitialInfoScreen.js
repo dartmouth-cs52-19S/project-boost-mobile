@@ -25,6 +25,7 @@ const LIGHT_BLUE = '#388CAB';
 const DARK_BLUE = '#293C44';
 const WHITE = '#FEFEFE';
 
+// the user is routed here after signing in if they haven't completed their initial setup (provided productivity info)
 class ProvideInitialInfoScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -59,8 +60,6 @@ class ProvideInitialInfoScreen extends React.Component {
     });
 
     this.state = {
-      // behavior: 'position', //position
-      // behaviorTwo: 'position', //position
       homeLocation: this.props.userData.homeLocation
         ? this.props.userData.homeLocation
         : 'Enter Your Home Address', // home location info
@@ -74,6 +73,7 @@ class ProvideInitialInfoScreen extends React.Component {
     };
   }
 
+  // grab updated info coming from redux in order to determine if user is set to advance to the app
   componentWillUpdate(nextProps) {
     // determine if there was a server error
     if (Object.keys(nextProps.apiError).length > 0) {
@@ -105,7 +105,7 @@ class ProvideInitialInfoScreen extends React.Component {
     );
   };
 
-  // save user info
+  // save user information/updates they provided
   saveInfo = () => {
     const frequentLocations = this.state.frequentLocations;
 
@@ -123,28 +123,37 @@ class ProvideInitialInfoScreen extends React.Component {
       },
       () => {
         if (this.isReadyToSave()) {
-          api
-            .updateUserSettings(
-              firebase.auth().currentUser.uid,
-              this.state.homeLocation,
-              this.state.homeLocationLatLong,
-              this.state.frequentLocations
-            )
-            .then(() => {
-              this.setState({
-                sentRequests: true,
-              });
+          // get user auth token
+          firebase
+            .auth()
+            .currentUser.getIdToken(true)
+            .then(idToken => {
+              // update user settings
+              api
+                .updateUserSettings(
+                  idToken,
+                  this.state.homeLocation,
+                  this.state.homeLocationLatLong,
+                  this.state.frequentLocations
+                )
+                // update state
+                .then(() => {
+                  this.setState({
+                    sentRequests: true,
+                  });
 
-              const id = firebase.auth().currentUser.uid;
-
-              // fire off all necessary API requests
-              this.props.setUserData(id);
-              this.props.setFrequentLocations(id, 10);
-              this.props.setMostProductiveDays(id);
-              this.props.setLeastProductiveDays(id);
-              this.props.setMostProductiveLocations(id);
-              this.props.setProductivityScores(id);
-              this.props.setNewLocations(id);
+                  // fire off all necessary API requests
+                  this.props.setUserData(idToken);
+                  this.props.setFrequentLocations(idToken, 10);
+                  this.props.setMostProductiveDays(idToken);
+                  this.props.setLeastProductiveDays(idToken);
+                  this.props.setMostProductiveLocations(idToken);
+                  this.props.setProductivityScores(idToken);
+                  this.props.setNewLocations(idToken);
+                })
+                .catch(error => {
+                  Alert.alert(error.message);
+                });
             })
             .catch(error => {
               Alert.alert(error.message);
@@ -179,6 +188,7 @@ class ProvideInitialInfoScreen extends React.Component {
     );
   };
 
+  // addresses of top 10 most frequently visited locations are initially set as preset for you, but you can change
   renderPresetRows = () => {
     return Object.keys(this.state.frequentLocations).map((address, index) => {
       // define buttons for swipe
@@ -235,6 +245,7 @@ class ProvideInitialInfoScreen extends React.Component {
     });
   };
 
+  // add another location to your preset locations
   addAnotherPreset = () => {
     return (
       <View>
@@ -278,6 +289,7 @@ class ProvideInitialInfoScreen extends React.Component {
     );
   };
 
+  // saving mechanism to put the new location into your presets
   addLocation = () => {
     if (this.state.locationNameToAdd.length > 0 && this.state.locationProductivityToAdd > 0) {
       const frequentLocations = this.state.frequentLocations;
