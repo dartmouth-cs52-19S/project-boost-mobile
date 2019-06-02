@@ -12,7 +12,7 @@ import host.exp.exponent.Constants;
 public class AppConstants {
 
   public static final String VERSION_NAME = "2.10.8";
-  public static String INITIAL_URL = "exp://exp.host/@cs52-boost/boost-mobile";
+  public static String INITIAL_URL = "exp://exp.host/@syedt21/boost-mobile";
   public static final String SHELL_APP_SCHEME = "exp14a2d3d016ea4231b40608ffa43a7f00";
   public static final String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
@@ -23,12 +23,9 @@ public class AppConstants {
   static {
     List<Constants.EmbeddedResponse> embeddedResponses = new ArrayList<>();
 
-    
-        // ADD EMBEDDED RESPONSES HERE
-        // START EMBEDDED RESPONSES
-        embeddedResponses.add(new Constants.EmbeddedResponse("https://exp.host/@cs52-boost/boost-mobile", "assets://shell-app-manifest.json", "application/json"));
-        embeddedResponses.add(new Constants.EmbeddedResponse("https://d1wp6m56sqw74a.cloudfront.net/%40cs52-boost%2Fboost-mobile%2F1.0.0%2F93d56ab8b1ed990fdee0298d143d4397-32.0.0-android.js", "assets://shell-app.bundle", "application/javascript"));
-        // END EMBEDDED RESPONSES
+    // ADD EMBEDDED RESPONSES HERE
+    // START EMBEDDED RESPONSES
+    // END EMBEDDED RESPONSES
     EMBEDDED_RESPONSES = embeddedResponses;
   }
 

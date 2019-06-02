@@ -14,7 +14,7 @@ public class MainActivity extends DetachActivity {
 
   @Override
   public String publishedUrl() {
-    return "exp://exp.host/@cs52-boost/boost-mobile";
+    return "exp://exp.host/@syedt21/boost-mobile";
   }
 
   @Override
