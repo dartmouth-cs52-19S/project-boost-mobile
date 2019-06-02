@@ -48,6 +48,7 @@ const BottomTabNavigatorConfig = {
       paddingTop: 5,
     },
     style: {
+      height: 75,
       backgroundColor: '#293C44',
     },
   },
