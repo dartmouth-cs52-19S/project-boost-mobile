@@ -69,7 +69,7 @@ If you happen to get a `Error: File 'file:///Users/[username]/Library/Developer/
 - Move your Podfile you moved earlier into `project-boost-mobile/ios/Podfile`
 - Run `pod install` then `pod update` in the `project-boost-mobile/ios` directory
 - Run `yarn` in the `project-boost-mobile/` directory
-- Proceed to follow steps in Running Dev Environment for further instrcution
+- Proceed to follow steps in Running Dev Environment for further instruction
 
 ## 🚀 Deployment 
 
