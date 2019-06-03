@@ -138,18 +138,32 @@ class ProvideInitialInfoScreen extends React.Component {
                 )
                 // update state
                 .then(() => {
-                  this.setState({
-                    sentRequests: true,
-                  });
+                  // send again to handle server-side changes (one-time operation)
+                  api
+                    .updateUserSettings(
+                      idToken,
+                      this.state.homeLocation,
+                      this.state.homeLocationLatLong,
+                      this.state.frequentLocations
+                    )
+                    // update state
+                    .then(() => {
+                      this.setState({
+                        sentRequests: true,
+                      });
 
-                  // fire off all necessary API requests
-                  this.props.setUserData(idToken);
-                  this.props.setFrequentLocations(idToken, 10);
-                  this.props.setMostProductiveDays(idToken);
-                  this.props.setLeastProductiveDays(idToken);
-                  this.props.setMostProductiveLocations(idToken);
-                  this.props.setProductivityScores(idToken);
-                  this.props.setNewLocations(idToken);
+                      // fire off all necessary API requests
+                      this.props.setUserData(idToken);
+                      this.props.setFrequentLocations(idToken, 10);
+                      this.props.setMostProductiveDays(idToken);
+                      this.props.setLeastProductiveDays(idToken);
+                      this.props.setMostProductiveLocations(idToken);
+                      this.props.setProductivityScores(idToken);
+                      this.props.setNewLocations(idToken);
+                    })
+                    .catch(error => {
+                      Alert.alert(error.message);
+                    });
                 })
                 .catch(error => {
                   Alert.alert(error.message);
