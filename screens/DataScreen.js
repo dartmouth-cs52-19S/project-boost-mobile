@@ -57,6 +57,7 @@ class DataScreen extends React.Component {
   getMostProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
       if (
+        !this.props.mostProductiveDays.mostProductiveWeekDayLast7Days ||
         this.props.mostProductiveDays.mostProductiveWeekDayLast7Days === 'Not enough information'
       ) {
         return (
@@ -76,6 +77,7 @@ class DataScreen extends React.Component {
       }
     } else if (this.state.selectedTimeframe === '30 DAYS') {
       if (
+        !this.props.mostProductiveDays.mostProductiveWeekDayLast30Days ||
         this.props.mostProductiveDays.mostProductiveWeekDayLast30Days === 'Not enough information'
       ) {
         return (
@@ -94,7 +96,10 @@ class DataScreen extends React.Component {
         );
       }
     } else {
-      if (this.props.mostProductiveDays.mostProductiveWeekDayAllTime === 'Not enough information') {
+      if (
+        !this.props.mostProductiveDays.mostProductiveWeekDayAllTime ||
+        this.props.mostProductiveDays.mostProductiveWeekDayAllTime === 'Not enough information'
+      ) {
         return (
           <Text
             style={
@@ -115,6 +120,7 @@ class DataScreen extends React.Component {
   getLeastProductiveDay = () => {
     if (this.state.selectedTimeframe === '7 DAYS') {
       if (
+        !this.props.leastProductiveDays.leastProductiveWeekDayLast7Days ||
         this.props.leastProductiveDays.leastProductiveWeekDayLast7Days === 'Not enough information'
       ) {
         return (
@@ -134,6 +140,7 @@ class DataScreen extends React.Component {
       }
     } else if (this.state.selectedTimeframe === '30 DAYS') {
       if (
+        !this.props.leastProductiveDays.leastProductiveWeekDayLast30Days ||
         this.props.leastProductiveDays.leastProductiveWeekDayLast30Days === 'Not enough information'
       ) {
         return (
@@ -153,6 +160,7 @@ class DataScreen extends React.Component {
       }
     } else {
       if (
+        !this.props.leastProductiveDays.leastProductiveWeekDayAllTime ||
         this.props.leastProductiveDays.leastProductiveWeekDayAllTime === 'Not enough information'
       ) {
         return (
